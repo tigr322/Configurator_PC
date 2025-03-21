@@ -8,7 +8,7 @@ use App\Models\Category;
 use App\Models\Component;
 class ComponentController extends Controller
 {
- /**
+ /**ы
      * Показать список всех комплектующих с фильтрацией и сортировкой
      */
     public function index(Request $request)
