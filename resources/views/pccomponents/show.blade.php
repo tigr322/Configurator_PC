@@ -23,7 +23,7 @@
             <div class="flex-1 space-y-2">
                 <p><strong>Категория:</strong> {{ $component->category->name }}</p>
                 <p><strong>Бренд:</strong> {{ $component->brand ?? 'Не указан' }}</p>
-                <p><strong>Цена:</strong> {{ number_format($component->price, 2, ',', ' ') }} ₽</p>
+                <p><strong>Цена:</strong> {{ number_format($component->price, 2, ',', ' ') }} $</p>
 
                 @if($component->shop_url)
                     <a href="{{ $component->shop_url }}" target="_blank" class="text-blue-500 underline">
