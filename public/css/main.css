@@ -1,0 +1,150 @@
+/* Основные стили */
+body {
+    background-color: #0a0a0a;
+    color: #EDEDEC;
+    font-family: 'Instrument Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+  
+}
+.container {
+    max-width: 500px;
+    margin: 100px auto;
+    padding: 20px;
+    background: rgba(20, 20, 20, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+h1 {
+   
+    margin: 30px auto;
+    padding: 20px;
+    color: #FACC15;
+}
+
+label {
+    color: #EDEDEC;
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Стили для выпадающего списка */
+.build-dropdown {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    background-color: #1a1a1a;
+    color: #FACC15;
+    border: 2px solid #FACC15;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.build-dropdown:hover {
+    border-color: #e0b20e;
+}
+
+.build-dropdown:focus {
+    outline: none;
+    border-color: #ffcc00;
+    box-shadow: 0 0 8px rgba(255, 204, 0, 0.8);
+}
+/* Навигация */
+header nav {
+    display: flex;
+    justify-content: end;
+    gap: 16px;
+}
+
+   
+
+header nav a {
+    color: #EDEDEC;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+header nav a:hover {
+    color: #FACC15;
+    border-color: #FACC15;
+}
+
+/* Главный контейнер */
+.main-container {
+    text-align: center;
+    margin-top: 50px;
+    max-width: 600px;
+}
+
+/* Заголовки */
+.main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.main-subtitle {
+    font-size: 1.2rem;
+    color: #A1A1A1;
+    margin-bottom: 30px;
+}
+.white-icon {
+    color: white;
+}
+/* Кнопка */
+.btn-start {
+    background-color: #FACC15;
+    color: #0a0a0a;
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.navigation {
+    width: 100%;
+    position: fixed;
+    top: 10px;
+    left: 0;
+   
+  
+    z-index: 1000;
+}
+.btn-start:hover {
+    background-color: #e0b20e;
+    transform: scale(1.05);
+}
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #e0b20e;
+    text-align: center;
+    padding: 10px 0;
+    font-weight: bold;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 2rem;
+    }
+
+    .main-subtitle {
+        font-size: 1rem;
+    }
+
+    .btn-start {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+}

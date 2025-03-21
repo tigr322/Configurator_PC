@@ -1,0 +1,85 @@
+/* auth.css - стиль для страницы авторизации в черно-желтом стиле */
+
+body {
+    background-color: #121212;
+    color: #f1c40f;
+    font-family: 'Instrument Sans', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+form {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+    width: 350px;
+    box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+}
+
+input, button {
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+input {
+    background-color: #252525;
+    border: 2px solid #f1c40f;
+    color: #fff;
+}
+
+input:focus {
+    outline: none;
+    border-color: #ffcc00;
+}
+
+button {
+    background-color: #f1c40f;
+    border: none;
+    color: #121212;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #ffcc00;
+}
+
+a {
+    color: #f1c40f;
+    text-decoration: none;
+    font-size: 14px;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+a:hover {
+    color: #ffcc00;
+    text-decoration: underline;
+}
+
+label {
+    font-size: 14px;
+    display: block;
+    margin-top: 10px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.remember-me input {
+    width: auto;
+    margin-right: 10px;
+}
