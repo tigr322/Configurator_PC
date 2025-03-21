@@ -21,7 +21,9 @@ class ComponentController extends Controller
                 $q->where('name', $request->category);
             });
         }
-
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
         if ($request->filled('brand')) {
             $query->where('brand', 'like', '%' . $request->brand . '%');
         }

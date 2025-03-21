@@ -22,6 +22,8 @@
                 @endforeach
             </select>
 
+            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="name" placeholder="Название" value="{{ request('name') }}" class="border p-2 rounded">
+
             <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="brand" placeholder="Бренд" value="{{ request('brand') }}" class="border p-2 rounded">
 
             <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="min_price" placeholder="Мин. цена" value="{{ request('min_price') }}" class="border p-2 rounded">
