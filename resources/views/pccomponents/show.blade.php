@@ -50,11 +50,6 @@
                         @endif
                     </div>
                 </div>
-                
-                
-                
-                
-
                 {{-- Источники цен (если есть) --}}
                 @if($component->parsedData->count())
                     <div>

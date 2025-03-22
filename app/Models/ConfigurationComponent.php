@@ -9,4 +9,9 @@ class ConfigurationComponent extends Model
 {
     /** @use HasFactory<\Database\Factories\ConfigurationComponentFactory> */
     use HasFactory;
+    protected $fillable = [
+        'configuration_id',
+        'component_id'
+        
+    ];
 }

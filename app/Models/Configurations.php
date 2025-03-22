@@ -12,7 +12,8 @@ class Configurations extends Model
 
     public function components()
     {
-        return $this->belongsToMany(Component::class, 'configuration_components');
+        return $this->belongsToMany(Component::class, 'configuration_components', 'configuration_id', 'component_id')->with('category');
     }
+    
 
 }   

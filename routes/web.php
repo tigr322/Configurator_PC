@@ -10,7 +10,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
+Route::get('/configurator', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 //Route::get('/catalog', [ComponentController::class,'catalog'])->name('catalog');
@@ -24,5 +24,6 @@ Route::middleware('auth')->group(function () {
 });
 Route::get('/catalog', [ComponentController::class, 'index'])->name('catalog');
 Route::get('/component/{id}', [ComponentController::class, 'show'])->name('components.show');
+Route::get('/configurations/{id}', [ConfigurationController::class, 'show'])->name('configurationbuild.showconf');
 
 require __DIR__.'/auth.php';

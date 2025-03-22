@@ -12,4 +12,10 @@ class ConfigurationController extends Controller
 
         return view('configurationbuild.builds', ['builds' => $builds]);  // Передаем данные в представление
     }
+    public function show($id)
+    {
+        $configuration = Configurations::with('components.category')->findOrFail($id);
+    
+        return view('configurationbuild.showconf', compact('configuration')); // Убедитесь, что переменная правильно названа
+    }
 }
