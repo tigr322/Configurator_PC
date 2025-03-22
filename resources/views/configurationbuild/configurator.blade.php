@@ -23,7 +23,7 @@
                         <option value="">-- Не выбрано --</option>
                         @foreach($category->components as $component)
                             <option value="{{ $component->id }}">
-                                {{ $component->name }} ({{ number_format($component->price, 2) }} ₽)
+                                {{ $component->name }} ({{ number_format($component->price, 2) }} $)
                             </option>
                         @endforeach
                     </select>

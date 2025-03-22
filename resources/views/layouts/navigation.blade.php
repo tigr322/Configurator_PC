@@ -10,7 +10,9 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-
+    <style>
+        
+        </style>
     <!-- Styles / Scripts -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -64,5 +66,19 @@
 <footer>
     <p>© 2025 Конфигуратор ПК</p>
 </footer>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const nav = document.querySelector('.navigation');
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 70) {
+                nav.classList.add('hidden');
+            } else {
+                nav.classList.remove('hidden');
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
