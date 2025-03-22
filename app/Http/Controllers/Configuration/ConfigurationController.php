@@ -10,6 +10,6 @@ class ConfigurationController extends Controller
     public function configurations(Request $request){
         $builds = Configurations::all();  // Получаем все конфигурации
 
-        return view('builds', ['builds' => $builds]);  // Передаем данные в представление
+        return view('configurationbuild.builds', ['builds' => $builds]);  // Передаем данные в представление
     }
 }

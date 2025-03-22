@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>Каталог комплектующих</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <style>
+
+    </style>
 </head>
+
 <body>
     @include('layouts.navigation')
 
@@ -22,12 +26,12 @@
                 @endforeach
             </select>
 
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="name" placeholder="Название" value="{{ request('name') }}" class="border p-2 rounded">
+            <input  type="text" name="name" placeholder="Название" value="{{ request('name') }}" class="border p-2 rounded">
 
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="brand" placeholder="Бренд" value="{{ request('brand') }}" class="border p-2 rounded">
+            <input  type="text" name="brand" placeholder="Бренд" value="{{ request('brand') }}" class="border p-2 rounded">
 
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="min_price" placeholder="Мин. цена" value="{{ request('min_price') }}" class="border p-2 rounded">
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="max_price" placeholder="Макс. цена" value="{{ request('max_price') }}" class="border p-2 rounded">
+            <input  type="number" name="min_price" placeholder="Мин. цена" value="{{ request('min_price') }}" class="border p-2 rounded">
+            <input  type="number" name="max_price" placeholder="Макс. цена" value="{{ request('max_price') }}" class="border p-2 rounded">
 
             <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="sort" class="border p-2 rounded">
                 <option value="">Сортировка</option>
