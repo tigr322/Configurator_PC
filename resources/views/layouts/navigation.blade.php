@@ -27,8 +27,8 @@
                 </svg>
             </a>
             @auth
-                <a href="{{ url('/dashboard') }}" class="inline-block px-5 py-1.5 border border-[#3E3E3A] rounded-sm text-sm leading-normal">
-                    Магазин
+                <a href="{{ url('/configurator') }}" class="inline-block px-5 py-1.5 border border-[#3E3E3A] rounded-sm text-sm leading-normal">
+                    Конфигуратор
                 </a>
 
                 <form method="POST" action="{{ route('logout') }}">
