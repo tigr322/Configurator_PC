@@ -15,7 +15,7 @@
     <div class="container mx-auto px-4 py-6">
         <h1 class="text-3xl font-bold mb-6">Каталог комплектующих</h1>
 
-        {{-- 🔍 Форма фильтрации --}}
+        {{-- Форма фильтрации --}}
         <form method="GET" action="{{ route('catalog') }}" class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
             <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="category" class="border p-2 rounded">
                 <option value="">Все категории</option>
@@ -42,7 +42,7 @@
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
         </form>
 
-        {{-- 🔧 Список компонентов --}}
+        {{-- Список компонентов --}}
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @forelse ($components as $component)
                 <div class="border rounded-lg p-4 shadow">
@@ -61,7 +61,7 @@
             @endforelse
         </div>
 
-        {{-- 📄 Пагинация --}}
+        {{--Пагинация --}}
         <div class="mt-6">
             {{ $components->withQueryString()->links() }}
         </div>

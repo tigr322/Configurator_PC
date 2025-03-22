@@ -32,7 +32,9 @@
                 <a href="{{ url('/configurator') }}" class="inline-block px-5 py-1.5 border border-[#3E3E3A] rounded-sm text-sm leading-normal">
                     Конфигуратор
                 </a>
-
+                <a href="{{ url('/profile') }}" class="inline-block px-5 py-1.5 border border-[#3E3E3A] rounded-sm text-sm leading-normal">
+                    Профиль
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="inline-block px-5 py-1.5 border border-transparent hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
@@ -69,9 +71,10 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const nav = document.querySelector('.navigation');
-
+        const footer = document.querySelector('.footer');
         window.addEventListener('scroll', function () {
-            if (window.scrollY > 70) {
+           
+            if (window.scrollY > 70 ) {
                 nav.classList.add('hidden');
             } else {
                 nav.classList.remove('hidden');

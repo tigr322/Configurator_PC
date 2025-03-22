@@ -13,9 +13,9 @@ class CompatibilityRulesTableSeeder extends Seeder
     public function run()
     {
         DB::table('compatibility_rules')->insert([
-            'category1_id' => 1, // Processors
+            'category1_id' => 5, // Processors
             'category2_id' => 2, // Motherboards
-            'condition' => json_encode(['socket' => 'LGA1200'])
+            'condition' => json_encode(["sata_ports"=>">="])
         ]);
     }
 }
