@@ -35,6 +35,57 @@
             </button>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selects = document.querySelectorAll('select[id^="component_"]');
+    
+            selects.forEach(select => {
+                select.addEventListener('change', function () {
+                    const componentId = this.value;
+                    const categoryId = this.id.replace('component_', '');
+    
+                    if (!componentId) return;
+    
+                    fetch('/configurator/check-compatibility', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({
+                            component_id: componentId,
+                            category_id: categoryId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        for (const [targetCategoryId, components] of Object.entries(data)) {
+                            const targetSelect = document.getElementById(`component_${targetCategoryId}`);
+                            if (!targetSelect) continue;
+    
+                            // Сохраняем текущий выбор (если есть)
+                            const currentValue = targetSelect.value;
+    
+                            // Сброс списка
+                            targetSelect.innerHTML = '<option value="">-- Не выбрано --</option>';
+    
+                            components.forEach(c => {
+                                const option = document.createElement('option');
+                                option.value = c.id;
+                                option.textContent = `${c.name} (${parseFloat(c.price).toFixed(2)} $)`;
+                                targetSelect.appendChild(option);
+                            });
+    
+                            // Если предыдущий выбор всё ещё есть в новом списке — восстановим его
+                            if ([...targetSelect.options].some(opt => opt.value === currentValue)) {
+                                targetSelect.value = currentValue;
+                            }
+                        }
+                    });
+                });
+            });
+        });
+    </script>
     
     
 @endsection

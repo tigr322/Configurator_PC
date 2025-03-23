@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/catalog', [ComponentController::class, 'index'])->name('catalog');
 Route::get('/component/{id}', [ComponentController::class, 'show'])->name('components.show');
 Route::get('/configurations/{id}', [ConfigurationController::class, 'show'])->name('configurationbuild.showconf');
+Route::post('/configurator/check-compatibility', [ComponentController::class, 'checkCompatibility']);
 
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор
