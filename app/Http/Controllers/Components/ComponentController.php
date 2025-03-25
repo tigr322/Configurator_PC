@@ -108,7 +108,76 @@ class ComponentController extends Controller
     
         return response()->json($result);
     }
-    
+    public function checkCompatibilityMulti(Request $request)
+{
+    $selectedComponents = $request->input('selected_components', []);
+
+    // Загружаем все выбранные компоненты
+    $components = Component::whereIn('id', array_values($selectedComponents))
+        ->get()
+        ->keyBy('id');
+
+    $result = [];
+
+    // Получаем все правила совместимости
+    $rules = CompatibilityRule::all();
+
+    foreach ($rules as $rule) {
+        $sourceCategoryId = $rule->category1_id;
+        $targetCategoryId = $rule->category2_id;
+        $conditions = $rule->condition;
+
+        // Проверяем, выбран ли компонент из sourceCategory
+        if (!isset($selectedComponents[$sourceCategoryId])) {
+            continue;
+        }
+
+        $sourceComponentId = $selectedComponents[$sourceCategoryId];
+        $sourceComponent = $components[$sourceComponentId] ?? null;
+
+        if (!$sourceComponent) continue;
+
+        $sourceData = json_decode($sourceComponent->compatibility_data, true);
+
+        // Получаем все компоненты из целевой категории
+        $targetComponents = Component::where('category_id', $targetCategoryId)->get();
+
+        foreach ($targetComponents as $targetComponent) {
+            $targetData = json_decode($targetComponent->compatibility_data, true);
+
+            $isCompatible = true;
+
+            foreach ($conditions as $field => $operator) {
+                $sourceValue = $sourceData[$field] ?? null;
+                $targetValue = $targetData[$field] ?? null;
+
+                if (is_null($sourceValue) || is_null($targetValue)) {
+                    $isCompatible = false;
+                    break;
+                }
+
+                switch ($operator) {
+                    case '==': $isCompatible = $sourceValue == $targetValue; break;
+                    case '>=': $isCompatible = $sourceValue >= $targetValue; break;
+                    case '<=': $isCompatible = $sourceValue <= $targetValue; break;
+                    case '>':  $isCompatible = $sourceValue >  $targetValue; break;
+                    case '<':  $isCompatible = $sourceValue <  $targetValue; break;
+                    default:   $isCompatible = false; break;
+                }
+
+                if (!$isCompatible) break;
+            }
+
+            // Если не совместимо — добавим в "исключённые" компоненты
+            if (!$isCompatible) {
+                $result[$targetCategoryId][] = $targetComponent->id;
+            }
+        }
+    }
+
+    return response()->json($result);
+}
+
     public function show($id)
     {
         $component = Component::with(['category', 'parsedData'])->findOrFail($id);

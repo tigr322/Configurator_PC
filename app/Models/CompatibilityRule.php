@@ -9,6 +9,7 @@ class CompatibilityRule extends Model
 {
     /** @use HasFactory<\Database\Factories\CompatibilityRuleFactory> */
     use HasFactory;
+    
     protected $fillable = [
         'category1_id',
         'category2_id',
