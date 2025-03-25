@@ -2,9 +2,95 @@
 @section('title', 'Создать конфигурацию')
 
 @section('content')
-    <div class="container">
-        <h1>Создание конфигурации ПК</h1>
+<!--<style>
+    
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Прижимаем слева */
+        padding-left: 30px; /* Отступ от левого края */
+        margin-left: 0;
+        max-width: 2000px; /* Максимальная ширина контейнера */
+        width: 100%;
+    }
+    
+    .container h1 {
+        margin-bottom: 20px;
+    }
 
+    .container form {
+        width: 20%;
+        background-color: #000000;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .mb-3 {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        background-color: #f3f4f6;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        color: black;
+    }
+
+    button {
+        padding: 0.75rem 1.5rem;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    /* Стиль для сообщений об успехе или ошибке */
+    .alert {
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        width: 100%;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+</style> -->
+
+    <div class="container">
+
+        <h1>Создание конфигурации ПК</h1>
+       @if (session('success'))
+<div style="color: green; font-weight: bold; text-align: center;">
+    {{ session('success') }}
+</div>
+@endif
+
+@if (session('error'))
+<div style="color: red; font-weight: bold; text-align: center;">
+    {{ session('error') }}
+</div>
+@endif
         <form action="{{ route('configurations.store') }}" method="POST">
             @csrf
 
@@ -15,14 +101,14 @@
             </div>
 
             <h3>Выберите комплектующие:</h3>
-
+            
             @foreach($categories as $category)
                 <div class="mb-3">
                     <label for="component_{{ $category->id }}">{{ $category->name }}:</label>
-                    <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="components[{{ $category->id }}]" id="component_{{ $category->id }}" class="form-control">
+                    <select style="width: 300px; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="components[{{ $category->id }}]" id="component_{{ $category->id }}" class="form-control">
                         <option value="">-- Не выбрано --</option>
                         @foreach($category->components as $component)
-                            <option value="{{ $component->id }}">
+                            <option  value="{{ $component->id }}">
                                 {{ $component->name }} ({{ number_format($component->price, 2) }} $)
                             </option>
                         @endforeach
@@ -34,58 +120,76 @@
                 Создать конфигурацию
             </button>
         </form>
+       
     </div>
+   
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const selects = document.querySelectorAll('select[id^="component_"]');
-    
+        
             selects.forEach(select => {
-                select.addEventListener('change', function () {
-                    const componentId = this.value;
-                    const categoryId = this.id.replace('component_', '');
-    
-                    if (!componentId) return;
-    
-                    fetch('/configurator/check-compatibility', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        },
-                        body: JSON.stringify({
-                            component_id: componentId,
-                            category_id: categoryId
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        for (const [targetCategoryId, components] of Object.entries(data)) {
-                            const targetSelect = document.getElementById(`component_${targetCategoryId}`);
-                            if (!targetSelect) continue;
-    
-                            // Сохраняем текущий выбор (если есть)
-                            const currentValue = targetSelect.value;
-    
-                            // Сброс списка
-                            targetSelect.innerHTML = '<option value="">-- Не выбрано --</option>';
-    
-                            components.forEach(c => {
-                                const option = document.createElement('option');
-                                option.value = c.id;
-                                option.textContent = `${c.name} (${parseFloat(c.price).toFixed(2)} $)`;
-                                targetSelect.appendChild(option);
-                            });
-    
-                            // Если предыдущий выбор всё ещё есть в новом списке — восстановим его
-                            if ([...targetSelect.options].some(opt => opt.value === currentValue)) {
-                                targetSelect.value = currentValue;
-                            }
-                        }
-                    });
-                });
+                select.addEventListener('change', checkAllCompatibility);
             });
+        
+            function checkAllCompatibility() {
+                // Собираем все выбранные компоненты
+                const selectedComponents = {};
+                selects.forEach(select => {
+                    const categoryId = select.id.replace('component_', '');
+                    const componentId = select.value;
+                    if (componentId) {
+                        selectedComponents[categoryId] = componentId;
+                    }
+                });
+        
+                if (Object.keys(selectedComponents).length === 0) return;
+        
+                fetch('/configurator/check-compatibility-multi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({
+                        selected_components: selectedComponents
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Сначала разблокируем все опции
+                    selects.forEach(select => {
+                        Array.from(select.options).forEach(option => {
+                            if (option.value !== "") {
+                                option.disabled = false;
+                            }
+                        });
+                    });
+        
+                    // Проходим по каждой категории с несовместимыми компонентами
+                    for (const [categoryId, incompatibleIds] of Object.entries(data)) {
+                        const targetSelect = document.getElementById(`component_${categoryId}`);
+                        if (!targetSelect) continue;
+        
+                        const incompatibleSet = new Set(incompatibleIds.map(id => id.toString()));
+                        const currentValue = targetSelect.value;
+        
+                        Array.from(targetSelect.options).forEach(option => {
+                            if (option.value === "") return;
+        
+                            if (incompatibleSet.has(option.value)) {
+                                option.disabled = true;
+        
+                                if (currentValue === option.value) {
+                                    targetSelect.value = "";
+                                }
+                            }
+                        });
+                    }
+                });
+            }
         });
-    </script>
+        </script>
+        
     
     
 @endsection

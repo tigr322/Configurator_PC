@@ -20,6 +20,7 @@
 </head>
 <body>
     <!-- -->
+    <div class="page-wrapper">
 <header  class="navigation">
     @if (Route::has('login'))
         <nav class="flex items-center justify-end gap-4">
@@ -61,13 +62,11 @@
         </nav>
     @endif
 </header>
-<main>
+<main class="main-content">
     @yield('content')
+     
 </main>
 
-<footer>
-    <p>© 2025 Конфигуратор ПК</p>
-</footer>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const nav = document.querySelector('.navigation');
@@ -82,6 +81,10 @@
         });
     });
 </script>
-
+<!--<footer class="footer">
+    <p>© 2025 Конфигуратор ПК</p>
+</footer>  -->
+    </div>
 </body>
+
 </html>
