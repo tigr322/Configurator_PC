@@ -17,7 +17,7 @@
         @if (auth()->check() && auth()->user()->admin == 1)
     <div class="mb-8 p-4 border rounded bg-black-100">
         <h2 class="text-xl font-semibold mb-4">🔧 Админ-панель: Парсинг комплектующих</h2>
-        <form method="POST" action="{{ route('admin.parse.components') }}">
+        <form method="POST" action="{{ route('admin.parse') }}">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>

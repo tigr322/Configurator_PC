@@ -4,23 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Services\ParserService;
 class ParserController extends Controller
 {
-    public function parse(Request $request)
+    public function parse(Request $request, ParserService $parser)
     {
-        // Валидация
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'source_url' => 'nullable|url',
+            'source_url' => 'required|url',
         ]);
 
-        // Пример обработки:
-        // Тут можно вставить свою логику парсинга или запустить Artisan-команду
+        $parser->parseFromUrl($request->source_url, $request->category_id);
 
-        // Пример логики
-        // ParserService::parseFromUrl($request->source_url, $request->category_id);
-
-        return redirect()->back()->with('success', 'Парсинг запущен!');
+        return redirect()->back()->with('success', 'Парсинг успешно завершен!');
     }
 }

@@ -105,7 +105,7 @@
             @foreach($categories as $category)
                 <div class="mb-3">
                     <label for="component_{{ $category->id }}">{{ $category->name }}:</label>
-                    <select style="width: 300px; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="components[{{ $category->id }}]" id="component_{{ $category->id }}" class="form-control">
+                    <select style="max-width: 200px; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem;  color: black;" name="components[{{ $category->id }}]" id="component_{{ $category->id }}" class="form-control">
                         <option value="">-- Не выбрано --</option>
                         @foreach($category->components as $component)
                             <option  value="{{ $component->id }}">

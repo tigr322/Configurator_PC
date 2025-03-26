@@ -28,6 +28,11 @@ Route::post('/configurator/check-compatibility', [ComponentController::class, 'c
 Route::post('/configurator/check-compatibility-multi', [ComponentController::class, 'checkCompatibilityMulti']);
 Route::post('/admin/parse-components', [App\Http\Controllers\Admin\ParserController::class, 'parse'])->name('admin.parse.components');
 
+Route::middleware(['auth'])->group(function () {
+    Route::post('/admin/parse', [\App\Http\Controllers\Admin\ParserController::class, 'parse'])
+        ->name('admin.parse');
+});
+
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор
 /* 

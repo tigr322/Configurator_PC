@@ -133,9 +133,62 @@ footer {
     padding: 10px 0;
     font-weight: bold;
 }
+@media (max-width: 375px) {
+    .navigation {
+        display: flex;
+        justify-content: center;
+        background: #111;
+        padding: 10px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .navigation nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        max-width: 100%;
+    }
+
+    .navigation a,
+    .navigation button {
+        font-size: 12px;
+        padding: 6px 10px;
+        border: 1px solid #3E3E3A;
+        background: transparent;
+        color: #fff;
+        border-radius: 4px;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+
+    .navigation button {
+        background: none;
+    }
+
+    .navigation a:hover,
+    .navigation button:hover {
+        background-color: #222;
+    }
+
+    .page-wrapper {
+        padding-top: 60px; /* чтобы контент не был под навигацией */
+    }
+
+    .container {
+        margin: 20px auto;
+        padding: 10px;
+    }
+}
+
 
 /* Адаптивность */
 @media (max-width: 768px) {
+    .navigation{
+        max-width: 768px;
+    }
     .main-title {
         font-size: 2rem;
     }
