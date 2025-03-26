@@ -1,0 +1,105 @@
+header nav {
+    display: flex;
+    align-items: center; /* выравнивает по вертикали */
+}
+
+
+header nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: none;
+}
+
+header nav a:hover {
+    color: #FACC15;
+    border-color: #FACC15;
+}
+
+h1 {
+    margin: 30px auto;
+    padding: 20px;
+    color: #FACC15;
+}
+
+label {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.build-dropdown {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    background-color: var(--card-bg);
+    color: #FACC15;
+    border: 2px solid #FACC15;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.build-dropdown:hover {
+    border-color: #e0b20e;
+}
+
+.build-dropdown:focus {
+    outline: none;
+    border-color: #ffcc00;
+    box-shadow: 0 0 8px rgba(255, 204, 0, 0.8);
+}
+
+.navigation.hide {
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+/* Позиционирование кнопки в левом верхнем углу */
+/* Позиционирование кнопки */
+#themeToggle {
+position: fixed;
+top: 10px;
+left: 10px;
+padding: 10px 20px;
+background-color: #4CAF50;
+color: white;
+border: none;
+border-radius: 5px;
+font-size: 16px;
+cursor: pointer;
+z-index: 1000;
+width: auto;
+max-width: 100px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+background-color: #656464;
+transition: background-color 0.3s ease;
+}
+.sun-icon,
+.moon-icon {
+transition: opacity 0.3s ease;
+}
+
+/* По умолчанию (светлая тема) — показываем Луну */
+.light-theme .sun-icon {
+display: none;
+}
+
+.light-theme .moon-icon {
+display: inline;
+}
+
+/* В тёмной теме — показываем Солнце */
+.dark-theme .sun-icon {
+display: inline;
+}
+
+.dark-theme .moon-icon {
+display: none;
+}
+

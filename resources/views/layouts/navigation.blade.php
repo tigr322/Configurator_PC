@@ -3,88 +3,119 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Конфигуратор ПК</title>
 
-    <title>Configurator PC-Market</title>
-
-    <!-- Fonts -->
+    
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-    <style>
-        
-        </style>
-    <!-- Styles / Scripts -->
+    <link rel="stylesheet" href="{{ asset('css/light-dark.css') }}">
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
 <body>
-    <!-- -->
     <div class="page-wrapper">
-<header  class="navigation">
-    @if (Route::has('login'))
-        <nav class="flex items-center justify-end gap-4">
-            <a style="color: aliceblue" href="{{ url('/') }}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pc-display-horizontal" viewBox="0 0 16 16">
-                    <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5v7A1.5 1.5 0 0 0 1.5 10H6v1H1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5v-1h4.5A1.5 1.5 0 0 0 16 8.5v-7A1.5 1.5 0 0 0 14.5 0h-13Zm0 1h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5ZM12 12.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm2 0a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0ZM1.5 12h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1ZM1 14.25a.25.25 0 0 1 .25-.25h5.5a.25.25 0 1 1 0 .5h-5.5a.25.25 0 0 1-.25-.25Z"/>
-                </svg>
-            </a>
-            @auth
-                <a href="{{ url('/configurator') }}" class="inline-block px-5 py-1.5 border border-[#3E3E3A] rounded-sm text-sm leading-normal">
-                    Конфигуратор
-                </a>
-                <a href="{{ url('/profile') }}" class="inline-block px-5 py-1.5 border border-[#3E3E3A] rounded-sm text-sm leading-normal">
-                    Профиль
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="inline-block px-5 py-1.5 border border-transparent hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
-                        Выход
-                    </button>
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="inline-block px-5 py-1.5 border border-transparent hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
-                    Вход
-                </a>
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="inline-block px-5 py-1.5 border border-transparent hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
-                        Регистрация
-                    </a>
-                @endif
-            @endauth
-            
-            <a href="{{ route('catalog') }}">
-                Каталог комплектующих
-            </a>
-            <a href="{{ route('builds') }}">
-                Популярные конфигурации
-            </a>
-        </nav>
-    @endif
-</header>
-<main class="main-content">
-    @yield('content')
-     
-</main>
+        <header class="navigation">
+            @if (Route::has('login'))
+                <nav>
+                    <a href="{{ url('/') }}">🖥️</a>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const nav = document.querySelector('.navigation');
-        const footer = document.querySelector('.footer');
-        window.addEventListener('scroll', function () {
-           
-            if (window.scrollY > 70 ) {
-                nav.classList.add('hidden');
-            } else {
-                nav.classList.remove('hidden');
+                    @auth
+                    <button class="button-theme" id="themeToggle">
+                        <span class="sun-icon">
+                            <!-- SVG для Солнца -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <circle cx="12" cy="12" r="5" fill="yellow" />
+                                <line x1="12" y1="0" x2="12" y2="4" stroke="yellow" stroke-width="2"/>
+                                <line x1="12" y1="20" x2="12" y2="24" stroke="yellow" stroke-width="2"/>
+                                <line x1="0" y1="12" x2="4" y2="12" stroke="yellow" stroke-width="2"/>
+                                <line x1="20" y1="12" x2="24" y2="12" stroke="yellow" stroke-width="2"/>
+                                <line x1="3" y1="3" x2="6" y2="6" stroke="yellow" stroke-width="2"/>
+                                <line x1="18" y1="18" x2="21" y2="21" stroke="yellow" stroke-width="2"/>
+                                <line x1="3" y1="21" x2="6" y2="18" stroke="yellow" stroke-width="2"/>
+                                <line x1="18" y1="6" x2="21" y2="3" stroke="yellow" stroke-width="2"/>
+                            </svg>
+                        </span>
+                        <span class="moon-icon">
+                            <!-- SVG для Луны -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <circle cx="15" cy="9" r="8" fill="darkgray" />
+                                <circle cx="17" cy="7" r="6" fill="white" />
+                            </svg>
+                        </span>
+                    </button>
+                    
+                    
+                        <a href="{{ url('/configurator') }}">Конфигуратор</a>
+                        <a href="{{ url('/profile') }}">Профиль</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit">Выход</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}">Вход</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}">Регистрация</a>
+                        @endif
+                    @endauth
+                    <a href="{{ route('catalog') }}">Каталог комплектующих</a>
+                    <a href="{{ route('builds') }}">Популярные конфигурации</a>
+                </nav>
+            @endif
+        </header>
+
+        <main class="main-content">
+            @yield('content')
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const nav = document.querySelector('.navigation');
+            let lastScrollY = window.scrollY;
+
+            window.addEventListener('scroll', function () {
+                if (window.scrollY > lastScrollY && window.scrollY > 130) {
+                    nav.classList.add('hide');
+                } else {
+                    nav.classList.remove('hide');
+                }
+                lastScrollY = window.scrollY;
+            });
+
+            const toggleButton = document.getElementById("themeToggle");
+
+            // Установка сохранённой темы
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme === "light") {
+                document.body.classList.add("light");
             }
+
+            toggleButton?.addEventListener("click", function () {
+                document.body.classList.toggle("light");
+                localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+            });
         });
+    </script>
+  <script>
+    const themeToggleButton = document.getElementById('themeToggle');
+    const bodyElement = document.body;
+
+    // Устанавливаем тему при загрузке страницы
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    bodyElement.classList.add(savedTheme + '-theme');
+
+    themeToggleButton.addEventListener('click', () => {
+        // Переключаем классы
+        bodyElement.classList.toggle('dark-theme');
+        bodyElement.classList.toggle('light-theme');
+
+        // Сохраняем тему в localStorage
+        const newTheme = bodyElement.classList.contains('dark-theme') ? 'dark' : 'light';
+        localStorage.setItem('theme', newTheme);
     });
 </script>
-<!--<footer class="footer">
-    <p>© 2025 Конфигуратор ПК</p>
-</footer>  -->
-    </div>
-</body>
 
+</body>
 </html>
