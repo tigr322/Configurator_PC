@@ -74,30 +74,40 @@
         document.addEventListener("DOMContentLoaded", function () {
             const nav = document.querySelector('.navigation');
             let lastScrollY = window.scrollY;
-
+    
+            // Оптимизация: используем requestAnimationFrame для плавности
+            let ticking = false;
+    
             window.addEventListener('scroll', function () {
-                if (window.scrollY > lastScrollY && window.scrollY > 130) {
-                    nav.classList.add('hide');
-                } else {
-                    nav.classList.remove('hide');
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                            nav.classList.add('hide');
+                        } else {
+                            nav.classList.remove('hide');
+                        }
+                        lastScrollY = window.scrollY;
+                        ticking = false;
+                    });
+                    ticking = true;
                 }
-                lastScrollY = window.scrollY;
             });
-
+    
+            // Темная/светлая тема
             const toggleButton = document.getElementById("themeToggle");
-
-            // Установка сохранённой темы
             const savedTheme = localStorage.getItem("theme");
+    
             if (savedTheme === "light") {
                 document.body.classList.add("light");
             }
-
+    
             toggleButton?.addEventListener("click", function () {
                 document.body.classList.toggle("light");
                 localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
             });
         });
     </script>
+    
   <script>
     const themeToggleButton = document.getElementById('themeToggle');
     const bodyElement = document.body;

@@ -79,7 +79,7 @@
 
     <div class="container">
 
-        <h1>Создание конфигурации ПК</h1>
+        <h1 style="font-size: x-large">Создание конфигурации ПК</h1>
        @if (session('success'))
 <div style="color: green; font-weight: bold; text-align: center;">
     {{ session('success') }}
@@ -100,7 +100,7 @@
                 <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"  type="text" name="name" id="config-name" class="form-control" required>
             </div>
 
-            <h3>Выберите комплектующие:</h3>
+            <h2>Выберите комплектующие:</h3>
             
             @foreach($categories as $category)
                 <div class="mb-3">
