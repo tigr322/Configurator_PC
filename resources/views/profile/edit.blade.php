@@ -1,5 +1,5 @@
 @extends('layouts.navigation')  
-@section('title', 'Создать конфигурацию')
+@section('title', 'Профиль')
 
 @section('content')
 <div class="container">
