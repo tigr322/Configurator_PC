@@ -13,7 +13,7 @@
     @include('layouts.navigation')
    
     
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-3">
         @if (auth()->check() && auth()->user()->admin == 1)
     <div class="mb-8 p-4 border rounded bg-black-100">
         <h2 class="text-xl font-semibold mb-4">🔧 Админ-панель: Парсинг комплектующих</h2>
@@ -76,7 +76,7 @@
         
       
         {{-- Список компонентов --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
           
             @forelse ($components as $component)
                 <div class="border rounded-lg p-4 shadow">

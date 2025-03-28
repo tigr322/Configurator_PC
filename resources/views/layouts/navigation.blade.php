@@ -10,9 +10,8 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('css/light-dark.css') }}">
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
 </head>
 <body>
     <div class="page-wrapper">
@@ -49,10 +48,10 @@
                     
                         <a href="{{ url('/configurator') }}">Конфигуратор</a>
                         <a href="{{ url('/profile') }}">Профиль</a>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <a method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit">Выход</button>
-                        </form>
+                        </a>
                     @else
                         <a href="{{ route('login') }}">Вход</a>
                         @if (Route::has('register'))

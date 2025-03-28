@@ -157,6 +157,12 @@ header nav a:hover {
     text-decoration: none;
     display: inline-block;
 }
+.main-container {
+    max-width: 1000px;
+    margin: 100px auto;
+    padding: 20px;
+    text-align: center;
+}
 .navigation {
     position: fixed;
     top: 0;

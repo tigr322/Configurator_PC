@@ -10,11 +10,46 @@ use App\Models\Category;
 use App\Models\Component;
 class ConfigurationController extends Controller
 {
-    public function configurations(Request $request){
-        $builds = Configurations::all();  // Получаем все конфигурации
-
-        return view('configurationbuild.builds', ['builds' => $builds]);  // Передаем данные в представление
+    public function configurations(Request $request)
+{
+    // Начинаем запрос с моделей Configurations и их компонентов
+    $query = Configurations::query()->with('components');
+    
+    // Фильтрация по имени конфигурации
+    if ($request->filled('search')) {
+        $query->where('name', 'like', '%' . $request->search . '%');
     }
+    
+    // Фильтрация по компонентам
+    if ($request->filled('component')) {
+        $query->whereHas('components', function($query) use ($request) {
+            $query->where('name', 'like', '%' . $request->component . '%');
+        });
+    }
+
+    // Сортировка по цене
+    if ($request->filled('sort')) {
+        switch ($request->sort) {
+            case 'price_asc':
+                $query->orderBy('total_price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('total_price', 'desc');
+                break;
+            default:
+                $query->latest();
+        }
+    } else {
+        $query->latest();
+    }
+
+    // Получаем все конфигурации после применения фильтров и сортировок
+    $builds = $query->get();  // Используем get() вместо all(), чтобы получить только отфильтрованные данные
+    
+    // Передаем конфигурации в представление
+    return view('configurationbuild.builds', ['builds' => $builds]);
+}
+
     public function show($id)
     {
         $configuration = Configurations::with('components.category')->findOrFail($id);
