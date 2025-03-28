@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
 
+
     </style>
 </head>
 
@@ -27,29 +28,50 @@
 <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
           
     @forelse ($builds as $build)
-        <div class="border rounded-lg p-4 shadow">
-           
-            <h2 class="text-lg font-semibold">{{ $build->name }}</h2>
-            <p class="text-sm text-gray-500">{{ $build->total_price}}</p>
-            <a href="{{ route('configurationbuild.showconf', $build->id) }}" class="inline-block mt-2 text-blue-500 hover:underline">
-                Подробнее
-            </a>
-            
+    <div class="accordion-item border rounded-lg p-4 shadow mb-4">
+        <h2 class="text-lg font-semibold">{{ $build->name }}</h2>
+        <p class="text-sm text-gray-500">{{ $build->total_price }}</p>
+    
+        <!-- Кнопка аккордеона -->
+        <button class="accordion-toggle mt-2 text-blue-500 hover:underline" aria-expanded="false" aria-controls="accordion-content-{{ $build->id }}">
+            Подробнее
+        </button>
+    
+        <!-- Скрытый контент -->
+        <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-2">
+            @foreach($build->components as $component)
+                <li>
+                    <strong>{{ $component->category->name }}:</strong> 
+                    {{ $component->name }} — {{ number_format($component->price, 2) }} $
+                </li>
+            @endforeach
+            <!--<a href="{{ route('configurationbuild.showconf', $build->id) }}" class="text-blue-500 hover:underline">
+                Перейти к полному описанию
+            </a>-->
         </div>
+    </div>
+    
     @empty
         <p>Комплектующие не найдены.</p>
     @endforelse
 </div>
 </div>
 
-    <script>
-        function selectBuild(selectElement) {
-            const selectedId = selectElement.value;
-            if (selectedId) {
-                window.location.href = "/configurations/" + selectedId;
-            }
-        }
-    </script>
+<script>
+    document.querySelectorAll('.accordion-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            const content = document.getElementById(this.getAttribute('aria-controls'));
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+            // Переключаем видимость контента
+            content.style.display = isExpanded ? 'none' : 'block';
+
+            // Обновляем aria-expanded для доступности
+            this.setAttribute('aria-expanded', !isExpanded);
+        });
+    });
+</script>
+
 </body>
 </html>
 
