@@ -1,36 +1,45 @@
-<?php 
+<?php
+
 namespace App\Services;
 
+use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
-use App\Models\Component;
 
 class ParserService
 {
-    public function parseFromUrl(string $url, int $categoryId)
+    public function parseFromUrl($url, $category_id)
     {
         $client = new Client();
-        $response = $client->get($url);
-        $html = $response->getBody()->getContents();
 
+    $headers = [
+        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    ];
+
+    try {
+        // Отправляем запрос
+        $response = $client->get($url, [
+            'headers' => $headers
+        ]);
+
+        // Получаем HTML содержимое
+        $html = (string) $response->getBody();
+
+        // Загружаем HTML в Crawler
         $crawler = new Crawler($html);
 
-       
-        $crawler->filter('.product')->each(function (Crawler $node) use ($categoryId) {
+        // Пример парсинга
+        $crawler->filter('.product-card')->each(function (Crawler $node) use ($category_id) {
+            // Логика парсинга
             $name = $node->filter('.product-title')->text();
-            $brand = $node->filter('.brand')->text();
-            $price = floatval(str_replace(['$', ' '], '', $node->filter('.price')->text()));
-            $image = $node->filter('img')->attr('src');
-
-            Component::create([
-                'category_id' => $categoryId,
-                'name' => $name,
-                'brand' => $brand,
-                'price' => $price,
-                'image_url' => $image,
-            ]);
+            $price = $node->filter('.price')->text();
+            
+            // Сохранение в базу данных или другие действия
         });
 
-        return true;
+        return 'Парсинг завершен';
+    } catch (\Exception $e) {
+        return 'Ошибка при выполнении запроса: ' . $e->getMessage();
+    }
     }
 }

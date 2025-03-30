@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Services\ParserService;
+use Illuminate\Http\Request;
+
 class ParserController extends Controller
 {
     public function parse(Request $request, ParserService $parser)
@@ -14,8 +15,9 @@ class ParserController extends Controller
             'source_url' => 'required|url',
         ]);
 
-        $parser->parseFromUrl($request->source_url, $request->category_id);
+        // Используем сервис для парсинга
+        $message = $parser->parseFromUrl($request->source_url, $request->category_id);
 
-        return redirect()->back()->with('success', 'Парсинг успешно завершен!');
+        return redirect()->back()->with('success', $message);
     }
 }

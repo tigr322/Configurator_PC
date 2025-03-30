@@ -86,11 +86,16 @@
 </div>
 @endif
 
-@if (session('error'))
-<div style="color: red; font-weight: bold; text-align: center;">
-    {{ session('error') }}
-</div>
+@if ($errors->any())
+    <div style="color: red; font-weight: bold; text-align: center;">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
 @endif
+
         <form action="{{ route('configurations.store') }}" method="POST">
             @csrf
 
@@ -142,7 +147,7 @@
                     }
                 });
         
-                if (Object.keys(selectedComponents).length === 0) return;
+                //if (Object.keys(selectedComponents).length === 0) return;
         
                 fetch('/configurator/check-compatibility-multi', {
                     method: 'POST',
@@ -154,7 +159,12 @@
                         selected_components: selectedComponents
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+    if (!response.ok) {
+        return response.json().then(error => { throw error; });
+    }
+    return response.json();
+})
                 .then(data => {
                     // Сначала разблокируем все опции
                     selects.forEach(select => {

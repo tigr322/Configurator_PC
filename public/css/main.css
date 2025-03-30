@@ -321,3 +321,30 @@ footer {
         padding: 10px 20px;
     }
 }
+.accordion {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    border-radius: 0.25rem;
+}
+
+.accordion:hover {
+    background-color:  #4CAF50;
+}
+
+.panel {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: var(--panel-bg-color); 
+}
+
+.panel input,
+.panel select {
+    margin-top: 8px;
+}

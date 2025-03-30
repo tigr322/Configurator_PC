@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Configuration;
-
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -73,11 +73,22 @@ class ConfigurationController extends Controller
 
 public function store(Request $request)
 {
+    $request->merge([
+        'components' => array_values($request->input('components', [])),
+    ]);
+    
     $request->validate([
         'name' => 'required|string|max:255',
-        'components' => 'array',
-    ]);
+        'components' => 'required|array|min:1',
+        'components.*' => 'required|integer|exists:components,id',
+    ], [
+        'components.required' => 'Нужно выбрать хотя бы один компонент.',
+        'components.*.exists' => 'Один или несколько выбранных компонентов не существуют.',
+        'components.*.required' => 'Выберите компонент для категории :attribute.',
 
+    ]);
+    
+    
     // Создаем конфигурацию
     $config = Configurations::create([
         'user_id' => Auth::id(),
