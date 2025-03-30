@@ -14,15 +14,29 @@
 @include('layouts.navigation')  
 
 <div class="container mx-auto px-4 py-3">
-<form method="GET" action="{{ route('configurations') }}" class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-    <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="search" placeholder="Название" value="{{ request('search') }}" class="border p-2 rounded">
-    <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="component" placeholder="Компонент" value="{{ request('component') }}" class="border p-2 rounded">
-    <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="sort" class="border p-2 rounded">
-        <option value="">Сортировка</option>
-        <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
-        <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
-    </select>
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
+    <form method="GET" action="{{ route('configurations') }}"
+    class="mb-6 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-4 items-center justify-center">
+  <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
+         type="text" name="search" placeholder="Название" value="{{ request('search') }}" class="border p-2 rounded">
+  
+  <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
+         type="text" name="component" placeholder="Компонент" value="{{ request('component') }}" class="border p-2 rounded">
+  <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
+         type="number" name="pagination" placeholder="Пагинация" value="{{ request('pagination') }}" class="border p-2 rounded">
+  <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
+          name="sort" class="border p-2 rounded">
+      <option value="">Сортировка</option>
+      <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
+      <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
+  </select>
+  
+  <div class=" flex justify-center">
+    <button type="submit"
+        class="bg-blue-500 text-white px-6 py-2 rounded w-full md:w-auto">
+        Применить
+    </button>
+</div>
+
 </form>
 
 <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
@@ -54,6 +68,9 @@
     @empty
         <p>Комплектующие не найдены.</p>
     @endforelse
+</div>
+<div class="mt-6">
+    {{ $col->withQueryString()->links() }}
 </div>
 </div>
 

@@ -36,7 +36,12 @@ class ComponentController extends Controller
         if ($request->filled('max_price')) {
             $query->where('price', '<=', $request->max_price);
         }
-
+        if ($request->filled('pagination')) {
+            $perPage = (int) $request->input('pagination');
+            $components = $query->paginate($perPage);
+        } else {
+            $components = $query->paginate(5); // или любое значение по умолчанию
+        }
         // Сортировка
         if ($request->filled('sort')) {
             switch ($request->sort) {
@@ -54,7 +59,7 @@ class ComponentController extends Controller
         }
 
         // Пагинация
-        $components = $query->paginate(10);
+      
 
         // Все категории для фильтра
         $categories = Category::all();

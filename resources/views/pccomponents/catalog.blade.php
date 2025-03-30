@@ -48,7 +48,7 @@
         <h1 class="text-3xl font-bold mb-6">Каталог комплектующих</h1>
         
         {{-- Форма фильтрации --}}
-        <form method="GET" action="{{ route('catalog') }}" class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <form method="GET" action="{{ route('catalog') }}" class="mb-6 grid grid-cols-4 md:grid-cols-3 gap-4">
             <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="category" class="border p-2 rounded">
                 <option value="">Все категории</option>
                 @foreach ($categories as $category)
@@ -64,7 +64,8 @@
 
             <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="min_price" placeholder="Мин. цена" value="{{ request('min_price') }}" class="border p-2 rounded">
             <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="max_price" placeholder="Макс. цена" value="{{ request('max_price') }}" class="border p-2 rounded">
-
+            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
+            type="number" name="pagination" placeholder="Пагинация" value="{{ request('pagination') }}" class="border p-2 rounded">
             <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="sort" class="border p-2 rounded">
                 <option value="">Сортировка</option>
                 <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>

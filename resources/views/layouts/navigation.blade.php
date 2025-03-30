@@ -48,10 +48,10 @@
                     
                         <a href="{{ url('/configurator') }}">Конфигуратор</a>
                         <a href="{{ url('/profile') }}">Профиль</a>
-                        <a method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit">Выход</button>
-                        </a>
+                        </form>
                     @else
                         <a href="{{ route('login') }}">Вход</a>
                         @if (Route::has('register'))
