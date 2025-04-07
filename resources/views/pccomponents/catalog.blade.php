@@ -60,7 +60,22 @@
             </div>
         </div>
     @endif
-    
+    @if (session('success'))
+    <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if ($errors->any())
+    <div style="color: red; font-weight: bold; text-align: center; margin-top: 1rem;">
+        <ul style="list-style-type: none; padding: 0;">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
         <h1 class="text-3xl font-bold mb-6">Каталог комплектующих</h1>
         
         {{-- Форма фильтрации --}}
@@ -94,19 +109,46 @@
       
         {{-- Список компонентов --}}
         <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
-          
             @forelse ($components as $component)
+            <form method="POST" action="{{ route('delete', $component->id) }}" >
+                @csrf
+                @method('DELETE')
                 <div class="border rounded-lg p-4 shadow">
-                    @if ($component->image_url)
-                        <img src="{{ $component->image_url }}" alt="{{ $component->name }}" class="w-full h-40 object-contain mb-2">
-                    @endif
+                    <div class="flex justify-center mb-4">
+                        @if($component->image_url)
+                            @php
+                                
+                                $imagePath = 'products/' . basename($component->image_url);
+                                $url = asset('storage/' . $imagePath);
+                            @endphp
+                            
+                            <img 
+                                src="{{ $url }}" 
+                                alt="{{ $component->name }}" 
+                                class="max-w-full h-auto max-h-64 object-contain rounded shadow"
+                                onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
+                            >
+                        @else
+                      
+                            <img 
+                            src="{{ asset('images/defaulte_image.jpg') }}" 
+                            alt="Default product image"
+                            style="width: 200px; height: 200px;">
+                        
+                        @endif
+                    </div>
                     <h2 class="text-lg font-semibold">{{ $component->name }}</h2>
                     <p class="text-sm text-gray-500">{{ $component->brand }}</p>
-                    <p class="font-bold text-green-600 mt-2">{{ number_format($component->price, 2) }} $</p>
+                    <p class="font-bold text-green-600 mt-2">{{ number_format($component->price, 2) }} </p>
                     <a href="{{ route('components.show', $component->id) }}" class="inline-block mt-2 text-blue-500 hover:underline">
                         Подробнее
                     </a>
+                    @if (auth()->check() && auth()->user()->admin == 1)
+                    <button type="submit" class="mt-2 text-red-600 hover:underline">Удалить</button>
+                    @endif
+                    
                 </div>
+            </form>
             @empty
                 <p>Комплектующие не найдены.</p>
             @endforelse
@@ -136,5 +178,7 @@
         });
     }
         </script>
+       
+        
 </body>
 </html>

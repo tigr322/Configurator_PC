@@ -33,6 +33,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/parse', [\App\Http\Controllers\Admin\ParserController::class, 'parse'])
         ->name('admin.parse');
 });
+Route::delete('/delete/{id}', [ComponentController::class, 'delete'])->name('delete');
+Route::put('/components/{id}', [ComponentController::class, 'update'])->name('components.update');
 
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор

@@ -154,6 +154,40 @@ if ($valided->fails()) {
 
     return response()->json($result);
 }
+public function delete($id)
+{
+    $component = Component::find($id);
+
+    if ($component) {
+        $component->delete();
+        return redirect()->back()->with('success', 'Компонент успешно удалён.');
+    }
+
+    return redirect()->back()->withErrors(['Компонент не найден.']);
+}
+public function update(Request $request, $id)
+{
+    $component = Component::findOrFail($id);
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'brand' => 'nullable|string|max:255',
+        'price' => 'required|numeric',
+        'shop_url' => 'nullable|url',
+        'compatibility_data' => 'nullable|json',
+    ]);
+
+    $component->update([
+        'name' => $request->name,
+        'brand' => $request->brand,
+        'price' => $request->price,
+        'shop_url' => $request->shop_url,
+        'compatibility_data' => $request->compatibility_data,
+    ]);
+
+    return redirect()->back()->with('success', 'Компонент обновлён успешно.');
+}
+
 
     public function show($id)
     {

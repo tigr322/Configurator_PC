@@ -32,7 +32,7 @@ class Kernel extends HttpKernel
     ];
 
     protected $routeMiddleware = [
-        
+        'customHeaders' => \App\Http\Middleware\CustomHeadersMiddleware::class,
         'admin' => \App\Http\Middleware\Admin::class, // вот сюда ты добавляешь admin
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,

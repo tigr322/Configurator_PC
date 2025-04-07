@@ -31,8 +31,7 @@
   </select>
   
   <div class=" flex justify-center">
-    <button type="submit"
-        class="bg-blue-500 text-white px-6 py-2 rounded w-full md:w-auto">
+    <button type="submit" class="inline-block px-5 py-1.5 border border-transparent hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
         Применить
     </button>
 </div>
