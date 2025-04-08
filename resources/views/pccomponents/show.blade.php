@@ -77,25 +77,25 @@
         @else 
         <div class="flex flex-col items-center"> <!-- Центрируем содержимое -->
             <h1 class="text-2xl font-bold mb-4">{{ $component->name }}</h1>
-    
+            @if($component->image_url)
+            <div class="flex justify-center mb-4">
+                    @php
+                            
+                            $imagePath = 'products/' . basename($component->image_url);
+                            $url = asset('storage/' . $imagePath);
+                        @endphp
+                        
+                        <img 
+                            src="{{ $url }}" 
+                            alt="{{ $component->name }}" 
+                            class="max-w-full h-auto max-h-64 object-contain rounded shadow"
+                            onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
+                        >
+                </div>
+            @endif
             <div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
                 {{-- Картинка --}}
-                @if($component->image_url)
-                <div class="flex justify-center mb-4">
-                        @php
-                                
-                                $imagePath = 'products/' . basename($component->image_url);
-                                $url = asset('storage/' . $imagePath);
-                            @endphp
-                            
-                            <img 
-                                src="{{ $url }}" 
-                                alt="{{ $component->name }}" 
-                                class="max-w-full h-auto max-h-64 object-contain rounded shadow"
-                                onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
-                            >
-                    </div>
-                @endif
+               
     
                 {{-- Информация --}}
                 <div class="w-full md:w-2/3 space-y-2">

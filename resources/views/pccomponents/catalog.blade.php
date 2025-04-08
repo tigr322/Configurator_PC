@@ -16,10 +16,28 @@
     <div class="container mx-auto px-4 py-3">
         @if (auth()->check() && auth()->user()->admin == 1)
         <div class="mb-6 p-4 border rounded bg-black-100 max-w-xl mx-auto">
-            <h2 class="text-lg font-semibold mb-4 text-center">🔧 Админ-панель: Парсинг комплектующих</h2>
-            
+            <h2 class="text-lg font-semibold mb-4 text-center">🔧 Админ-панель</h2>
+            <button class="mb-6 accordion w-full  bg-green-600 text-white text-center">
+                Добавить новые категории
+            </button>
+            <div class="panel p-4 border-t-2 border-green-600 hidden">
+                <form method="POST" action="{{ route('admin.addCategory') }}">
+                    @csrf
+                    <div>
+                        <label for="source_url" class="block text-sm font-medium">Добавить категорию</label>
+                        <input type="text" name="category_name" id="category_name" placeholder=""
+                               class="w-full px-3 py-2 bg-white border rounded text-black">
+                    </div>
+                    <div class="flex justify-center" style="padding: 10px;">
+                        <button type="submit" 
+                                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                           Добавить
+                        </button>
+                    </div>
+                </form>
+            </div>
             <!-- Кнопка для открытия аккордеона -->
-            <button class="accordion w-full px-3 py-2 bg-green-600 text-white rounded-t-lg text-left">
+            <button class="accordion w-full px-3 py-2 bg-green-600 text-white rounded-t-lg text-center">
                 Открыть форму для парсинга комплектующих
             </button>
             

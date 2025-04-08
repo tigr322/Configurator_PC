@@ -8,7 +8,7 @@ use RoachPHP\Spider\Configuration\Overrides;
 use Illuminate\Support\Facades\Artisan;
 use App\Spiders\ComponentSpider;
 use RoachPHP\Roach;
-
+use App\Models\Category;
 use Illuminate\Support\Facades\Log;
 class ParserController extends Controller
 {
@@ -37,5 +37,14 @@ class ParserController extends Controller
 
         return redirect()->back()
             ->with('success', 'Парсинг успешно запущен!');
+    }
+    public function addCategory(Request $request){
+        $validated = $request->validate([
+            'category_name' => 'required|string|max:32',
+        ]);
+        Category::create(['name' => $validated['category_name']]);
+
+        return redirect()->back()
+        ->with('success', 'Успешно добавлена категория товара!');
     }
 }
