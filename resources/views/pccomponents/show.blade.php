@@ -17,8 +17,19 @@
             <div class="flex flex-col items-center"> <!-- Центрируем содержимое -->
                 {{-- Картинка --}}
                 @if($component->image_url)
-                    <div class="w-full md:w-1/3 mb-6">
-                        <img src="{{ $component->image_url }}" alt="{{ $component->name }}" class="w-full rounded shadow">
+                <div class="flex justify-center mb-4">
+                        @php
+                                
+                                $imagePath = 'products/' . basename($component->image_url);
+                                $url = asset('storage/' . $imagePath);
+                            @endphp
+                            
+                            <img 
+                                src="{{ $url }}" 
+                                alt="{{ $component->name }}" 
+                                class="max-w-full h-auto max-h-64 object-contain rounded shadow"
+                                onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
+                            >
                     </div>
                 @endif
 
@@ -70,8 +81,19 @@
             <div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
                 {{-- Картинка --}}
                 @if($component->image_url)
-                    <div class="w-full md:w-1/3">
-                        <img src="{{ $component->image_url }}" alt="{{ $component->name }}" class="w-full rounded shadow">
+                <div class="flex justify-center mb-4">
+                        @php
+                                
+                                $imagePath = 'products/' . basename($component->image_url);
+                                $url = asset('storage/' . $imagePath);
+                            @endphp
+                            
+                            <img 
+                                src="{{ $url }}" 
+                                alt="{{ $component->name }}" 
+                                class="max-w-full h-auto max-h-64 object-contain rounded shadow"
+                                onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
+                            >
                     </div>
                 @endif
     

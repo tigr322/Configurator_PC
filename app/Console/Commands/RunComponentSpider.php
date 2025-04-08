@@ -13,7 +13,6 @@ class RunComponentSpider extends Command
 
     public function handle()
     {
-        // Запуск паука для парсинга
         Roach::startSpider(ComponentSpider::class);
         $this->info('Парсинг завершён!');
     }

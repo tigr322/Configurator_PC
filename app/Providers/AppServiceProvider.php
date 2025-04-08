@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use App\Spiders\ComponentSpider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -15,6 +15,15 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
+        $this->app->bind(ComponentSpider::class, function () {
+            return new ComponentSpider();
+        });
+      /*  $this->app->bind(ComponentSpider::class, function ($app) {
+            return new ComponentSpider(
+                $app['request']->get('categoryId'),
+                $app['request']->get('sourceUrl')
+            );
+        });*/
     }
 
     /**
