@@ -14,10 +14,11 @@
    
     
     <div class="container mx-auto px-4 py-3">
-        
+        <div class="relative h-screen">
         @if (auth()->check() && auth()->user()->admin == 1)
-        <div class=" bg-gray-50 border rounded shadow-sm p-4 text-sm">
-            <h2 class="text-3xl font-bold mb-6">🔧 Админ-панель</h2>
+    
+        <div class="fixed left-0 top-100  shadow-md z-50 p-4 overflow-auto" style="width: 30%">
+            <h2 class="text-2xl font-bold mb-6">🔧 Админ-панель</h2>
         
             <!-- Добавление категории -->
             <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
@@ -118,30 +119,18 @@
                     </button>
                 </form>
             </div>
-            
         </div>
+       
         
     @endif
-    @if (session('success'))
-    <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
-        {{ session('success') }}
-    </div>
-@endif
 
-@if ($errors->any())
-    <div style="color: red; font-weight: bold; text-align: center; margin-top: 1rem;">
-        <ul style="list-style-type: none; padding: 0;">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
 
-        <h1 class="text-3xl font-bold mb-6">Каталог комплектующих</h1>
+      
         
         {{-- Форма фильтрации --}}
-        <form method="GET" action="{{ route('catalog') }}" class="mb-6 grid grid-cols-6 md:grid-cols-4 gap-4">
+        <div class="fixed right-0 top-100 shadow-md z-40 p-4 overflow-auto">
+            <h2 class="text-2xl font-bold mb-6">Фильтрация</h2>
+        <form method="GET" action="{{ route('catalog') }}" class="mb-3 grid grid-cols-3 md:grid-cols-2 gap-2">
             <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="category" class="border p-2 rounded">
                 <option value="">Все категории</option>
                 @foreach ($categories as $category)
@@ -167,10 +156,27 @@
 
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
         </form>
-        
-      
+    </div>
+</div>
         {{-- Список компонентов --}}
         <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <h1 class="text-3xl font-bold mb-6">Каталог комплектующих</h1>
+            @if (session('success'))
+            <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
+                {{ session('success') }}
+            </div>
+        @endif
+        
+        @if ($errors->any())
+            <div style="color: red; font-weight: bold; text-align: center; margin-top: 1rem;">
+                <ul style="list-style-type: none; padding: 0;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
             @forelse ($components as $component)
             <form method="POST" action="{{ route('delete', $component->id) }}" >
                 @csrf
