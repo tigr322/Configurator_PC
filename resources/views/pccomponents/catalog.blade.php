@@ -17,7 +17,7 @@
         
         @if (auth()->check() && auth()->user()->admin == 1)
         <div class=" bg-gray-50 border rounded shadow-sm p-4 text-sm">
-            <h2 class="text-center text-base font-semibold mb-2">🔧 Админ-панель</h2>
+            <h2 class="text-3xl font-bold mb-6">🔧 Админ-панель</h2>
         
             <!-- Добавление категории -->
             <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
