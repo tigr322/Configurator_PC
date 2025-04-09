@@ -14,69 +14,113 @@
    
     
     <div class="container mx-auto px-4 py-3">
+        
         @if (auth()->check() && auth()->user()->admin == 1)
-        <div class="mb-6 p-4 border rounded bg-black-100 max-w-xl mx-auto">
-            <h2 class="text-lg font-semibold mb-4 text-center">🔧 Админ-панель</h2>
-            <button class="mb-6 accordion w-full  bg-green-600 text-white text-center">
-                Добавить новые категории
+        <div class=" bg-gray-50 border rounded shadow-sm p-4 text-sm">
+            <h2 class="text-center text-base font-semibold mb-2">🔧 Админ-панель</h2>
+        
+            <!-- Добавление категории -->
+            <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+                ➕ Категория
             </button>
-            <div class="panel p-4 border-t-2 border-green-600 hidden">
+            <div class="panel hidden mt-2">
                 <form method="POST" action="{{ route('admin.addCategory') }}">
                     @csrf
-                    <div>
-                        <label for="source_url" class="block text-sm font-medium">Добавить категорию</label>
-                        <input type="text" name="category_name" id="category_name" placeholder=""
-                               class="w-full px-3 py-2 bg-white border rounded text-black">
+                    <div class="mb-2">
+                        <label for="category_name" class="block   mb-1">Новая категория</label>
+                        <input type="text" name="category_name" id="category_name" required
+                            class="w-full px-2 py-1 border rounded text-black   bg-white">
                     </div>
-                    <div class="flex justify-center" style="padding: 10px;">
-                        <button type="submit" 
-                                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-                           Добавить
-                        </button>
-                    </div>
+                    <button type="submit"
+                        class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
+                        Добавить
+                    </button>
                 </form>
             </div>
-            <!-- Кнопка для открытия аккордеона -->
-            <button class="accordion w-full px-3 py-2 bg-green-600 text-white rounded-t-lg text-center">
-                Открыть форму для парсинга комплектующих
+        
+            <!-- Парсинг -->
+            <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+                🔍 Парсинг
             </button>
-            
-            <!-- Содержимое аккордеона -->
-            <div class="panel p-4 border-t-2 border-green-600 hidden">
+            <div class="panel hidden mt-2">
                 <form method="POST" action="{{ route('admin.parse') }}">
                     @csrf
-                    <div class="space-y-4">
-                        
-                        <!-- Категория -->
-                        <div>
-                            <label for="category_id" class="block text-sm font-medium">Категория</label>
-                            <select id="category_id" name="category_id" required
-                                    class="w-full px-3 py-2 bg-white border rounded text-black">
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-        
-                        <!-- URL Источника -->
-                        <div>
-                            <label for="source_url" class="block text-sm font-medium">URL источника</label>
-                            <input type="url" name="source_url" id="source_url" placeholder="https://..."
-                                   class="w-full px-3 py-2 bg-white border rounded text-black">
-                        </div>
-        
-                        <!-- Кнопка Парсинга -->
-                        <div class="flex justify-center" style="padding: 10px;">
-                            <button type="submit" 
-                                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-                                Начать парсинг
-                            </button>
-                        </div>
-        
+                    <div class="mb-2">
+                        <label for="category_id" class="block   mb-1">Категория</label>
+                        <select id="category_id" name="category_id" required
+                            class="w-full px-2 py-1 border rounded text-black   bg-white">
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
+                    <div class="mb-2">
+                        <label for="source_url" class="block   mb-1">URL источника</label>
+                        <input type="url" name="source_url" id="source_url" placeholder="https://..."
+                            class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
+                        Начать парсинг
+                    </button>
                 </form>
             </div>
+            <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+                ✏ Добавить комплектующие в ручную 
+            </button>
+            <div class="panel hidden mt-2">
+                <form method="POST" action="{{ route('admin.addComponent') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-2">
+                        <label for="category_id" class="block   mb-1">Категория</label>
+                        <select id="category_id" name="category_id" required
+                            class="w-full px-2 py-1 border rounded text-black   bg-white">
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+            
+                    <div class="mb-2">
+                        <label for="component_name" class="block   mb-1">Название</label>
+                        <input type="text" name="component_name" id="component_name" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                    </div>
+                    <div class="mb-2">
+                        <label for="component_price" class="block   mb-1">Цена (руб)</label>
+                        <input type="number" name="component_price" id="component_price" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                    </div>
+                    <div class="mb-2">
+                        <label for="component_brand" class="block   mb-1">Бренд</label>
+                        <input type="text" name="component_brand" id="component_brand" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                    </div>
+            
+                    <div class="mb-2">
+                        <label for="component_market_url" class="block   mb-1">Ссылка на товар</label>
+                        <input type="url" name="component_market_url" id="component_market_url" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                    </div>
+            
+                    <div class="mb-2">
+                        <label class="block font-semibold   mb-1">Совместимость (JSON)</label>
+                        <textarea name="compatibility_data"
+                                  class="w-full border p-2 rounded h-28   bg-gray-100 text-black resize-none"
+                                  placeholder='{"socket": "AM4", "form_factor": "ATX"}'></textarea>
+                    </div>
+            
+                    <div class="mb-3">
+                        <label for="component_image" class="block   mb-1">Изображение</label>
+                        <input type="file" name="component_image" id="component_image"
+                               class="w-full border rounded   px-2 py-1 bg-white text-black file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:  file:bg-green-600 file:text-white hover:file:bg-green-700">
+                    </div>
+            
+                    <button type="submit"
+                        class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
+                        Добавить
+                    </button>
+                </form>
+            </div>
+            
         </div>
+        
     @endif
     @if (session('success'))
     <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
@@ -135,7 +179,6 @@
                     <div class="flex justify-center mb-4">
                         @if($component->image_url)
                             @php
-                                
                                 $imagePath = 'products/' . basename($component->image_url);
                                 $url = asset('storage/' . $imagePath);
                             @endphp

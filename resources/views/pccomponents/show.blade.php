@@ -35,6 +35,18 @@
 
                 {{-- Информация --}}
                 <div class="w-full max-w-md space-y-4"> <!-- Фиксированная ширина и отступы -->
+                    <div class="mb-4">
+                        <label class="block font-semibold">Категория:</label>
+                        <select name="category_id" id="category_id" required
+                            class="w-full px-3 py-2 border rounded bg-white text-black">
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}" {{ $component->category_id == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div>
                         <label class="block font-semibold">Название:</label>
                         <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" 
@@ -77,22 +89,22 @@
         @else 
         <div class="flex flex-col items-center"> <!-- Центрируем содержимое -->
             <h1 class="text-2xl font-bold mb-4">{{ $component->name }}</h1>
-            @if($component->image_url)
-            <div class="flex justify-center mb-4">
-                    @php
+             @if($component->image_url)
+                <div class="flex justify-center mb-4">
+                        @php
+                                
+                                $imagePath = 'products/' . basename($component->image_url);
+                                $url = asset('storage/' . $imagePath);
+                            @endphp
                             
-                            $imagePath = 'products/' . basename($component->image_url);
-                            $url = asset('storage/' . $imagePath);
-                        @endphp
-                        
-                        <img 
-                            src="{{ $url }}" 
-                            alt="{{ $component->name }}" 
-                            class="max-w-full h-auto max-h-64 object-contain rounded shadow"
-                            onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
-                        >
-                </div>
-            @endif
+                            <img 
+                                src="{{ $url }}" 
+                                alt="{{ $component->name }}" 
+                                class="max-w-full h-auto max-h-64 object-contain rounded shadow"
+                                onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
+                            >
+                    </div>
+                @endif
             <div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
                 {{-- Картинка --}}
                

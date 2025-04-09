@@ -34,6 +34,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.parse');
         Route::post('/admin/addCategory', [\App\Http\Controllers\Admin\ParserController::class, 'addCategory'])
         ->name('admin.addCategory');
+        Route::post('/admin/addComponent', [\App\Http\Controllers\Admin\ParserController::class, 'addComponent'])
+        ->name('admin.addComponent');
 }); 
 Route::delete('/delete/{id}', [ComponentController::class, 'delete'])->name('delete');
 Route::put('/components/{id}', [ComponentController::class, 'update'])->name('components.update');

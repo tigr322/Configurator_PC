@@ -174,12 +174,14 @@ public function update(Request $request, $id)
         'brand' => 'nullable|string|max:255',
         'price' => 'required|numeric',
         'shop_url' => 'nullable|url',
+        'category_id' => 'required',
         'compatibility_data' => 'nullable|json',
     ]);
 
     $component->update([
         'name' => $request->name,
         'brand' => $request->brand,
+        'category_id' =>  $request->category_id, 
         'price' => $request->price,
         'shop_url' => $request->shop_url,
         'compatibility_data' => $request->compatibility_data,
@@ -192,7 +194,7 @@ public function update(Request $request, $id)
     public function show($id)
     {
         $component = Component::with(['category', 'parsedData'])->findOrFail($id);
-
-        return view('pccomponents.show', compact('component'));
+        $categories = Category::all(); 
+        return view('pccomponents.show', compact('component','categories'));
     }
 }
