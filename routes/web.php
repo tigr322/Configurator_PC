@@ -40,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
 Route::delete('/delete/{id}', [ComponentController::class, 'delete'])->name('delete');
 Route::put('/components/{id}', [ComponentController::class, 'update'])->name('components.update');
 
+Route::post('/save-compatibility-rules', [ComponentController::class, 'saveRules'])->name('save.compatibility.rules');
+
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор
 /* 

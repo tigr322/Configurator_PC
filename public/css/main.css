@@ -129,7 +129,10 @@ header nav a:hover {
     margin-top: 50px;
     max-width: 600px;
 }
-
+.Filters h2 {
+    font-size: 0.75rem;
+    text-align: center;
+}
 /* Заголовки */
 .main-title {
     font-size: 2.5rem;
@@ -190,6 +193,7 @@ footer {
     padding: 10px 0;
     font-weight: bold;
 }
+
 @media (max-width: 375px) {
     .navigation {
         transition: transform 0.3s ease, opacity 0.3s ease;
@@ -199,7 +203,8 @@ footer {
         right: 0;
         z-index: 1000;
     }
-    
+   
+   
     .navigation.hide {
         transform: translateY(-100%);
         opacity: 0;
@@ -257,6 +262,40 @@ footer {
         position: sticky;
         top: 0;
         
+    }
+    
+     .Filters {
+        width: 100%; /* Фильтры будут занимать всю ширину */
+        right: 0;
+        top: 80px; /* Можно подправить, если нужно отступить от верхней части */
+       
+       
+      
+    }
+
+    .Filters input,
+    .Filters select {
+        font-size: 0.3rem; /* Уменьшаем шрифт */
+        padding: 0; /* Меньше отступов внутри */
+    }
+
+    .Filters button {
+        font-size: 1rem; /* Уменьшаем размер шрифта в кнопке */
+        padding: 0.175rem 0.3rem; /* Уменьшаем отступы */
+    }
+
+    .Filters input,
+    .Filters select {
+        width: 100%; /* Сделаем поля ввода во всю ширину */
+    }
+
+    /* Пример уменьшения шрифта заголовка */
+    .Filters h2 {
+        font-size: 1rem; /* Уменьшаем размер заголовка */
+    }
+
+    .Filters form {
+        grid-template-columns: 1fr; /* Все элементы формы будут в одну колонку */
     }
     .button-theme {
      

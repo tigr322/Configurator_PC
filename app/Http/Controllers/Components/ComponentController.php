@@ -63,8 +63,9 @@ class ComponentController extends Controller
 
         // Все категории для фильтра
         $categories = Category::all();
+        $rules = CompatibilityRule::all();
 
-        return view('pccomponents.catalog', compact('components', 'categories'));
+        return view('pccomponents.catalog', compact('components', 'categories', 'rules'));
     }
 
     /**
@@ -165,6 +166,38 @@ public function delete($id)
 
     return redirect()->back()->withErrors(['Компонент не найден.']);
 }
+
+
+public function saveRules(Request $request)
+{
+    $rules = $request->input('rules', []);
+    $deletedRules = $request->input('deleted_rules') ? json_decode($request->input('deleted_rules')) : [];
+
+    // Удаление правил
+    if (!empty($deletedRules)) {
+        CompatibilityRule::whereIn('id', $deletedRules)->delete();
+    }
+
+    // Сохранение/обновление
+    foreach ($rules as $rule) {
+        if (!isset($rule['category1_id'], $rule['category2_id'], $rule['condition'])) {
+            continue; // Пропускаем если данных не хватает
+        }
+
+        CompatibilityRule::updateOrCreate(
+            ['id' => $rule['id'] ?? null], // может быть null
+            [
+                'category1_id' => $rule['category1_id'],
+                'category2_id' => $rule['category2_id'],
+                'condition' => json_decode($rule['condition'], true),
+            ]
+        );
+    }
+
+    return redirect()->back()->with('success', 'Правила сохранены');
+}
+
+
 public function update(Request $request, $id)
 {
     $component = Component::findOrFail($id);
