@@ -55,6 +55,25 @@ class ConfigurationController extends Controller
     // Передаем конфигурации в представление
     return view('configurationbuild.builds', compact('builds', 'col'));
 }
+/*public function edit($id)
+{
+    $build = Configurations::with('components.category')->findOrFail($id);
+    return view('builds.edit', compact('build'));
+}
+
+public function update(Request $request, $id)
+{
+    $build = Configurations::findOrFail($id);
+    $build->update($request->only(['name']));
+    return redirect()->route('builds.index')->with('success', 'Конфигурация обновлена');
+}
+*/
+public function destroy($id)
+{
+    $build = Configurations::findOrFail($id);
+    $build->delete();
+    return redirect()->back()->with('success', 'Конфигурация удалена');
+}
 
     public function show($id)
     {

@@ -13,7 +13,7 @@ Route::get('/', function () {
 Route::get('/configurator', [ConfigurationController::class,'create'])->middleware(['auth', 'verified'])->name('configurator');
 Route::post('/configurations', [ConfigurationController::class, 'store'])->middleware(['auth', 'verified'])->name('configurations.store');
 //Route::get('/catalog', [ComponentController::class,'catalog'])->name('catalog');
-Route::get('/builds', [ConfigurationController::class,'configurations'])->name('builds');
+Route::get('/builds', [ConfigurationController::class,'configurations'])->name(name: 'builds');
 
 
 Route::middleware('auth')->group(function () {
@@ -41,6 +41,9 @@ Route::delete('/delete/{id}', [ComponentController::class, 'delete'])->name('del
 Route::put('/components/{id}', [ComponentController::class, 'update'])->name('components.update');
 
 Route::post('/save-compatibility-rules', [ComponentController::class, 'saveRules'])->name('save.compatibility.rules');
+Route::get('builds/{build}/edit', [ConfigurationController::class, 'edit'])->name('builds.edit');
+Route::put('builds/{build}', [ConfigurationController::class, 'update'])->name('builds.update');
+Route::delete('builds/{build}', [ConfigurationController::class, 'destroy'])->name('builds.destroy');
 
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор

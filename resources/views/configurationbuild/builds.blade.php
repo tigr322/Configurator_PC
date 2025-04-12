@@ -39,35 +39,65 @@
 </form>
 
 <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
-          
     @forelse ($builds as $build)
     <div class="accordion-item border rounded-lg p-4 shadow mb-4">
         <h2 class="text-lg font-semibold">{{ $build->name }}</h2>
-        <p class="text-sm text-gray-500">{{ $build->total_price }}</p>
-    
-        <!-- Кнопка аккордеона -->
+        <p class="text-sm text-gray-500">Общая стоимость: {{ number_format($build->total_price, 2) }} $</p>
+     
+        <div class="flex justify-center flex-wrap gap-4 mt-4">
+            @foreach($build->components as $component)
+                @php
+                    $hasImage = $component->image_url;
+                    $imagePath = $hasImage ? 'products/' . basename($component->image_url) : null;
+                    $url = $hasImage ? asset('storage/' . $imagePath) : asset('images/defaulte_image.jpg');
+                @endphp
+
+                <div class="w-48 h-48 flex-shrink-0">
+                    <img 
+                        src="{{ $url }}" 
+                        alt="{{ $component->name }}" 
+                        class="w-full h-full object-contain rounded shadow border"
+                        onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
+                    >
+                </div>
+            @endforeach
+        </div>
+
         <button class="accordion-toggle mt-2 text-blue-500 hover:underline" aria-expanded="false" aria-controls="accordion-content-{{ $build->id }}">
             Подробнее
         </button>
-    
+
         <!-- Скрытый контент -->
         <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-2">
-            @foreach($build->components as $component)
-                <li>
-                    <strong>{{ $component->category->name }}:</strong> 
-                    {{ $component->name }} — {{ number_format($component->price, 2) }} $
-                </li>
-            @endforeach
-            <!--<a href="{{ route('configurationbuild.showconf', $build->id) }}" class="text-blue-500 hover:underline">
-                Перейти к полному описанию
-            </a>-->
+            <ul class="list-disc pl-5">
+
+                @foreach($build->components as $component)
+                
+                    <li>
+                        
+                        <strong>{{ $component->category->name }}:</strong> 
+                        {{ $component->name }} — {{ number_format($component->price, 2) }} $
+                    </li>
+                @endforeach
+            </ul>
         </div>
+
+        <!-- Кнопки управления -->
+      
+            <form action="{{ route('builds.destroy', $build->id) }}" method="POST" onsubmit="return confirm('Удалить эту конфигурацию?');">
+                @csrf
+                @method('DELETE')
+                @if (auth()->check() && auth()->user()->admin == 1)
+                <button type="submit" class="mt-2 text-red-600 hover:underline">Удалить</button>
+                @endif
+            </form>
+       
     </div>
-    
     @empty
-        <p>Комплектующие не найдены.</p>
+        <p>Конфигурации не найдены.</p>
     @endforelse
 </div>
+
 <div class="mt-6">
     {{ $col->withQueryString()->links() }}
 </div>

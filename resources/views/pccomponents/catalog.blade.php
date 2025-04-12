@@ -188,9 +188,9 @@
                 <thead>
                     <tr>
                         <th class="border px-2 py-1">ID</th>
-                        <th class="border px-2 py-1">Category 1</th>
-                        <th class="border px-2 py-1">Category 2</th>
-                        <th class="border px-2 py-1">Condition (JSON)</th>
+                        <th class="border px-2 py-1">Категория 1</th>
+                        <th class="border px-2 py-1">Категория 2</th>
+                        <th class="border px-2 py-1">Правила (JSON)</th>
                         <th class="border px-2 py-1">Удалить</th>
                     </tr>
                 </thead>
