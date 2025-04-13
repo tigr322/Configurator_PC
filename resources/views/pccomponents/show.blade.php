@@ -70,7 +70,14 @@
                         <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" 
                                type="url" name="shop_url" value="{{ $component->shop_url }}" class="w-full border p-2 rounded">
                     </div>
-
+                    <div>
+                        <label class="block font-semibold">Характеристики</label>
+                        <textarea 
+                          style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; height: 200px; font-size: 0.875rem; overflow-x: auto; color: black;" 
+                          name="characteristics"
+                          class="w-full border p-2 rounded"
+                        >{{ str_replace(';', ";\n", $component->characteristics) }}</textarea>
+                      </div>
                     <div>
                         <label class="block font-semibold">Совместимость (JSON):</label>
                         <textarea style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" 
@@ -114,7 +121,7 @@
                     <p><strong>Категория:</strong> {{ $component->category->name }}</p>
                     <p><strong>Бренд:</strong> {{ $component->brand ?? 'Не указан' }}</p>
                     <p><strong>Цена:</strong> {{ number_format($component->price, 2, ',', ' ') }} руб</p>
-    
+                    <p><strong>Характеристики: </strong> {{ str_replace(';', ";\n", $component->characteristics) }}</p>
                     @if($component->shop_url)
                         <a href="{{ $component->shop_url }}" target="_blank" class="text-blue-500 underline">
                             Перейти в магазин
@@ -122,24 +129,7 @@
                     @endif
     
                     {{-- Совместимость --}}
-                    <div>
-                        <h2 class="text-lg font-semibold mt-4 mb-2">Совместимость</h2>
-                        <div class="bg-gray-100 p-2 rounded text-sm text-black">
-                            @php
-                                $compatibility = json_decode($component->compatibility_data, true);
-                            @endphp
                     
-                            @if($compatibility)
-                                <ul style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" class="list-disc pl-5">
-                                    @foreach($compatibility as $key => $value)
-                                        <li><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <p>Нет данных о совместимости.</p>
-                            @endif
-                        </div>
-                    </div>
                 </div>
             </div>
         @endif

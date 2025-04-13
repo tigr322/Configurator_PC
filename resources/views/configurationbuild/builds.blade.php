@@ -41,9 +41,12 @@
 <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
     @forelse ($builds as $build)
     <div class="accordion-item border rounded-lg p-4 shadow mb-4">
-        <h2 class="text-lg font-semibold">{{ $build->name }}</h2>
-        <p class="text-sm text-gray-500">Общая стоимость: {{ number_format($build->total_price, 2) }} $</p>
+       
      
+        <h2 class="text-lg font-semibold">{{ $build->name }}</h2>
+        <h1>Пользователь {{ App\Models\User::find($build->user_id)->name }}</h1> 
+        <p class="text-sm text-gray-500">Общая стоимость: {{ number_format($build->total_price, 2) }} руб</p>
+         
         <div class="flex justify-center flex-wrap gap-4 mt-4">
             @foreach($build->components as $component)
                 @php
@@ -76,7 +79,7 @@
                     <li>
                         
                         <strong>{{ $component->category->name }}:</strong> 
-                        {{ $component->name }} — {{ number_format($component->price, 2) }} $
+                        {{ $component->name }} — {{ number_format($component->price, 2) }} руб
                     </li>
                 @endforeach
             </ul>

@@ -62,6 +62,7 @@ class ParserController extends Controller
             'component_market_url' => 'required|url',
             'compatibility_data' => 'required|json',
             'component_image' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+            'charastiristics'=> 'nullable|string|max:512'
         ]);
     
         $imagePath = null;
@@ -86,6 +87,7 @@ class ParserController extends Controller
             'shop_url' => $validated['component_market_url'],
             'compatibility_data' => $validated['compatibility_data'] ?? null,
             'image_url' => $foto,
+            'characteristics' =>$validated['charastiristics'],
         ]);
     
         return redirect()->back()->with('success', 'Компонент успешно добавлен!');

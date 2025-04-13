@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Component;
 use App\Models\CompatibilityRule;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 class ComponentController extends Controller
 {
  /**ы
@@ -72,101 +74,124 @@ class ComponentController extends Controller
      * Показать один компонент
      */
   
-    public function checkCompatibilityMulti(Request $request)
-{
-    $data = [
-    'selected_components' => $request->input('selected_components'),
-];
-
-$valided = Validator::make($data, [
-    'selected_components' => 'required|array|min:1',
-    'selected_components.*' => 'required|integer|exists:components,id',
-]);
-
-if ($valided->fails()) {
-    return response()->json($valided->errors(), 422);
-}
-
-    
-    $selectedComponents = $request->input('selected_components', []);
-
-    // Загружаем все выбранные компоненты
-    $components = Component::whereIn('id', array_values($selectedComponents))
-        ->get()
-        ->keyBy('id');
-
-    $result = [];
-
-    // Получаем все правила совместимости
-    $rules = CompatibilityRule::all();
-
-    foreach ($rules as $rule) {
-        $sourceCategoryId = $rule->category1_id;
-        $targetCategoryId = $rule->category2_id;
-        $conditions = $rule->condition;
-
-        // Проверяем, выбран ли компонент из sourceCategory
-        if (!isset($selectedComponents[$sourceCategoryId])) {
-            continue;
-        }
-
-        $sourceComponentId = $selectedComponents[$sourceCategoryId];
-        $sourceComponent = $components[$sourceComponentId] ?? null;
-
-        if (!$sourceComponent) continue;
-
-        $sourceData = json_decode($sourceComponent->compatibility_data, true);
-
-        // Получаем все компоненты из целевой категории
-        $targetComponents = Component::where('category_id', $targetCategoryId)->get();
-
-        foreach ($targetComponents as $targetComponent) {
-            $targetData = json_decode($targetComponent->compatibility_data, true);
-
-            $isCompatible = true;
-
-            foreach ($conditions as $field => $operator) {
-                $sourceValue = $sourceData[$field] ?? null;
-                $targetValue = $targetData[$field] ?? null;
-
-                if (is_null($sourceValue) || is_null($targetValue)) {
-                    $isCompatible = false;
-                    break;
-                }
-
-                switch ($operator) {
-                    case '==': $isCompatible = $sourceValue == $targetValue; break;
-                    case '>=': $isCompatible = $sourceValue >= $targetValue; break;
-                    case '<=': $isCompatible = $sourceValue <= $targetValue; break;
-                    case '>':  $isCompatible = $sourceValue >  $targetValue; break;
-                    case '<':  $isCompatible = $sourceValue <  $targetValue; break;
-                    default:   $isCompatible = false; break;
-                }
-
-                if (!$isCompatible) break;
-            }
-
-            // Если не совместимо — добавим в "исключённые" компоненты
-            if (!$isCompatible) {
-                $result[$targetCategoryId][] = $targetComponent->id;
-            }
-        }
-    }
-
-    return response()->json($result);
-}
-public function delete($id)
+     public function checkCompatibilityMulti(Request $request)
+     {
+         $data = [
+             'selected_components' => $request->input('selected_components'),
+         ];
+     
+         $valided = Validator::make($data, [
+             'selected_components' => 'required|array|min:1',
+             'selected_components.*' => 'required|integer|exists:components,id',
+         ]);
+     
+         if ($valided->fails()) {
+             return response()->json($valided->errors(), 422);
+         }
+     
+         $selectedComponents = $request->input('selected_components', []);
+         $components = Component::whereIn('id', array_values($selectedComponents))
+             ->get()
+             ->keyBy('id');
+     
+         $result = [];
+         $rules = CompatibilityRule::all();
+     
+         foreach ($rules as $rule) {
+             $sourceCategoryId = $rule->category1_id;
+             $targetCategoryId = $rule->category2_id;
+             $conditions = $rule->condition;
+     
+             if (!isset($selectedComponents[$sourceCategoryId])) {
+                 continue;
+             }
+     
+             $sourceComponentId = $selectedComponents[$sourceCategoryId];
+             $sourceComponent = $components[$sourceComponentId] ?? null;
+             if (!$sourceComponent) continue;
+     
+             $sourceData = json_decode($sourceComponent->compatibility_data, true);
+             $targetComponents = Component::where('category_id', $targetCategoryId)->get();
+     
+             foreach ($targetComponents as $targetComponent) {
+                 $targetData = json_decode($targetComponent->compatibility_data, true);
+                 $isCompatible = true;
+     
+                 foreach ($conditions as $field => $operator) {
+                     $sourceValue = $sourceData[$field] ?? null;
+                     $targetValue = $targetData[$field] ?? null;
+     
+                     if (is_null($sourceValue) || is_null($targetValue)) {
+                         $isCompatible = false;
+                         break;
+                     }
+     
+                     // Специальная обработка для интерфейсов
+                     if ($field === 'interface') {
+                         $sourceInterfaces = (array)$sourceValue;
+                         $targetInterfaces = (array)$targetValue;
+                         
+                         // Проверяем пересечение массивов
+                         $isCompatible = count(array_intersect($sourceInterfaces, $targetInterfaces)) > 0;
+                         continue;
+                     }
+     
+                     // Стандартная проверка для других полей
+                     switch ($operator) {
+                         case '==': $isCompatible = $sourceValue == $targetValue; break;
+                         case '>=': $isCompatible = $sourceValue >= $targetValue; break;
+                         case '<=': $isCompatible = $sourceValue <= $targetValue; break;
+                         case '>':  $isCompatible = $sourceValue >  $targetValue; break;
+                         case '<':  $isCompatible = $sourceValue <  $targetValue; break;
+                         default:   $isCompatible = false; break;
+                     }
+     
+                     if (!$isCompatible) break;
+                 }
+     
+                 if (!$isCompatible) {
+                     $result[$targetCategoryId][] = $targetComponent->id;
+                 }
+             }
+         }
+     
+         return response()->json($result);
+     }
+public function delete($id) 
 {
     $component = Component::find($id);
 
-    if ($component) {
-        $component->delete();
-        return redirect()->back()->with('success', 'Компонент успешно удалён.');
+    if (!$component) {
+        return redirect()->back()->withErrors(['Компонент не найден.']);
     }
 
-    return redirect()->back()->withErrors(['Компонент не найден.']);
-}
+    // Удаление изображения из хранилища
+    if ($component->image_url) {
+        $imageName = basename($component->image_url);
+        
+        // Правильный путь к файлу (полный абсолютный путь)
+        $absolutePath = storage_path('app/public/products/' . $imageName);
+        
+        // Альтернативный вариант через Storage
+        $storagePath = 'public/products/' . $imageName;
 
+        // Удаляем через Storage (предпочтительный способ)
+        if (Storage::exists($storagePath)) {
+            Storage::delete($storagePath);
+        } 
+        // Если Storage не находит, пробуем прямой путь (для отладки)
+        elseif (file_exists($absolutePath)) {
+            unlink($absolutePath);
+            Log::info("Файл удален через прямой путь: " . $absolutePath);
+        } else {
+            Log::warning("Файл изображения не найден ни по одному пути: " . $imageName);
+        }
+    }
+
+    $component->delete();
+
+    return redirect()->back()->with('success', 'Компонент успешно удалён.');
+}
 
 public function saveRules(Request $request)
 {
@@ -209,6 +234,7 @@ public function update(Request $request, $id)
         'shop_url' => 'nullable|url',
         'category_id' => 'required',
         'compatibility_data' => 'nullable|json',
+        'characteristics'=> 'nullable|string|max:512'
     ]);
 
     $component->update([
@@ -218,6 +244,7 @@ public function update(Request $request, $id)
         'price' => $request->price,
         'shop_url' => $request->shop_url,
         'compatibility_data' => $request->compatibility_data,
+        'characteristics' =>$request->characteristics,
     ]);
 
     return redirect()->back()->with('success', 'Компонент обновлён успешно.');

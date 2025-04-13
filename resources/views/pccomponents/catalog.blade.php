@@ -158,7 +158,12 @@
                 <label for="component_market_url" class="block   mb-1">Ссылка на товар</label>
                 <input type="url" name="component_market_url" id="component_market_url" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
             </div>
-    
+            <div class="mb-2">
+                <label class="block font-semibold   mb-1">Характеристика</label>
+                <textarea name="charastiristics"
+                          class="w-full border p-2 rounded h-28   bg-gray-100 text-black resize-none"
+                          placeholder=''></textarea>
+            </div>
             <div class="mb-2">
                 <label class="block font-semibold   mb-1">Совместимость (JSON)</label>
                 <textarea name="compatibility_data"

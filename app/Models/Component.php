@@ -17,6 +17,7 @@ class Component extends Model
         'image_url',
         'shop_url',
         'compatibility_data',
+        'characteristics',
     ];
 
     // 🛠 Связь: Component принадлежит категории
