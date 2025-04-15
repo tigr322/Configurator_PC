@@ -42,7 +42,7 @@ class ComponentController extends Controller
             $perPage = (int) $request->input('pagination');
             $components = $query->paginate($perPage);
         } else {
-            $components = $query->paginate(5); 
+            $components = $query->paginate(12); 
         }
        
         if ($request->filled('sort')) {

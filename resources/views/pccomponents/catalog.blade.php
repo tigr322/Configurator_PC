@@ -253,52 +253,59 @@
 @endif
 </div>
         {{-- Список компонентов --}}
-        <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
-            
+        <div class="mb-8">
             <h1 class="text-3xl font-bold mb-6">Каталог комплектующих</h1>
             
-            @forelse ($components as $component)
-            <form method="POST" action="{{ route('delete', $component->id) }}" >
-                @csrf
-                @method('DELETE')
-                <div class="border rounded-lg p-4 shadow">
-                    <div class="flex justify-center mb-4">
-                        @if($component->image_url)
-                            @php
-                                $imagePath = 'products/' . basename($component->image_url);
-                                $url = asset('storage/' . $imagePath);
-                            @endphp
-                            
-                            <img 
-                                src="{{ $url }}" 
-                                alt="{{ $component->name }}" 
-                                class="max-w-full h-auto max-h-64 object-contain rounded shadow"
-                                onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
-                            >
-                        @else
-                      
-                            <img 
-                            src="{{ asset('images/defaulte_image.jpg') }}" 
-                            alt="Default product image"
-                            style="width: 200px; height: 200px;">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                @forelse ($components as $component)
+                <form method="POST" action="{{ route('delete', $component->id) }}" class="h-full">
+                    @csrf
+                    @method('DELETE')
+                    <!-- Добавлен класс h-full к родительскому div -->
+                    <div class="w-[280px] h-[420px] border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col" style = "height: 430px;">
+                        <!-- Контейнер изображения с фиксированной высотой -->
+                        <div class="h-[200px] flex items-center justify-center mb-3">
+                            @if($component->image_url)
+                                @php
+                                    $imagePath = 'products/' . basename($component->image_url);
+                                    $url = asset('storage/' . $imagePath);
+                                @endphp
+                                
+                                <img 
+                                    src="{{ $url }}" 
+                                    alt="{{ $component->name }}" 
+                                    class="max-w-full max-h-full object-contain"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
+                                >
+                            @else
+                                <img 
+                                    src="{{ asset('images/defaulte_image.jpg') }}" 
+                                    alt="Default product image"
+                                    class="max-w-full max-h-full object-contain">
+                            @endif
+                        </div>
                         
-                        @endif
+                        <div class="mt-auto">
+                            <h2 class="text-md font-medium line-clamp-2 h-12 mb-1">{{ $component->name }}</h2>
+                            <p class="text-xs text-gray-500 mb-2">{{ $component->brand }}</p>
+                            
+                            <div class="flex items-center justify-between mt-3">
+                                <p class="font-bold text-green-600 text-lg">{{ number_format($component->price, 0, '', ' ') }} ₽</p>
+                                <a href="{{ route('components.show', $component->id) }}" class="text-blue-500 hover:text-blue-700 text-sm">
+                                    Подробнее
+                                </a>
+                            </div>
+                            
+                            @if (auth()->check() && auth()->user()->admin == 1)
+                            <button type="submit" class="mt-2 text-red-600 hover:text-red-800 text-sm">Удалить</button>
+                            @endif
+                        </div>
                     </div>
-                    <h2 class="text-lg font-semibold">{{ $component->name }}</h2>
-                    <p class="text-sm text-gray-500">{{ $component->brand }}</p>
-                    <p class="font-bold text-green-600 mt-2">{{ number_format($component->price, 2) }} </p>
-                    <a href="{{ route('components.show', $component->id) }}" class="inline-block mt-2 text-blue-500 hover:underline">
-                        Подробнее
-                    </a>
-                    @if (auth()->check() && auth()->user()->admin == 1)
-                    <button type="submit" class="mt-2 text-red-600 hover:underline">Удалить</button>
-                    @endif
-                    
-                </div>
-            </form>
-            @empty
-                <p>Комплектующие не найдены.</p>
-            @endforelse
+                </form>
+                @empty
+                    <p class="col-span-full text-center py-10 text-gray-500">Комплектующие не найдены.</p>
+                @endforelse
+            </div>
         </div>
 
         {{--Пагинация --}}

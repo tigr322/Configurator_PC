@@ -113,17 +113,29 @@
                     <select style="max-width: 200px; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem;  color: black;" name="components[{{ $category->id }}]" id="component_{{ $category->id }}" class="form-control">
                         <option value="">-- Не выбрано --</option>
                         @foreach($category->components as $component)
-                            <option  value="{{ $component->id }}">
+                        <option 
+                        value="{{ $component->id }}" 
+                        data-image-url="{{ asset('storage/products/' . basename($component->image_url)) }}"
+                    >
                                 {{ $component->name }} ({{ number_format($component->price, 2) }} руб)
                             </option>
                         @endforeach
                     </select>
                 </div>
+                <img 
+                id="preview_image_{{ $category->id }}" 
+                src="{{ asset('images/defaulte_image.jpg') }}" 
+                alt="Предпросмотр"
+                style="width: 175px; height: 150px; object-fit: contain;"
+                class="rounded shadow border border-gray-300 inline-block ml-4 align-middle"
+                />
+            
             @endforeach
-
+            <div>
             <button type="submit" class="inline-block px-5 py-1.5 border border-transparent hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
                 Создать конфигурацию
             </button>
+            </div>
         </form>
        
     </div>
@@ -133,8 +145,24 @@
             const selects = document.querySelectorAll('select[id^="component_"]');
         
             selects.forEach(select => {
-                select.addEventListener('change', checkAllCompatibility);
+                select.addEventListener('change', function () {
+                checkAllCompatibility();
+                updateImagePreview(select);
             });
+
+            // Первичная инициализация изображений (если надо)
+            updateImagePreview(select);
+        });
+        function updateImagePreview(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const imageUrl = selectedOption.dataset.imageUrl || '{{ asset('images/defaulte_image.jpg') }}';
+            const categoryId = select.id.replace('component_', '');
+            const imgElement = document.getElementById(`preview_image_${categoryId}`);
+
+            if (imgElement) {
+                imgElement.src = imageUrl;
+            }
+        }
         
             function checkAllCompatibility() {
                 // Собираем все выбранные компоненты

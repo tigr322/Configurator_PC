@@ -35,6 +35,16 @@ class ComponentSpider extends BasicSpider
     if (preg_match('/Форм-фактор\s+([A-Z]+)\b/u', $title, $matches)) {
         $data['form_factor'] = $matches[1];
     }
+    if($this->context['category_id'] == 3){
+        if (preg_match('/(DDR[0-9])/i', $title, $matches)) {
+            $data['memory_type'] = strtoupper($matches[1]);
+        }
+        
+        if (preg_match('/(\d{3,5})\s?(МГц|MHz)/iu', $title, $matches)) {
+            $data['speed'] = $matches[1] . 'MHz';
+        }
+    }
+   
     if (preg_match('/(Socket\s*AM[2345]|LGA\s*[\d]+|AM[2345])/ui', $title, $matches)) {
         
         $socket = preg_replace('/\s*Socket\s*/i', '', $matches[1]); 
@@ -53,6 +63,7 @@ class ComponentSpider extends BasicSpider
     if (preg_match('/Разъемы[\s\x{00A0}]*M\.?2/ui', $title)) {
         $data['interface'] = ['M.2', 'SATA']; // Всегда добавляем SATA для материнок
     } 
+
     if ($this->context['category_id'] == 2) { 
         if (!isset($data['interface'])) {
             $data['interface'] = [];
