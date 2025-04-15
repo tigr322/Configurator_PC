@@ -34,7 +34,7 @@ class ComponentController extends Controller
         if ($request->filled('min_price')) {
             $query->where('price', '>=', $request->min_price);
         }
-
+//d
         if ($request->filled('max_price')) {
             $query->where('price', '<=', $request->max_price);
         }
