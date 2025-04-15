@@ -262,9 +262,9 @@
                     @csrf
                     @method('DELETE')
                     <!-- Добавлен класс h-full к родительскому div -->
-                    <div class="w-[280px] h-[420px] border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col" style = "height: 430px;">
+                    <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col" style = "height: 430px;">
                         <!-- Контейнер изображения с фиксированной высотой -->
-                        <div class="h-[200px] flex items-center justify-center mb-3">
+                        <div class="flex-grow-0 h-48 flex items-center justify-center mb-3">
                             @if($component->image_url)
                                 @php
                                     $imagePath = 'products/' . basename($component->image_url);
@@ -284,20 +284,24 @@
                                     class="max-w-full max-h-full object-contain">
                             @endif
                         </div>
-                        
-                        <div class="mt-auto">
+                        <div class="mb-2">
                             <h2 class="text-md font-medium line-clamp-2 h-12 mb-1">{{ $component->name }}</h2>
-                            <p class="text-xs text-gray-500 mb-2">{{ $component->brand }}</p>
-                            
-                            <div class="flex items-center justify-between mt-3">
+                            <p class="text-xs text-gray-500">{{ $component->brand }}</p>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="flex items-center justify-between border-t pt-3">
                                 <p class="font-bold text-green-600 text-lg">{{ number_format($component->price, 0, '', ' ') }} ₽</p>
-                                <a href="{{ route('components.show', $component->id) }}" class="text-blue-500 hover:text-blue-700 text-sm">
+                                <a href="{{ route('components.show', $component->id) }}" 
+                                   class="text-blue-500 hover:text-blue-700 text-sm whitespace-nowrap">
                                     Подробнее
                                 </a>
                             </div>
                             
                             @if (auth()->check() && auth()->user()->admin == 1)
-                            <button type="submit" class="mt-2 text-red-600 hover:text-red-800 text-sm">Удалить</button>
+                            <button type="submit" 
+                                    class="mt-2 text-red-600 hover:text-red-800 text-sm w-full text-left">
+                                Удалить
+                            </button>
                             @endif
                         </div>
                     </div>

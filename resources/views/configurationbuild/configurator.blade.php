@@ -96,21 +96,22 @@
     </div>
 @endif
 
-        <form action="{{ route('configurations.store') }}" method="POST">
+        <form action="{{ route('configurations.store') }}" method="POST" class="space-y-4">
             @csrf
 
-            <div class="mb-3">
-                <label  for="config-name">Название конфигурации:</label>
-               
-                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"  type="text" name="name" id="config-name" class="form-control" required>
+            <div class="mb-4">
+                <label for="config-name" class="block mb-1">Название конфигурации:</label>
+                <input type="text" name="name" id="config-name" 
+                       class=" md:w-1/2 bg-gray-100 p-2 rounded text-sm text-black" required>
             </div>
 
-            <h2>Выберите комплектующие:</h3>
-            
+            <h2 class="text-lg font-medium mb-3">Выберите комплектующие:</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             @foreach($categories as $category)
-                <div class="mb-3">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border border-gray-200 rounded-lg">
+                <div class="flex-1 min-w-0">
                     <label for="component_{{ $category->id }}">{{ $category->name }}:</label>
-                    <select style="max-width: 200px; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem;  color: black;" name="components[{{ $category->id }}]" id="component_{{ $category->id }}" class="form-control">
+                    <select style="max-width: 200px; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem;  color: black;" name="components[{{ $category->id }}]" id="component_{{ $category->id }}" class="w-full bg-gray-100 p-2 rounded text-sm text-black">
                         <option value="">-- Не выбрано --</option>
                         @foreach($category->components as $component)
                         <option 
@@ -119,6 +120,7 @@
                     >
                                 {{ $component->name }} ({{ number_format($component->price, 2) }} руб)
                             </option>
+                        
                         @endforeach
                     </select>
                 </div>
@@ -129,9 +131,11 @@
                 style="width: 175px; height: 150px; object-fit: contain;"
                 class="rounded shadow border border-gray-300 inline-block ml-4 align-middle"
                 />
-            
+            </div>
             @endforeach
-            <div>
+        </div>
+            <div class="py-1.5 px-5 mb-4">
+
             <button type="submit" class="inline-block px-5 py-1.5 border border-transparent hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
                 Создать конфигурацию
             </button>
