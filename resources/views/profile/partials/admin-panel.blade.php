@@ -54,7 +54,17 @@
                                     >
                                         {{ __('Сохранено.') }}
                                     </p>
-                                @endif
+                                @else
+                                    <p
+                                        x-data="{ show: true }"
+                                        x-show="show"
+                                        x-transition
+                                        x-init="setTimeout(() => show = false, 2000)"
+                                        class="text-xs text-red-600 mt-1"
+                                    >
+                                        {{ __('Несохранено.') }}
+                                    </p>
+                                    
                             
                         </form>
                         <form method="POST" action="{{ route('user.destroy', $user->id) }}" class="inline">
