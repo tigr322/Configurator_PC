@@ -12,6 +12,7 @@
         <table class="border rounded-lg shadow-sm">
             <thead class="bg-gray-50">
                 <tr>
+                    <th class="px-4 py-2 text-left text-sm font-medium">ID</th>
                     <th class="px-4 py-2 text-left text-sm font-medium">Имя</th>
                     <th class="px-4 py-2 text-left text-sm font-medium">Email</th>
                     <th class="px-4 py-2 text-left text-sm font-medium">Пароль</th>
@@ -26,6 +27,9 @@
                         <form method="post" action="{{ route('user.update', $user->id) }}">
                             @csrf
                             @method('put')
+                            <td class="px-4 py-2">
+                               {{ $user->id }}
+                            </td>
                             <td class="px-4 py-2">
                                 <x-text-input  style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="name" value="{{ $user->name }}" class="w-full" required />
                             </td>
@@ -45,26 +49,34 @@
                                 <x-primary-button class="text-sm">{{ __('Сохранить') }}</x-primary-button>
                                
                                 @if (session('status') === 'user-updated-'.$user->id)
-                                    <p
-                                        x-data="{ show: true }"
-                                        x-show="show"
-                                        x-transition
-                                        x-init="setTimeout(() => show = false, 2000)"
-                                        class="text-xs text-green-600 mt-1"
-                                    >
-                                        {{ __('Сохранено.') }}
-                                    </p>
-                                @else
-                                    <p
-                                        x-data="{ show: true }"
-                                        x-show="show"
-                                        x-transition
-                                        x-init="setTimeout(() => show = false, 2000)"
-                                        class="text-xs text-red-600 mt-1"
-                                    >
-                                        {{ __('Несохранено.') }}
-                                    </p>
-                                @endif
+                                <!-- Сообщение об успешном сохранении -->
+                                <div 
+                                    x-data="{ show: true }" 
+                                    x-show="show"
+                                    x-transition
+                                    x-init="setTimeout(() => show = false, 2000)"
+                                    class="text-xs text-green-600 mt-1 flex items-center"
+                                >
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    {{ __('Данные успешно сохранены!') }}
+                                </div>
+                            @elseif (session('status') === 'error')
+                               
+                                <div 
+                                    x-data="{ show: true }" 
+                                    x-show="show"
+                                    x-transition
+                                    x-init="setTimeout(() => show = false, 2000)"
+                                    class="text-xs text-red-600 mt-1 flex items-center"
+                                >
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    {{ __('Ошибка сохранения!') }}
+                                </div>
+                            @endif
                                     
                             
                         </form>
