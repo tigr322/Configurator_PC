@@ -22,3 +22,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/docker/db/backup.sql
+/docker/nginx/default.conf
+/docker/php/Dockerfile
+docker-compose.yml
