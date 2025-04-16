@@ -43,13 +43,7 @@
                             </td>
                             <td class="px-4 py-2">
                                 <x-primary-button class="text-sm">{{ __('Сохранить') }}</x-primary-button>
-                                <form method="POST" action="{{ route('user.destroy', $user->id) }}" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <x-danger-button type="submit" class="text-sm">
-                                        {{ __('Удалить') }}
-                                    </x-danger-button>
-                                </form>
+                               
                                 @if (session('status') === 'user-updated-'.$user->id)
                                     <p
                                         x-data="{ show: true }"
@@ -61,9 +55,18 @@
                                         {{ __('Сохранено.') }}
                                     </p>
                                 @endif
-                            </td>
+                            
                         </form>
+                        <form method="POST" action="{{ route('user.destroy', $user->id) }}" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-danger-button type="submit" class="text-sm">
+                                {{ __('Удалить') }}
+                            </x-danger-button>
+                        </form>
+                    </td>
                     </tr>
+                   
                 @endforeach
             </tbody>
         </table>
