@@ -84,62 +84,63 @@ public function destroy($id)
     }
     
     public function create()
-{
-    // Загружаем все категории и их компоненты pc-configurator/resources/views/configurationbuild/configurator.blade.php
-    $categories = Category::with('components')->get();
-//return view('configurationbuild.configurator', compact('categories'));
-    return view('configurationbuild.configurator', compact('categories'));
-}
-public function publicShow($id){
-    $build = Configurations::with('components.category')->findOrFail($id);
-    return view('configurationbuild.publicBuild', compact('build'));
-}
-public function store(Request $request)
-{  
-    $user = Auth::user();
-    $userid = $user->id;
-    if ($user->admin == 0 && Configurations::where("user_id",$userid)->count() >= 5) {
-        return redirect()->route('configurator')->with('error', 'Ограничение по количеству конфигурации');
+    {
+        // Загружаем все категории и их компоненты pc-configurator/resources/views/configurationbuild/configurator.blade.php
+        $categories = Category::with('components')->get();
+        //return view('configurationbuild.configurator', compact('categories'));
+        return view('configurationbuild.configurator', compact('categories'));
     }
-    $request->merge([
-        'components' => array_values($request->input('components', [])),
-    ]);
-    
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'components' => 'required|array|min:1',
-        'components.*' => 'required|integer|exists:components,id',
-    ], [
-        'components.required' => 'Нужно выбрать хотя бы один компонент.',
-        'components.*.exists' => 'Один или несколько выбранных компонентов не существуют.',
-        'components.*.required' => 'Выберите компонент для категории :attribute.',
-
-    ]);
-    
-    
-    // Создаем конфигурацию
-    $config = Configurations::create([
-        'user_id' => Auth::id(),
-        'name' => $request->name,
-        'total_price' => 0,
-    ]);
-
-    $total = 0;
-
-    // Привязываем компоненты
-    foreach ($request->components as $componentId) {
-        if ($componentId) {
-            $config->components()->attach($componentId);
-            $component = Component::find($componentId);
-            $total += $component->price;
+    public function publicShow($id){
+        $build = Configurations::with('components.category')->findOrFail($id);
+        return view('configurationbuild.publicBuild', compact('build'));
+    }
+    //создание конфигурации и загрузки ее в бд
+    public function store(Request $request)
+    {  
+        $user = Auth::user();
+        $userid = $user->id;
+        if ($user->admin == 0 && Configurations::where("user_id",$userid)->count() >= 5) {
+            return redirect()->route('configurator')->with('error', 'Ограничение по количеству конфигурации');
         }
+        $request->merge([
+            'components' => array_values($request->input('components', [])),
+        ]);
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'components' => 'required|array|min:1',
+            'components.*' => 'required|integer|exists:components,id',
+        ], [
+            'components.required' => 'Нужно выбрать хотя бы один компонент.',
+            'components.*.exists' => 'Один или несколько выбранных компонентов не существуют.',
+            'components.*.required' => 'Выберите компонент для категории :attribute.',
+
+        ]);
+        
+        
+        // Создаем конфигурацию
+        $config = Configurations::create([
+            'user_id' => Auth::id(),
+            'name' => $request->name,
+            'total_price' => 0,
+        ]);
+
+        $total = 0;
+
+        // Привязываем компоненты
+        foreach ($request->components as $componentId) {
+            if ($componentId) {
+                $config->components()->attach($componentId);
+                $component = Component::find($componentId);
+                $total += $component->price;
+            }
+        }
+
+        // Обновляем итоговую цену
+        $config->total_price = $total;
+        $config->save();
+
+        return redirect()->route('configurator')->with('success', 'Конфигурация успешно создана!');
     }
-
-    // Обновляем итоговую цену
-    $config->total_price = $total;
-    $config->save();
-
-    return redirect()->route('configurator')->with('success', 'Конфигурация успешно создана!');
-}
-    
+        
 }

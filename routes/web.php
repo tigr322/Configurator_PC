@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
-
+//получаем категории компонетов в конфигуратор
 Route::get('/configurator', [ConfigurationController::class,'create'])->middleware(['auth', 'verified'])->name('configurator');
+//создание конфигурации и загрузки ее в бд
 Route::post('/configurations', [ConfigurationController::class, 'store'])->middleware(['auth', 'verified'])->name('configurations.store');
 //Route::get('/catalog', [ComponentController::class,'catalog'])->name('catalog');
+//загрузка всех конфигурации из бд
 Route::get('/builds', [ConfigurationController::class,'configurations'])->name(name: 'builds');
 
 
