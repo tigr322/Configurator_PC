@@ -17,13 +17,18 @@
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
+            <div class="ontainer mx-auto px-4">
+                <div class="text-center">
+                    @include('profile.partials.my-configurations')
+                </div>
+            </div>
             @if (auth()->check() && auth()->user()->admin == 1)
             <div class="container mx-auto px-4">
-    <div class="text-center">
-        <h2 class="text-xl font-semibold">Все пользователи</h2>
-        @include('profile.partials.admin-panel')
-    </div>
-</div>
+                <div class="text-center">
+                    <h2 class="text-xl font-semibold">Все пользователи</h2>
+                    @include('profile.partials.admin-panel')
+                </div>
+            </div>
             @endif
             <div class="p-4 sm:p-8 shadow sm:rounded-lg">
                 <div class="max-w-xl mx-auto">

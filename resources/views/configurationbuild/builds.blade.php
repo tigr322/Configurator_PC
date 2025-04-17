@@ -69,7 +69,9 @@
         <button class="accordion-toggle mt-2 text-blue-500 hover:underline" aria-expanded="false" aria-controls="accordion-content-{{ $build->id }}">
             Подробнее
         </button>
-
+        <button onclick="copyShareLink({{ $build->id }})" class="mt-2 text-green-600 hover:underline">
+            Поделиться
+        </button>
         <!-- Скрытый контент -->
         <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-2">
             <ul class="list-disc pl-5">
@@ -120,7 +122,14 @@
         });
     });
 </script>
-
+<script>
+    function copyShareLink(buildId) {
+        const url = `{{ url('/public-build') }}/${buildId}`;
+        navigator.clipboard.writeText(url)
+            .then(() => alert('Ссылка скопирована в буфер обмена!'))
+            .catch(() => alert('Ошибка при копировании ссылки'));
+    }
+    </script>
 </body>
 </html>
 

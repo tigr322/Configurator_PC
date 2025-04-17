@@ -8,11 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\User;
+use App\Models\Configurations;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 use Illuminate\View\View;
+use League\Config\Configuration;
 
 class ProfileController extends Controller
 {
@@ -20,13 +22,23 @@ class ProfileController extends Controller
      * Display the user's profile form.
      */
     public function edit(Request $request): View
-    {
-        $user = User::all();
-        return view('profile.edit', [
-            'user' => $request->user(),
-            'users' =>  $user,
-        ]);
+{
+    $authUser = $request->user();
+    
+    $data = [
+        'user' => $authUser,
+        'builds' => Configurations::where('user_id', $authUser->id)
+                                          ->with('components')
+                                          ->get()
+    ];
+    
+    // Добавляем список пользователей только для администратора
+    if ($authUser->admin == 1) {
+        $data['users'] = User::all();
     }
+    
+    return view('profile.edit', $data);
+}
     public function destroyUser(User $user)
 {
     $user->delete();

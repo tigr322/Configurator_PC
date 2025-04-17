@@ -25,8 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/user/{user}', [ProfileController::class, 'updateUsers'])->name('user.update');
     
     Route::delete('/users/{user}', [ProfileController::class, 'destroyUser'])->name('user.destroy');
-
+   
 });
+
+
 Route::get('/catalog', [ComponentController::class, 'index'])->name('catalog');
 Route::get('/component/{id}', [ComponentController::class, 'show'])->name('components.show');
 Route::get('/configurations/{id}', [ConfigurationController::class, 'show'])->name('configurationbuild.showconf');
@@ -50,7 +52,7 @@ Route::post('/save-compatibility-rules', [ComponentController::class, 'saveRules
 Route::get('builds/{build}/edit', [ConfigurationController::class, 'edit'])->name('builds.edit');
 Route::put('builds/{build}', [ConfigurationController::class, 'update'])->name('builds.update');
 Route::delete('builds/{build}', [ConfigurationController::class, 'destroy'])->name('builds.destroy');
-
+Route::get('/public-build/{id}', [ConfigurationController::class, 'publicShow'])->name('builds.public');
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор
 /* 

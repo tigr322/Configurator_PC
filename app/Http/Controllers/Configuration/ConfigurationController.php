@@ -89,7 +89,10 @@ public function destroy($id)
 //return view('configurationbuild.configurator', compact('categories'));
     return view('configurationbuild.configurator', compact('categories'));
 }
-
+public function publicShow($id){
+    $build = Configurations::with('components.category')->findOrFail($id);
+    return view('configurationbuild.publicBuild', compact('build'));
+}
 public function store(Request $request)
 {
     $request->merge([
