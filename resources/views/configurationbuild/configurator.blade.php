@@ -112,7 +112,7 @@
             <h2 class="text-lg font-medium mb-3">Выберите комплектующие:</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             @foreach($categories as $category)
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border border-gray-200 rounded-lg">
+            <div class="flex flex-col items-center p-3 border border-gray-200 rounded-lg">
                 <div class="flex-1 min-w-0">
                     <label for="component_{{ $category->id }}">{{ $category->name }}:</label>
                     <select style="max-width: 200px; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem;  color: black;" name="components[{{ $category->id }}]" id="component_{{ $category->id }}" class="w-full bg-gray-100 p-2 rounded text-sm text-black">
