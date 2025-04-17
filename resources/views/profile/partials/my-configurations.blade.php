@@ -6,18 +6,38 @@
         <p class="mt-1 text-sm">
             {{ __('Вы можете удалить или редактировать свои конфигурации!') }}
         </p>
+        <style>
+            /* Медиазапросы для тонкой настройки */
+            @media (max-width: 640px) {
+                .accordion-item {
+                    padding: 0.75rem;
+                }
+                .accordion-content ul {
+                    width: 100%;
+                }
+            }
+            @media (min-width: 641px) and (max-width: 1023px) {
+                .accordion-content ul {
+                    width: 80%;
+                }
+            }
+        </style>
     </header>
     <div class="mt-6 overflow-x-auto">
-        <div class="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
             @forelse ($builds as $build)
-            <div class="accordion-item border rounded-lg p-4 shadow mb-4">
-               
-             
-                <h2 class="text-lg font-semibold">{{ $build->name }}</h2>
-                <h1>Пользователь {{ App\Models\User::find($build->user_id)->name }}</h1> 
-                <p class="text-sm text-gray-500">Общая стоимость: {{ number_format($build->total_price, 2) }} руб</p>
-                 
-                <div class="flex justify-center flex-wrap gap-4 mt-4">
+            <div class="accordion-item border rounded-lg p-3 sm:p-4 shadow mb-4 transition-all duration-200">
+                <!-- Заголовок -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-semibold">{{ $build->name }}</h2>
+                        <p class="text-xs sm:text-sm">Пользователь: {{ App\Models\User::find($build->user_id)->name }}</p>
+                    </div>
+                    <p class="text-sm sm:text-base font-medium">Итого: {{ number_format($build->total_price, 2) }} руб</p>
+                </div>
+        
+                <!-- Галерея компонентов -->
+                <div class="flex overflow-x-auto sm:overflow-visible sm:justify-center sm:flex-wrap gap-3 mt-3 py-2 sm:py-0">
                     @foreach($build->components as $component)
                         @php
                             $hasImage = $component->image_url;
@@ -25,52 +45,69 @@
                             $url = $hasImage ? asset('storage/' . $imagePath) : asset('images/defaulte_image.jpg');
                         @endphp
         
-                        <div class="w-48 h-48 flex-shrink-0">
+                        <div class="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
                             <img 
                                 src="{{ $url }}" 
                                 alt="{{ $component->name }}" 
-                                class="w-full h-full object-contain rounded shadow border"
+                                class="w-full h-full object-contain rounded shadow border border-gray-200"
                                 onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
                             >
                         </div>
                     @endforeach
                 </div>
         
-                <button class="accordion-toggle mt-2 text-blue-500 hover:underline" aria-expanded="false" aria-controls="accordion-content-{{ $build->id }}">
-                    Подробнее
-                </button>
-                <button onclick="copyShareLink({{ $build->id }})" class="mt-2 text-green-600 hover:underline">
-                    Поделиться
-                </button>
-                
-                <!-- Скрытый контент -->
-                <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-2">
-                    <ul class="list-disc pl-5">
+                <!-- Кнопки управления -->
+                <div class="flex-wrap gap-3 mt-3">
+                    <button class="accordion-toggle text-sm sm:text-base text-blue-500 hover:text-blue-700 transition-colors" 
+                            aria-expanded="false" 
+                            aria-controls="accordion-content-{{ $build->id }}">
+                        Подробнее
+                    </button>
+                    
+                    <button onclick="copyShareLink({{ $build->id }})" 
+                            class="text-sm sm:text-base text-green-600 hover:text-green-800 transition-colors">
+                        Поделиться
+                    </button>
         
+                  
+                    <form action="{{ route('builds.destroy', $build->id) }}" method="POST" 
+                          onsubmit="return confirm('Удалить эту конфигурацию?');" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-sm sm:text-base text-red-600 hover:text-red-800 transition-colors">
+                            Удалить
+                        </button>
+                    </form>
+                    
+                </div>
+        
+                <!-- Скрытый контент (список компонентов) -->
+                <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-3">
+                    <ul class="space-y-2 w-full mx-auto" style = "width: 65%">
                         @foreach($build->components as $component)
-                        
-                            <li>
-                                
-                                <strong>{{ $component->category->name }}:</strong> 
-                                {{ $component->name }} — {{ number_format($component->price, 2) }} руб
-                            </li>
+                        <li class="py-2 border-b border-gray-200 last:border-0" >
+                            <div class="flex justify-between items-baseline">
+                                <div class="truncate pr-2">
+                                    <a href="{{ route('components.show', $component->id) }}" 
+                                        class="text-sm hover:text-blue-600 transition-colors">
+                                         <span class="text-xs">{{ $component->category->name }}:</span>
+                                         <span class="ml-1 font-medium">{{ $component->name }}</span>
+                                     </a>
+                                </div>
+                                <span class="text-xs font-medium text-green-600 whitespace-nowrap">
+                                    {{ number_format($component->price, 0, '', ' ') }}₽
+                                </span>
+                            </div>
+                           
+                        </li>
                         @endforeach
                     </ul>
                 </div>
-        
-                <!-- Кнопки управления -->
-              
-                    <form action="{{ route('builds.destroy', $build->id) }}" method="POST" onsubmit="return confirm('Удалить эту конфигурацию?');">
-                        @csrf
-                        @method('DELETE')
-                      
-                        <button type="submit" class="mt-2 text-red-600 hover:underline">Удалить</button>
-                      
-                    </form>
-               
             </div>
             @empty
-                <p>Конфигурации не найдены.</p>
+            <div class="col-span-full text-center py-8">
+                <p class="text-gray-500">Конфигурации не найдены.</p>
+            </div>
             @endforelse
         </div>
         
