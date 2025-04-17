@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Configurations;
 use App\Models\Category;
+use App\Models\User;
 use App\Models\Component;
 class ConfigurationController extends Controller
 {
@@ -94,7 +95,12 @@ public function publicShow($id){
     return view('configurationbuild.publicBuild', compact('build'));
 }
 public function store(Request $request)
-{
+{  
+    $user = Auth::user();
+    $userid = $user->id;
+    if ($user->admin == 1 && Configurations::where("user_id",$userid)->count() >= 2) {
+        return redirect()->route('configurator')->with('error', 'Ограничение по количеству конфигурации');
+    }
     $request->merge([
         'components' => array_values($request->input('components', [])),
     ]);

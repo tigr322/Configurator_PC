@@ -81,10 +81,14 @@
 
         <h1 style="font-size: x-large">Создание конфигурации ПК</h1>
        @if (session('success'))
-<div style="color: green; font-weight: bold; text-align: center;">
-    {{ session('success') }}
-</div>
-@endif
+        <div style="color: green; font-weight: bold; text-align: center;">
+            {{ session('success') }}
+        </div>
+        @elseif(session('error'))
+        <div style="color: red; font-weight: bold; text-align: center;">
+            {{ session('error') }}
+        </div>
+        @endif
 
 @if ($errors->any())
     <div style="color: red; font-weight: bold; text-align: center;">
