@@ -98,7 +98,7 @@ public function store(Request $request)
 {  
     $user = Auth::user();
     $userid = $user->id;
-    if ($user->admin == 1 && Configurations::where("user_id",$userid)->count() >= 2) {
+    if ($user->admin == 0 && Configurations::where("user_id",$userid)->count() >= 5) {
         return redirect()->route('configurator')->with('error', 'Ограничение по количеству конфигурации');
     }
     $request->merge([
