@@ -125,9 +125,16 @@ header nav a:hover {
 
 /* Главный контейнер */
 .main-container {
-    text-align: center;
-    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  /* Вертикальное центрирование */
+    align-items: center;      /* Горизонтальное центрирование */
+    margin: 0 auto;          /* Автоматические отступы по бокам */
     max-width: 600px;
+    height: 80vh;           /* Занимает всю высоту viewport */
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 .Filters h2 {
     font-size: 0.75rem;
