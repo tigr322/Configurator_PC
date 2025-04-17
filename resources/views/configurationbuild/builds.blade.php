@@ -74,17 +74,30 @@
         </button>
         <!-- Скрытый контент -->
         <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-2">
-            <ul class="list-disc pl-5">
-
-                @foreach($build->components as $component)
-                
-                    <li>
-                        
-                        <strong>{{ $component->category->name }}:</strong> 
-                        {{ $component->name }} — {{ number_format($component->price, 2) }} руб
+            <div class="flex justify-center">
+                <ul class="space-y-2" style="width: 60%;">
+                    @foreach($build->components as $component)
+                    <li class="py-2 border-b last:border-0">
+                        <div class="flex justify-between items-baseline">
+                            <div class="truncate pr-2">
+                                <span class="text-xs block text-gray-500">{{ $component->category->name }}</span>
+                                <span class="text-sm text-gray-800">{{ $component->name }}</span>
+                            </div>
+                            <span class="text-xs font-medium text-green-600 whitespace-nowrap">
+                                {{ number_format($component->price, 0, '', ' ') }}₽
+                            </span>
+                        </div>
+                        <a href="{{ route('components.show', $component->id) }}" 
+                           class="text-xs text-green-600 hover:text-green-800 mt-1 inline-block">
+                            <svg class="inline mr-1 -mt-0.5" style="width: 10px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                            подробнее
+                        </a>
                     </li>
-                @endforeach
-            </ul>
+                    @endforeach
+                </ul>
+            </div>
         </div>
 
         <!-- Кнопки управления -->
@@ -130,6 +143,7 @@
             .catch(() => alert('Ошибка при копировании ссылки'));
     }
     </script>
+   
 </body>
 </html>
 
