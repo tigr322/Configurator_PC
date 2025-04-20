@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Component;
+use App\Models\Markets;
 use App\Models\CompatibilityRule;
+use App\Models\MarketsUrls;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 class ComponentController extends Controller
@@ -66,8 +68,9 @@ class ComponentController extends Controller
         // Все категории для фильтра
         $categories = Category::all();
         $rules = CompatibilityRule::all();
-
-        return view('pccomponents.catalog', compact('components', 'categories', 'rules'));
+        $markets = Markets::all();
+        $marketsUrls = MarketsUrls::all();
+        return view('pccomponents.catalog', compact('components', 'categories', 'rules','markets', 'marketsUrls'));
     }
 
     /**

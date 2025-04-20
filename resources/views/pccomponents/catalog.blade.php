@@ -114,10 +114,14 @@
                     @endforeach
                 </select>
             </div>
-            <div class="mb-2">
-                <label for="source_url" class="block   mb-1">URL источника</label>
-                <input type="url" name="source_url" id="source_url" placeholder="https://..."
-                    class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+            <div class="mb-3">
+                <label for="market-selectd" class="block mb-1 text-sm">Выберите магазин:</label>
+                <select id="market-selectd" name="market_id" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                    <option value="">— Выберите —</option>
+                    @foreach($markets as $market)
+                        <option value="{{ $market->id }}">{{ $market->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <button type="submit"
                 class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
@@ -247,6 +251,69 @@
         </form>
         
     </div>
+    <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+        ✏ Добавить URL магазина
+    </button>
+    <div class="panel hidden mt-2">
+        <form id="markets-urls-form" action="{{ route('markets_urls.save') }}" method="POST">
+            @csrf
+    
+            <div class="mb-3">
+                <label for="market-select" class="block mb-1 text-sm">Выберите магазин:</label>
+                <select id="market-select" name="market_id" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                    <option value="">— Выберите —</option>
+                    @foreach($markets as $market)
+                        <option value="{{ $market->id }}">{{ $market->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+    
+            <div id="categories-url-table-wrapper" class="hidden">
+                <table id="categories-url-table" class="table-auto w-full">
+                    <thead>
+                        <tr>
+                            <th class="border px-2 py-1">Категория</th>
+                            <th class="border px-2 py-1">URL</th>
+                            <th class="border px-2 py-1">Удалить</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categories-url-body">
+                        @foreach($marketsUrls as $index => $marketUrl)
+                            <tr>
+                                <td class="border px-2 py-1">
+                                    <select name="urls[{{ $index }}][category_id]" class="category-select w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                                        <option value="">— Категория —</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ $marketUrl->category_id == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="border px-2 py-1">
+                                    <input type="text" name="urls[{{ $index }}][url]" class="w-full border px-2 py-1 rounded bg-gray-100 text-black" value="{{ $marketUrl->url }}">
+                                </td>
+                                <td class="border px-2 py-1 text-center">
+                                    <button type="button" class="remove-row text-red-600" data-id="{{ $marketUrl->id }}">✖</button>
+
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                
+    
+                <button type="button" id="add-row" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
+                    ➕ Добавить строку
+                </button>
+            </div>
+    
+            <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-3">
+                💾 Сохранить
+            </button>
+        </form>
+    </div>
+    
 </div>
 
 
@@ -312,13 +379,13 @@
             </div>
         </div>
 
-        {{--Пагинация --}}
+       
         <div class="mt-6">
             {{ $components->withQueryString()->links() }}
         </div>
     </div>
     <script>
-         // Получаем все элементы с классом "accordion"
+       
     var acc = document.getElementsByClassName("accordion");
     
     // Для каждого аккордеона добавляем обработчик событий
@@ -408,6 +475,77 @@
             });
         });
     </script>
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const marketSelect = document.getElementById('market-select');
+        const tableWrapper = document.getElementById('categories-url-table-wrapper');
+        const tableBody = document.getElementById('categories-url-body');
+        const addRowBtn = document.getElementById('add-row');
+        //const addRowBtn = document.getElementById('add-row');
     
+        marketSelect.addEventListener('change', function () {
+            if (this.value) {
+                tableWrapper.classList.remove('hidden');
+            } else {
+                tableWrapper.classList.add('hidden');
+            }
+        });
+    
+        let rowIndex = {{ count($marketsUrls) }};
+    
+        addRowBtn.addEventListener('click', function () {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="border px-2 py-1">
+                    <select name="urls[${rowIndex}][category_id]" class="category-select w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                        <option value="">— Категория —</option>
+                        @foreach($categories as $c)
+                            <option value="{{ $c->id }}">{{ $c->name }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td class="border px-2 py-1">
+                    <input type="text" name="urls[${rowIndex}][url]" class="w-full border px-2 py-1 rounded bg-gray-100 text-black">
+                </td>
+                <td class="border px-2 py-1 text-center">
+                    <button type="button" class="remove-row text-red-600">✖</button>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+            rowIndex++;
+        });
+    
+        tableBody.addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-row')) {
+                const row = e.target.closest('tr');
+                const id = e.target.getAttribute('data-id');
+    
+                if (id) {
+                    if (confirm('Вы уверены, что хотите удалить эту ссылку?')) {
+                        fetch(`/markets-urls/delete/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            },
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                row.remove();
+                            } else {
+                                alert('Ошибка при удалении. Попробуйте снова.');
+                            }
+                        })
+                        .catch(() => alert('Ошибка при удалении. Попробуйте снова.'));
+                    }
+                } else {
+                    row.remove();
+                }
+            }
+        });
+    });
+    </script>
+    
+        
 </body>
 </html>

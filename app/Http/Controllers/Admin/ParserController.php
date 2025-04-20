@@ -7,40 +7,73 @@ use Illuminate\Http\Request;
 use RoachPHP\Spider\Configuration\Overrides;
 use Illuminate\Support\Facades\Artisan;
 use App\Spiders\ComponentSpider;
+use App\Spiders\ComponentRegardSpider;
 use RoachPHP\Roach;
+use App\Jobs\ParseMarketJob;
 use App\Models\Category;
 use App\Models\Component;
+use App\Models\MarketsUrls;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RoachPHP\Downloader\Middleware\RequestDeduplicationMiddleware;
+use RoachPHP\Downloader\Middleware\DelayRequestsMiddleware;
 class ParserController extends Controller
 {
     public function parse(Request $request)
-    {
-        $validated = $request->validate([
-            'category_id' => 'required|integer|exists:categories,id',
-            'source_url' => 'required|url',
-        ]);
+{
+    $validated = $request->validate([
+        'category_id' => 'required|integer|exists:categories,id',
+        'market_id' => 'required|integer|exists:markets,id',
+    ]);
+    ParseMarketJob::dispatch($validated)
+    ->onQueue('parsing');
+    // Get the URL from MarketsUrls
+    $marketUrl = MarketsUrls::where('category_id', $validated['category_id'])
+        ->where('market_id', $validated['market_id'])
+        ->first();
 
-        Log::info('Starting spider with params:', $validated);
+    if (!$marketUrl) {
+        return redirect()->back()
+            ->with('error', 'URL для выбранной категории и магазина не найден');
+    }
 
-        // Правильный способ запуска через Roach
-        Log::info('Before startSpider');
+    Log::info('Starting spider with params:', $validated);
+//dd($marketUrl->url);
+    if ($validated['market_id'] == 1) { 
         Roach::startSpider(
             ComponentSpider::class,
             new Overrides(
-                startUrls: [$validated['source_url']],
+                startUrls: [$marketUrl->url], 
             ),
             context: [
                 'category_id' => $validated['category_id'],
+                'market_id' => $validated['market_id'],
             ]
         );
-        
-        Log::info('After startSpider');
+    } elseif ($validated['market_id'] == 2) {
+        Roach::startSpider(
+            ComponentRegardSpider::class,
+            new Overrides(
+                startUrls: [$marketUrl->url],
+                downloaderMiddleware: [
+                   
+                    RequestDeduplicationMiddleware::class,
+                ], // Access the url property from the model
+            ),
 
-        return redirect()->back()
-            ->with('success', 'Парсинг успешно запущен!');
+            context: [
+                'category_id' => $validated['category_id'],
+                'market_id' => $validated['market_id'],
+            ]
+        );
     }
+
+    Log::info('After startSpider');
+
+    return redirect()->back()
+        ->with('success', 'Парсинг успешно запущен!');
+}
     public function addCategory(Request $request){
         $validated = $request->validate([
             'category_name' => 'required|string|max:32',

@@ -16,16 +16,20 @@ class Component extends Model
         'price',
         'image_url',
         'shop_url',
+        'market_id',
         'compatibility_data',
         'characteristics',
     ];
 
     // 🛠 Связь: Component принадлежит категории
-        public function category()
+public function category()
 {
     return $this->belongsTo(Category::class);
 }
-
+public function markets()
+{
+    return $this->belongsTo(Markets::class);
+}
 public function parsedData()
 {
     return $this->hasMany(ParsedData::class);

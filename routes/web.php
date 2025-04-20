@@ -27,6 +27,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/user/{user}', [ProfileController::class, 'updateUsers'])->name('user.update');
     
     Route::delete('/users/{user}', [ProfileController::class, 'destroyUser'])->name('user.destroy');
+
+    Route::delete('/markets-urls/delete/{id}', [ProfileController::class, 'destroyMarketUrl'])->name('markets_urls.destroy');
+
+    Route::post('/markets-urls/save/', [ProfileController::class, 'saveMarketUrl'])->name('markets_urls.save');
+
    
 });
 

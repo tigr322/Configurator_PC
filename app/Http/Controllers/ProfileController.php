@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\User;
+use App\Models\MarketsUrls;
 use App\Models\Configurations;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -111,4 +112,55 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+    public function saveMarketUrl(Request $request)
+{
+    $marketId = $request->input('market_id');
+    $urls = $request->input('urls');
+
+    foreach ($urls as $data) {
+        // Пропускаем, если URL пустой
+        if (empty($data['url'])) {
+            continue;
+        }
+
+        MarketsUrls::updateOrCreate(
+            [
+                'market_id' => $marketId,
+                'category_id' => $data['category_id']
+            ],
+            [
+                'url' => $data['url']
+            ]
+        );
+    }
+
+    return redirect()->back()->with('success', 'Ссылки успешно сохранены');
+}
+public function destroyMarketUrl($id)
+{
+    $url = MarketsUrls::find($id);
+
+    if (!$url) {
+        return response()->json([
+            'success' => false,
+            'message' => 'URL не найден'
+        ], 404);
+    }
+
+    try {
+        $url->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'URL успешно удален'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при удалении: ' . $e->getMessage()
+        ], 500);
+    }
+}
+    
+
+
 }

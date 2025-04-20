@@ -176,6 +176,7 @@ public function parse(Response $response): Generator
             'brand' => $brand,
             'compatibility_data' => json_encode($compatibilityData, JSON_UNESCAPED_UNICODE),
             'price' => $price,
+            'market_id' =>$this->context['market_id'],
             'shop_url'=> $shop_url,
             'image_url' =>$foto,
             'characteristics' => $characteristics,
@@ -183,7 +184,7 @@ public function parse(Response $response): Generator
     });
    
     // Ищем все товары
-   
+  
     // Сохраняем в JSON
     $jsonPath = storage_path('app/parsed_data.json');
     file_put_contents($jsonPath, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
