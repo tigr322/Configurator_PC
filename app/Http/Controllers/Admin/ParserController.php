@@ -12,6 +12,7 @@ use RoachPHP\Roach;
 use App\Jobs\ParseMarketJob;
 use App\Models\Category;
 use App\Models\Component;
+use App\Models\Markets;
 use App\Models\MarketsUrls;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -124,6 +125,15 @@ class ParserController extends Controller
         ]);
     
         return redirect()->back()->with('success', 'Компонент успешно добавлен!');
+    }
+    public function addMarket(Request $request){
+        $validated = $request->validate([
+            'market_name' => 'required|string|max:32',
+        ]);
+        Markets::create(['name' => $validated['market_name']]);
+
+        return redirect()->back()
+        ->with('success', 'Успешно добавлен новый магазин!');
     }
     
 }

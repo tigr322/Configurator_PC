@@ -49,6 +49,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.parse');
         Route::post('/admin/addCategory', [\App\Http\Controllers\Admin\ParserController::class, 'addCategory'])
         ->name('admin.addCategory');
+        Route::post('/admin/addMarket', [\App\Http\Controllers\Admin\ParserController::class, 'addMarket'])
+        ->name('admin.addMarket');
         Route::post('/admin/addComponent', [\App\Http\Controllers\Admin\ParserController::class, 'addComponent'])
         ->name('admin.addComponent');
 }); 
@@ -60,6 +62,8 @@ Route::get('builds/{build}/edit', [ConfigurationController::class, 'edit'])->nam
 Route::put('builds/{build}', [ConfigurationController::class, 'update'])->name('builds.update');
 Route::delete('builds/{build}', [ConfigurationController::class, 'destroy'])->name('builds.destroy');
 Route::get('/public-build/{id}', [ConfigurationController::class, 'publicShow'])->name('builds.public');
+Route::get('/markets-urls/{market}', [ComponentController::class, 'getUrls'])->name('markets_urls.get');
+
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор
 /* 

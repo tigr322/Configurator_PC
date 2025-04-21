@@ -313,7 +313,25 @@
             </button>
         </form>
     </div>
-    
+    <div class="mb-4  py-3">
+    <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition mb-6">
+        ➕ Добавить магазин
+    </button>
+    <div class="panel hidden mt-2">
+        <form method="POST" action="{{ route('admin.addMarket') }}">
+            @csrf
+            <div class="mb-2">
+                <label for="market_name" class="block   mb-1">Новая магазин</label>
+                <input type="text" name="market_name" id="market_name" required
+                    class="w-full px-2 py-1 border rounded text-black   bg-white">
+            </div>
+            <button type="submit"
+                class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
+                Добавить
+            </button>
+        </form>
+    </div>
+    </div>
 </div>
 
 
@@ -478,43 +496,75 @@
    <script>
     document.addEventListener('DOMContentLoaded', function () {
         const marketSelect = document.getElementById('market-select');
-        const tableWrapper = document.getElementById('categories-url-table-wrapper');
-        const tableBody = document.getElementById('categories-url-body');
-        const addRowBtn = document.getElementById('add-row');
-        //const addRowBtn = document.getElementById('add-row');
-    
-        marketSelect.addEventListener('change', function () {
-            if (this.value) {
-                tableWrapper.classList.remove('hidden');
-            } else {
-                tableWrapper.classList.add('hidden');
-            }
-        });
-    
-        let rowIndex = {{ count($marketsUrls) }};
-    
-        addRowBtn.addEventListener('click', function () {
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td class="border px-2 py-1">
-                    <select name="urls[${rowIndex}][category_id]" class="category-select w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
-                        <option value="">— Категория —</option>
-                        @foreach($categories as $c)
-                            <option value="{{ $c->id }}">{{ $c->name }}</option>
-                        @endforeach
-                    </select>
-                </td>
-                <td class="border px-2 py-1">
-                    <input type="text" name="urls[${rowIndex}][url]" class="w-full border px-2 py-1 rounded bg-gray-100 text-black">
-                </td>
-                <td class="border px-2 py-1 text-center">
-                    <button type="button" class="remove-row text-red-600">✖</button>
-                </td>
-            `;
-            tableBody.appendChild(newRow);
-            rowIndex++;
-        });
-    
+    const tableWrapper = document.getElementById('categories-url-table-wrapper');
+    const tableBody = document.getElementById('categories-url-body');
+    const addRowButton = document.getElementById('add-row');
+    let categories = @json($categories); // заранее передаём категории
+    let rowIndex = {{ count($marketsUrls) }};
+
+    marketSelect.addEventListener('change', function () {
+        const marketId = this.value;
+
+        if (marketId) {
+            fetch(`/markets-urls/${marketId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const urls = data.urls;
+                    categories = data.categories;
+                    tableBody.innerHTML = '';
+
+                    urls.forEach((urlItem, index) => {
+                        const row = createRow(index, urlItem.category_id, urlItem.url, urlItem.id);
+                        tableBody.appendChild(row);
+                    });
+
+                    tableWrapper.classList.remove('hidden');
+                    rowIndex = urls.length;
+                });
+        } else {
+            tableWrapper.classList.add('hidden');
+        }
+    });
+
+    addRowButton.addEventListener('click', function () {
+        const row = createRow(rowIndex, '', '');
+        tableBody.appendChild(row);
+        rowIndex++;
+    });
+
+    // Функция генерации строки
+    function createRow(index, selectedCategoryId = '', url = '', id = null) {
+        const row = document.createElement('tr');
+
+        const options = categories.map(category => {
+            const selected = category.id == selectedCategoryId ? 'selected' : '';
+            return `<option value="${category.id}" ${selected}>${category.name}</option>`;
+        }).join('');
+
+        row.innerHTML = `
+            <td class="border px-2 py-1">
+                <select name="urls[${index}][category_id]" class="category-select w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                    <option value="">— Категория —</option>
+                    ${options}
+                </select>
+            </td>
+            <td class="border px-2 py-1">
+                <input type="text" name="urls[${index}][url]" class="w-full border px-2 py-1 rounded bg-gray-100 text-black" value="${url}">
+            </td>
+            <td class="border px-2 py-1 text-center">
+                <button type="button" class="remove-row text-red-600" data-id="${id ?? ''}">✖</button>
+            </td>
+        `;
+
+        return row;
+    }
+
+    // Слушатель для удаления строки
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-row')) {
+            e.target.closest('tr').remove();
+        }
+    });ы
         tableBody.addEventListener('click', function (e) {
             if (e.target.classList.contains('remove-row')) {
                 const row = e.target.closest('tr');

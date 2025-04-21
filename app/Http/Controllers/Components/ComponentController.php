@@ -253,6 +253,16 @@ public function update(Request $request, $id)
     return redirect()->back()->with('success', 'Компонент обновлён успешно.');
 }
 
+public function getUrls($marketId)
+{
+    $marketUrls = MarketsUrls::where('market_id', $marketId)->with('category')->get();
+    $categories = Category::all();
+
+    return response()->json([
+        'urls' => $marketUrls,
+        'categories' => $categories,
+    ]);
+}
 
     public function show($id)
     {
