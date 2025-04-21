@@ -48,7 +48,7 @@
                     
                     
                         <a href="{{ url('/configurator') }}">Конфигуратор</a>
-                        <a href="{{ url('/profile') }}">Профиль</a>
+                        <a href="{{ route('profile.editProfile') }}">Профиль</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit">Выход</button>
@@ -61,6 +61,10 @@
                     @endauth
                     <a href="{{ route('catalog') }}">Каталог комплектующих</a>
                     <a href="{{ route('builds') }}">Популярные конфигурации</a>
+                    @if (auth()->check() && auth()->user()->admin == 1)
+                        <a href="{{ route('profile.edit'    ) }}">Администрирование пользователей</a>
+                    
+                    @endif
                 </nav>
             @endif
         </header>

@@ -18,7 +18,7 @@ class ComponentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Component::query()->with('category');
+        $query = Component::query()->with('category')->with('markets');
 
         // Фильтрация
         if ($request->filled('category')) {
@@ -268,6 +268,7 @@ public function getUrls($marketId)
     {
         $component = Component::with(['category', 'parsedData'])->findOrFail($id);
         $categories = Category::all(); 
+        //dd( $component);
         return view('pccomponents.show', compact('component','categories'));
     }
 }

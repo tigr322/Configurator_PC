@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>Каталог комплектующих</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <style>
 
-    </style>
 </head>
 
 <body>

@@ -23,23 +23,54 @@ class ProfileController extends Controller
      * Display the user's profile form.
      */
     public function edit(Request $request): View
-{
-    $authUser = $request->user();
-    
-    $data = [
-        'user' => $authUser,
-        'builds' => Configurations::where('user_id', $authUser->id)
-                                          ->with('components')
-                                          ->get()
-    ];
-    
-    // Добавляем список пользователей только для администратора
-    if ($authUser->admin == 1) {
-        $data['users'] = User::all();
+    {   
+        $authUser = $request->user();
+        
+        // Начинаем запрос для пользователей
+        $usersQuery = User::query();
+        
+        // Применяем фильтры только если они указаны
+        if ($request->filled('name')) {
+            $usersQuery->where('name', 'like', '%' . $request->name . '%');
+        }
+        if ($request->filled('email')) {
+            $usersQuery->where('email', 'like', '%' . $request->email . '%');
+        }
+        
+        // Получаем конфигурации текущего пользователя
+        $builds = Configurations::where('user_id', $authUser->id)
+                              ->with('components')
+                              ->get();
+        
+        // Подготавливаем данные для представления
+        $data = [
+            'user' => $authUser,
+            'builds' => $builds,
+            'users' => $authUser->admin == 1 ? $usersQuery->get() : collect()
+        ];
+        
+        return view('admin.admin-panel-users', $data);
     }
-    
-    return view('profile.edit', $data);
-}
+    public function editProfile(Request $request): View
+    {   
+        $authUser = $request->user();
+        
+        // Начинаем запрос для пользователей
+       
+        // Получаем конфигурации текущего пользователя
+        $builds = Configurations::where('user_id', $authUser->id)
+                              ->with('components')
+                              ->get();
+        
+        // Подготавливаем данные для представления
+        $data = [
+            'user' => $authUser,
+            'builds' => $builds,
+            
+        ];
+        
+        return view('profile.edit', $data);
+    }
     public function destroyUser(User $user)
 {
     $user->delete();

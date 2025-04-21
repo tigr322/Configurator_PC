@@ -9,6 +9,10 @@
     @include('layouts.navigation')
 
     <div class="container mx-auto px-4 py-8">
+        @php
+                            $market = App\Models\Markets::find($component->market_id);
+                            $marketName = $market ? $market->name : 'Не указан';
+                        @endphp
         @if (auth()->check() && auth()->user()->admin == 1)
         <form action="{{ route('components.update', $component->id) }}" method="POST" class="space-y-6">
             @csrf
@@ -64,9 +68,15 @@
                         <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" 
                                type="number" step="0.01" name="price" value="{{ $component->price }}" class="w-full border p-2 rounded">
                     </div>
-
+                    <div>
+                        
+                        <label class="block font-semibold">Магазин:</label>
+                        <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" 
+                               type="text" step="0.01" name="markets" value="{{  $marketName }}" class="w-full border p-2 rounded">
+                        </div>
                     <div>
                         <label class="block font-semibold">Ссылка на магазин:</label>
+                        
                         <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" 
                                type="url" name="shop_url" value="{{ $component->shop_url }}" class="w-full border p-2 rounded">
                     </div>
@@ -119,6 +129,7 @@
                 {{-- Информация --}}
                 <div class="w-full md:w-2/3 space-y-2">
                     <p><strong>Категория:</strong> {{ $component->category->name }}</p>
+                    <p><strong>Магазин:</strong> {{ $marketName }}</p>
                     <p><strong>Бренд:</strong> {{ $component->brand ?? 'Не указан' }}</p>
                     <p><strong>Цена:</strong> {{ number_format($component->price, 2, ',', ' ') }} руб</p>
                     <p><strong>Характеристики: </strong> {{ str_replace(';', ";\n", $component->characteristics) }}</p>
