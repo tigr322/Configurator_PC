@@ -11,10 +11,11 @@ use App\Models\CompatibilityRule;
 use App\Models\MarketsUrls;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 class ComponentController extends Controller
 {
- /**ы
-     * Показать список всех комплектующих с фильтрацией и сортировкой
+ /*
+      Показать список всех комплектующих с фильтрацией и сортировкой
      */
     public function index(Request $request)
     {
@@ -234,21 +235,41 @@ public function update(Request $request, $id)
         'name' => 'required|string|max:255',
         'brand' => 'nullable|string|max:255',
         'price' => 'required|numeric',
+        'market_id' => 'required',
         'shop_url' => 'nullable|url',
         'category_id' => 'required',
         'compatibility_data' => 'nullable|json',
-        'characteristics'=> 'nullable|string|max:512'
+        'characteristics' => 'nullable|string|max:512',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
     ]);
 
-    $component->update([
+    $updateData = [
         'name' => $request->name,
         'brand' => $request->brand,
-        'category_id' =>  $request->category_id, 
+        'category_id' => $request->category_id,
         'price' => $request->price,
+        'market_id' => $request->market_id,
         'shop_url' => $request->shop_url,
         'compatibility_data' => $request->compatibility_data,
-        'characteristics' =>$request->characteristics,
-    ]);
+        'characteristics' => $request->characteristics,
+    ];
+
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $foto = Str::uuid() . '.' . $image->getClientOriginalExtension();
+        $filename = 'products/' . $foto;
+    
+        $stream = fopen($image->getRealPath(), 'r+');
+        Storage::disk('public')->put($filename, $stream);
+        fclose($stream);
+    
+        $updateData['image_url'] = $foto;
+    }
+    
+    
+    
+
+    $component->update($updateData);
 
     return redirect()->back()->with('success', 'Компонент обновлён успешно.');
 }
@@ -268,7 +289,9 @@ public function getUrls($marketId)
     {
         $component = Component::with(['category', 'parsedData'])->findOrFail($id);
         $categories = Category::all(); 
+
+        $markets = Markets::all();
         //dd( $component);
-        return view('pccomponents.show', compact('component','categories'));
+        return view('pccomponents.show', compact('component','categories','markets'));
     }
 }

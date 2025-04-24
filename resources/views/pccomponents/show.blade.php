@@ -14,7 +14,7 @@
                             $marketName = $market ? $market->name : 'Не указан';
                         @endphp
         @if (auth()->check() && auth()->user()->admin == 1)
-        <form action="{{ route('components.update', $component->id) }}" method="POST" class="space-y-6">
+        <form action="{{ route('components.update', $component->id) }}" enctype="multipart/form-data" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
 
@@ -31,12 +31,15 @@
                             <img 
                                 src="{{ $url }}" 
                                 alt="{{ $component->name }}" 
-                                class="max-w-full h-auto max-h-64 object-contain rounded shadow"
+                                class="max-w-full h-auto max-h-64 object-contain rounded shadow" style = "width: 200px; height: 200px;"
                                 onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
                             >
                     </div>
                 @endif
-
+                <div class="mb-4">
+                    <label for="image" class="block font-medium text-sm text-gray-700">Изменить изображение</label>
+                    <input type="file" name="image" id="image" class="form-input mt-1 block w-full">
+                </div>   
                 {{-- Информация --}}
                 <div class="w-full max-w-md space-y-4"> <!-- Фиксированная ширина и отступы -->
                     <div class="mb-4">
@@ -71,8 +74,12 @@
                     <div>
                         
                         <label class="block font-semibold">Магазин:</label>
-                        <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" 
-                               type="text" step="0.01" name="markets" value="{{  $marketName }}" class="w-full border p-2 rounded">
+                        <select id="market_id" name="market_id" required
+                        class="w-full px-2 py-1 border rounded text-black   bg-white">
+                        @foreach ($markets as $market)
+                            <option value="{{ $market->id }}"{{ $component->market_id == $market->id ? 'selected' : '' }}>{{ $market->name }}</option>
+                        @endforeach
+                    </select>
                         </div>
                     <div>
                         <label class="block font-semibold">Ссылка на магазин:</label>

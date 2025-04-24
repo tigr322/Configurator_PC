@@ -36,16 +36,24 @@
                 </button>
         
                 <!-- Скрытый контент -->
-                <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-2">
-                    <ul class="list-disc pl-5">
-        
+                <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-3">
+                    <ul class="space-y-2 w-full mx-auto" style = "width: 65%">
                         @foreach($build->components as $component)
-                        
-                            <li>
-                                
-                                <strong>{{ $component->category->name }}:</strong> 
-                                {{ $component->name }} — {{ number_format($component->price, 2) }} руб
-                            </li>
+                        <li class="py-2 border-b border-gray-200 last:border-0" >
+                            <div class="flex justify-between items-baseline">
+                                <div class="truncate pr-2">
+                                    <a href="{{ route('components.show', $component->id) }}" 
+                                        class="text-sm hover:text-blue-600 transition-colors">
+                                         <span class="text-xs">{{ $component->category->name }}:</span>
+                                         <span class="ml-1 font-medium">{{ $component->name }}</span>
+                                     </a>
+                                </div>
+                                <span class="text-xs font-medium text-green-600 whitespace-nowrap">
+                                    {{ number_format($component->price, 0, '', ' ') }}₽
+                                </span>
+                            </div>
+                           
+                        </li>
                         @endforeach
                     </ul>
                 </div>

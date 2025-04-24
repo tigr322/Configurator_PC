@@ -25,4 +25,5 @@ yarn-error.log
 /docker/db/backup.sql
 /docker/nginx/default.conf
 /docker/php/Dockerfile
-docker-compose.yml
+docker-compose.ymlbackup.sql
+backup.sql

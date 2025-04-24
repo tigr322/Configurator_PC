@@ -142,7 +142,15 @@
                     @endforeach
                 </select>
             </div>
-    
+            <div class="mb-2">
+                <label for="market_id" class="block   mb-1">Магазин</label>
+                <select id="market_id" name="market_id" required
+                    class="w-full px-2 py-1 border rounded text-black   bg-white">
+                    @foreach ($markets as $market)
+                        <option value="{{ $market->id }}">{{ $market->name }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="mb-2">
                 <label for="component_name" class="block   mb-1">Название</label>
                 <input type="text" name="component_name" id="component_name" class="w-full px-2 py-1 border rounded text-black   bg-white" required>

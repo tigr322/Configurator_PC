@@ -90,6 +90,7 @@ class ParserController extends Controller
     {
         $validated = $request->validate([
             'category_id' => 'required|integer',
+            'market_id' => 'required',
             'component_name' => 'required|string|max:128',
             'component_price'=>  'required|numeric',
             'component_brand' => 'required|string|max:32',
@@ -111,11 +112,14 @@ class ParserController extends Controller
     
             // Сохраняем путь для доступа
             $imagePath = $filename;
+        }else{
+            $foto = 'images/defaulte_image.jpg';    
         }
     
         Component::create([
             'category_id' => $validated['category_id'],
             'name' => $validated['component_name'],
+            'market_id' =>$validated['market_id'],
             'brand' => $validated['component_brand'],
             'price'=>  $validated['component_price'],
             'shop_url' => $validated['component_market_url'],
