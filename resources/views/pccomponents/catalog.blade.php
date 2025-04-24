@@ -346,34 +346,41 @@
 </div>
         {{-- Список компонентов --}}
         <div class="mb-8">
-            <h1 class="text-3xl font-bold mb-6">Каталог комплектующих</h1>
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold">Каталог комплектующих</h1>
+                
+                <!-- Переключатель вида -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500">Вид:</span>
+                    <button id="grid-view" class="p-2 rounded-md bg-blue-100 text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                    </button>
+                    <button id="list-view" class="p-2 rounded-md hover:bg-gray-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <!-- Версия плиткой (по умолчанию) -->
+            <div id="grid-version" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 @forelse ($components as $component)
                 <form method="POST" action="{{ route('delete', $component->id) }}" class="h-full">
                     @csrf
                     @method('DELETE')
-                    <!-- Добавлен класс h-full к родительскому div -->
-                    <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col" style = "height: 430px;">
-                        <!-- Контейнер изображения с фиксированной высотой -->
+                    <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col" style="height: 430px;">
                         <div class="flex-grow-0 h-48 flex items-center justify-center mb-3">
                             @if($component->image_url)
                                 @php
                                     $imagePath = 'products/' . basename($component->image_url);
                                     $url = asset('storage/' . $imagePath);
                                 @endphp
-                                
-                                <img 
-                                    src="{{ $url }}" 
-                                    alt="{{ $component->name }}" 
-                                    class="max-w-full max-h-full object-contain"
-                                    onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'"
-                                >
+                                <img src="{{ $url }}" alt="{{ $component->name }}" class="max-w-full max-h-full object-contain" onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
                             @else
-                                <img 
-                                    src="{{ asset('images/defaulte_image.jpg') }}" 
-                                    alt="Default product image"
-                                    class="max-w-full max-h-full object-contain">
+                                <img src="{{ asset('images/defaulte_image.jpg') }}" alt="Default product image" class="max-w-full max-h-full object-contain">
                             @endif
                         </div>
                         <div class="mb-2">
@@ -383,15 +390,12 @@
                         <div class="mt-auto">
                             <div class="flex items-center justify-between border-t pt-3">
                                 <p class="font-bold text-green-600 text-lg">{{ number_format($component->price, 0, '', ' ') }} ₽</p>
-                                <a href="{{ route('components.show', $component->id) }}" 
-                                   class="text-blue-500 hover:text-blue-700 text-sm whitespace-nowrap">
+                                <a href="{{ route('components.show', $component->id) }}" class="text-blue-500 hover:text-blue-700 text-sm whitespace-nowrap">
                                     Подробнее
                                 </a>
                             </div>
-                            
                             @if (auth()->check() && auth()->user()->admin == 1)
-                            <button type="submit" 
-                                    class="mt-2 text-red-600 hover:text-red-800 text-sm w-full text-left">
+                            <button type="submit" class="mt-2 text-red-600 hover:text-red-800 text-sm w-full text-left">
                                 Удалить
                             </button>
                             @endif
@@ -402,8 +406,69 @@
                     <p class="col-span-full text-center py-10 text-gray-500">Комплектующие не найдены.</p>
                 @endforelse
             </div>
-        </div>
-
+            <div id="list-version" class="hidden space-y-4">
+                @forelse ($components as $component)
+                <form method="POST" action="{{ route('delete', $component->id) }}" class="w-full">
+                    @csrf
+                    @method('DELETE')
+                    <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex">
+                        <!-- Фиксированный контейнер для изображения -->
+                        <div class="flex-grow-0 h-48 flex items-center justify-center mb-3">
+                            @if($component->image_url)
+                                @php
+                                    $imagePath = 'products/' . basename($component->image_url);
+                                    $url = asset('storage/' . $imagePath);
+                                @endphp
+                                <img  style="height: 200px;" src="{{ $url }}" alt="{{ $component->name }}" class="max-w-full max-h-full object-contain" onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
+                            @else
+                                <img src="{{ asset('images/defaulte_image.jpg') }}" alt="Default product image" class="max-w-full max-h-full object-contain">
+                            @endif
+                        </div>
+                        
+                        <!-- Основной контент -->
+                        <div class="flex-grow flex flex-col min-w-0">
+                            <!-- Первая строка: Название и цена -->
+                            <div class="flex justify-between items-start mb-2">
+                                <h2 class="text-lg font-medium truncate pr-2">{{ $component->name }}</h2>
+                                <p class="text-lg font-bold text-green-600 whitespace-nowrap ml-4">
+                                    {{ number_format($component->price, 0, '', ' ') }} ₽
+                                </p>
+                            </div>
+                            
+                            <!-- Вторая строка: Бренд -->
+                            <p class="text-sm text-gray-500 mb-3">{{ $component->brand }}</p>
+                            
+                            <!-- Третья строка: Характеристики -->
+                            <div class="text-sm text-gray-700 mb-4" style="
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(200px));
+                        ">
+                            @foreach(explode(',', $component->characteristics) as $char)
+                                <span class="characteristic-item">{{ trim($char) }}</span>
+                            @endforeach
+                        </div>
+                            
+                            <!-- Кнопки действий -->
+                            <div class="mt-auto flex justify-between items-center">
+                                @if (auth()->check() && auth()->user()->admin == 1)
+                                <a href="{{ route('components.show', $component->id) }}" 
+                                   class="text-blue-500 hover:text-blue-700 text-sm font-medium">
+                                    Редактировать
+                                </a>
+                                @endif
+                                @if (auth()->check() && auth()->user()->admin == 1)
+                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    Удалить
+                                </button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                @empty
+                    <p class="text-center py-10 text-gray-500">Комплектующие не найдены.</p>
+                @endforelse
+            </div>
        
         <div class="mt-6">
             {{ $components->withQueryString()->links() }}
@@ -632,15 +697,15 @@
                         submitBtn.classList.add('opacity-50');
                     } else {
                         for (const [categoryId, urls] of Object.entries(data)) {
-    const categoryName = urls[0].category.name;
-    urls.forEach(url => {
-        const option = document.createElement('option');
-        option.value = categoryId;
-        option.textContent = `${categoryName} - ${url.url}`;
-        option.dataset.categoryId = categoryId; // Дополнительная проверка
-        select.appendChild(option);
-    });
-}
+                        const categoryName = urls[0].category.name;
+                        urls.forEach(url => {
+                            const option = document.createElement('option');
+                            option.value = categoryId;
+                            option.textContent = `${categoryName} - ${url.url}`;
+                            option.dataset.categoryId = categoryId; // Дополнительная проверка
+                            select.appendChild(option);
+                        });
+                    }
                         submitBtn.disabled = false;
                         submitBtn.classList.remove('opacity-50');
                     }
@@ -649,5 +714,46 @@
                 });
         });
         </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const gridViewBtn = document.getElementById('grid-view');
+                const listViewBtn = document.getElementById('list-view');
+                const gridVersion = document.getElementById('grid-version');
+                const listVersion = document.getElementById('list-version');
+                
+                // Проверяем сохраненное значение в localStorage
+                const savedView = localStorage.getItem('preferredView') || 'grid';
+                
+                // Устанавливаем начальное состояние
+                if (savedView === 'grid') {
+                    gridVersion.classList.remove('hidden');
+                    listVersion.classList.add('hidden');
+                    gridViewBtn.classList.add('bg-blue-100', 'text-blue-600');
+                    listViewBtn.classList.remove('bg-blue-100', 'text-blue-600');
+                } else {
+                    gridVersion.classList.add('hidden');
+                    listVersion.classList.remove('hidden');
+                    gridViewBtn.classList.remove('bg-blue-100', 'text-blue-600');
+                    listViewBtn.classList.add('bg-blue-100', 'text-blue-600');
+                }
+                
+                // Обработчики кликов
+                gridViewBtn.addEventListener('click', function() {
+                    gridVersion.classList.remove('hidden');
+                    listVersion.classList.add('hidden');
+                    gridViewBtn.classList.add('bg-blue-100', 'text-blue-600');
+                    listViewBtn.classList.remove('bg-blue-100', 'text-blue-600');
+                    localStorage.setItem('preferredView', 'grid');
+                });
+                
+                listViewBtn.addEventListener('click', function() {
+                    gridVersion.classList.add('hidden');
+                    listVersion.classList.remove('hidden');
+                    gridViewBtn.classList.remove('bg-blue-100', 'text-blue-600');
+                    listViewBtn.classList.add('bg-blue-100', 'text-blue-600');
+                    localStorage.setItem('preferredView', 'list');
+                });
+            });
+            </script>
 </body>
 </html>
