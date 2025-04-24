@@ -11,12 +11,12 @@
 
     @include('layouts.navigation')
    
-    <div class="relative h-screen">
+    <div>
        
         {{-- Форма фильтрации --}}
        
 </div>
-    <div class="container mx-auto px-4 py-3">
+    <div class="container mx-auto px-4 py-3 ">
         @if (session('success'))
             <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
                 {{ session('success') }}
@@ -345,9 +345,8 @@
 @endif
 </div>
         {{-- Список компонентов --}}
-        <div class="mb-8">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold">Каталог комплектующих</h1>
+        <div class="">
+            <div class="flex justify-between items-center">
                 
                 <!-- Переключатель вида -->
                 <div class="flex items-center space-x-2">
@@ -364,100 +363,132 @@
                     </button>
                 </div>
             </div>
-            
+            <h1 class="text-3xl font-bold">Каталог комплектующих</h1>
+                
             <!-- Версия плиткой (по умолчанию) -->
-            <div id="grid-version" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                @forelse ($components as $component)
-                <form method="POST" action="{{ route('delete', $component->id) }}" class="h-full">
-                    @csrf
-                    @method('DELETE')
-                    <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col" style="height: 430px;">
-                        <div class="flex-grow-0 h-48 flex items-center justify-center mb-3">
-                            @if($component->image_url)
-                                @php
-                                    $imagePath = 'products/' . basename($component->image_url);
-                                    $url = asset('storage/' . $imagePath);
-                                @endphp
-                                <img src="{{ $url }}" alt="{{ $component->name }}" class="max-w-full max-h-full object-contain" onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
-                            @else
-                                <img src="{{ asset('images/defaulte_image.jpg') }}" alt="Default product image" class="max-w-full max-h-full object-contain">
-                            @endif
+            <div>
+                <div class="mx-auto max-w-2xl sm:py-24 lg:max-w-7xl lg:px-8">
+                
+                  <div id="grid-version" class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+                    @forelse ($components as $component)
+                    <form method="POST" action="{{ route('delete', $component->id) }}" class="group">
+                      @csrf
+                      @method('DELETE')
+                      <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+                        <!-- Изображение -->
+                        <div class="aspect-square w-full rounded-lg bg-gray-100 flex items-center justify-center mb-4 overflow-hidden">
+                          @if($component->image_url)
+                            @php
+                              $imagePath = 'products/' . basename($component->image_url);
+                              $url = asset('storage/' . $imagePath);
+                            @endphp
+                            <img src="{{ $url }}" 
+                                 alt="{{ $component->name }}" 
+                                 class="w-full h-full object-contain group-hover:opacity-75"
+                                 onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
+                          @else
+                            <img src="{{ asset('images/defaulte_image.jpg') }}" 
+                                 alt="Default product image" 
+                                 class="w-full h-full object-contain group-hover:opacity-75">
+                          @endif
                         </div>
-                        <div class="mb-2">
-                            <h2 class="text-md font-medium line-clamp-2 h-12 mb-1">{{ $component->name }}</h2>
-                            <p class="text-xs text-gray-500">{{ $component->brand }}</p>
+                        
+                        <!-- Информация о товаре -->
+                        <div class="flex-grow">
+                          <h3 class="text-sm font-medium line-clamp-2 mb-1">{{ $component->name }}</h3>
+                          <p class="text-xs text-gray-500">{{ $component->brand }}</p>
                         </div>
-                        <div class="mt-auto">
-                            <div class="flex items-center justify-between border-t pt-3">
-                                <p class="font-bold text-green-600 text-lg">{{ number_format($component->price, 0, '', ' ') }} ₽</p>
-                                <a href="{{ route('components.show', $component->id) }}" class="text-blue-500 hover:text-blue-700 text-sm whitespace-nowrap">
-                                    Подробнее
-                                </a>
-                            </div>
-                            @if (auth()->check() && auth()->user()->admin == 1)
-                            <button type="submit" class="mt-2 text-red-600 hover:text-red-800 text-sm w-full text-left">
-                                Удалить
-                            </button>
-                            @endif
+                        
+                        <!-- Цена и кнопки -->
+                        <div class="mt-4">
+                          <div class="flex items-center justify-between border-t pt-3">
+                            <p class="text-lg font-medium text-green-600">{{ number_format($component->price, 0, '', ' ') }} ₽</p>
+                            <a href="{{ route('components.show', $component->id) }}" 
+                               class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                              Подробнее
+                            </a>
+                          </div>
+                          
+                          @if (auth()->check() && auth()->user()->admin == 1)
+                          <button type="submit" 
+                                  class="mt-2 text-sm font-medium text-red-600 hover:text-red-500 w-full text-left">
+                            Удалить
+                          </button>
+                          @endif
                         </div>
-                    </div>
-                </form>
-                @empty
-                    <p class="col-span-full text-center py-10 text-gray-500">Комплектующие не найдены.</p>
-                @endforelse
-            </div>
-            <div id="list-version" class="hidden space-y-4">
+                      </div>
+                    </form>
+                    @empty
+                      <p class="col-span-full text-center py-10 text-gray-500">Комплектующие не найдены.</p>
+                    @endforelse
+                  </div>
+                </div>
+              </div>
+              <div id="list-version" class="hidden space-y-4">
                 @forelse ($components as $component)
                 <form method="POST" action="{{ route('delete', $component->id) }}" class="w-full">
                     @csrf
                     @method('DELETE')
-                    <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex">
-                        <!-- Фиксированный контейнер для изображения -->
-                        <div class="flex-grow-0 h-48 flex items-center justify-center mb-3">
+                    <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4">
+                        <!-- Контейнер изображения -->
+                        <div class="flex-shrink-0 w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                             @if($component->image_url)
                                 @php
                                     $imagePath = 'products/' . basename($component->image_url);
                                     $url = asset('storage/' . $imagePath);
                                 @endphp
-                                <img  style="height: 200px;" src="{{ $url }}" alt="{{ $component->name }}" class="max-w-full max-h-full object-contain" onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
+                                <img src="{{ $url }}" 
+                                     alt="{{ $component->name }}" 
+                                     class="w-full h-full object-contain"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
                             @else
-                                <img src="{{ asset('images/defaulte_image.jpg') }}" alt="Default product image" class="max-w-full max-h-full object-contain">
+                                <img src="{{ asset('images/defaulte_image.jpg') }}" 
+                                     alt="Default product image" 
+                                     class="w-full h-full object-contain">
                             @endif
                         </div>
                         
                         <!-- Основной контент -->
-                        <div class="flex-grow flex flex-col min-w-0">
-                            <!-- Первая строка: Название и цена -->
-                            <div class="flex justify-between items-start mb-2">
-                                <h2 class="text-lg font-medium truncate pr-2">{{ $component->name }}</h2>
-                                <p class="text-lg font-bold text-green-600 whitespace-nowrap ml-4">
+                        <div class="flex-1 min-w-0">
+                            <!-- Заголовок и цена -->
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                                <h2 class="text-lg font-medium truncate">{{ $component->name }}</h2>
+                                <p class="text-lg font-semibold text-green-600 whitespace-nowrap">
                                     {{ number_format($component->price, 0, '', ' ') }} ₽
                                 </p>
                             </div>
                             
-                            <!-- Вторая строка: Бренд -->
+                            <!-- Бренд -->
                             <p class="text-sm text-gray-500 mb-3">{{ $component->brand }}</p>
                             
-                            <!-- Третья строка: Характеристики -->
-                            <div class="text-sm text-gray-700 mb-4" style="
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(200px));
-                        ">
-                            @foreach(explode(',', $component->characteristics) as $char)
-                                <span class="characteristic-item">{{ trim($char) }}</span>
-                            @endforeach
-                        </div>
-                            
+                            <!-- Характеристики -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                                @foreach(explode(',', $component->characteristics) as $char)
+                                <span class="text-sm px-2 py-1 rounded">
+                                    {{ trim($char) }}
+                                </span>
+                                @endforeach
+                            </div>
+                            @if($component->shop_url)
+                            <a href="{{ $component->shop_url }}" target="_blank" class="text-blue-500 underline">
+                                Перейти в магазин
+                            </a>
+                            @endif
                             <!-- Кнопки действий -->
-                            <div class="mt-auto flex justify-between items-center">
+                            <div class="flex justify-between items-center pt-3 border-t">
+                                <div class="flex space-x-4">
+                                    
+                                    @if (auth()->check() && auth()->user()->admin == 1)
+                                    <a href="{{ route('components.show', $component->id) }}" 
+                                       class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                                        Редактировать
+                                    </a>
+                                    @endif
+                                </div>
+                                
                                 @if (auth()->check() && auth()->user()->admin == 1)
-                                <a href="{{ route('components.show', $component->id) }}" 
-                                   class="text-blue-500 hover:text-blue-700 text-sm font-medium">
-                                    Редактировать
-                                </a>
-                                @endif
-                                @if (auth()->check() && auth()->user()->admin == 1)
-                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                <button type="submit" 
+                                        class="text-sm font-medium text-red-600 hover:text-red-500">
                                     Удалить
                                 </button>
                                 @endif
@@ -466,7 +497,9 @@
                     </div>
                 </form>
                 @empty
-                    <p class="text-center py-10 text-gray-500">Комплектующие не найдены.</p>
+                <div class="text-center py-10">
+                    <p class="text-gray-500">Комплектующие не найдены.</p>
+                </div>
                 @endforelse
             </div>
        

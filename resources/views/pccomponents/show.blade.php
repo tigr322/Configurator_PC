@@ -134,7 +134,7 @@
                
     
                 {{-- Информация --}}
-                <div class="w-full md:w-2/3 space-y-2">
+                <div class="">
                     <p><strong>Категория:</strong> {{ $component->category->name }}</p>
                     <p><strong>Магазин:</strong> {{ $marketName }}</p>
                     <p><strong>Бренд:</strong> {{ $component->brand ?? 'Не указан' }}</p>
