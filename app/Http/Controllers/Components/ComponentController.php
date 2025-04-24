@@ -167,41 +167,39 @@ class ComponentController extends Controller
      
          return response()->json($result);
      }
-public function delete($id) 
-{
-    $component = Component::find($id);
-
-    if (!$component) {
-        return redirect()->back()->withErrors(['Компонент не найден.']);
-    }
-
-    // Удаление изображения из хранилища
-    if ($component->image_url) {
-        $imageName = basename($component->image_url);
+     public function delete($id) 
+     {
+         try {
+             $component = Component::findOrFail($id);
+     
+             // Удаление изображения из хранилища
+             if ($component->image_url) {
+                 $imageName = basename($component->image_url);
+                 $storagePath = 'public/products/' . $imageName;
+     
+                 if (Storage::exists($storagePath)) {
+                     Storage::delete($storagePath);
+                 } else {
+                     // Логирование для отладки
+                     Log::warning("Файл изображения не найден: " . $storagePath);
+                 }
+             }
+     
+             $component->delete();
+     
+             return response()->json([
+                 'success' => true,
+                 'message' => 'Компонент успешно удален'
+             ]);
+     
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ошибка при удалении компонента: ' . $e->getMessage()
+                ], 500);
+            }
         
-        // Правильный путь к файлу (полный абсолютный путь)
-        $absolutePath = storage_path('app/public/products/' . $imageName);
-        
-        // Альтернативный вариант через Storage
-        $storagePath = 'public/products/' . $imageName;
-
-        // Удаляем через Storage (предпочтительный способ)
-        if (Storage::exists($storagePath)) {
-            Storage::delete($storagePath);
-        } 
-        // Если Storage не находит, пробуем прямой путь (для отладки)
-        elseif (file_exists($absolutePath)) {
-            unlink($absolutePath);
-            Log::info("Файл удален через прямой путь: " . $absolutePath);
-        } else {
-            Log::warning("Файл изображения не найден ни по одному пути: " . $imageName);
-        }
-    }
-
-    $component->delete();
-
-    return redirect()->back()->with('success', 'Компонент успешно удалён.');
-}
+     }
 
 public function saveRules(Request $request)
 {

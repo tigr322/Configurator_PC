@@ -487,10 +487,11 @@
                                 </div>
                                 
                                 @if (auth()->check() && auth()->user()->admin == 1)
-                                <button type="submit" 
-                                        class="text-sm font-medium text-red-600 hover:text-red-500">
-                                    Удалить
-                                </button>
+                                <button type="button" 
+                                onclick="deleteComponent(event, {{ $component->id }})" 
+                                class="text-red-600 hover:text-red-800 text-sm font-medium">
+                            Удалить
+                        </button>
                                 @endif
                             </div>
                         </div>
@@ -788,5 +789,74 @@
                 });
             });
             </script>
+            <script>
+                function deleteComponent(event, id) {
+                        event.preventDefault(); // Важно: предотвращаем действие по умолчанию
+                        
+                        if (!confirm('Вы уверены, что хотите удалить этот компонент?')) return;
+
+                        const componentElement = event.target.closest('form'); // Находим родительскую форму
+
+                        fetch(`/delete/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Ошибка сети');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                // Плавное исчезновение элемента
+                                componentElement.style.transition = 'opacity 0.3s, transform 0.3s';
+                                componentElement.style.opacity = '0';
+                                componentElement.style.transform = 'scale(0.9)';
+                                
+                                // Удаление после анимации
+                                setTimeout(() => {
+                                    componentElement.remove();
+                                    
+                                    // Обновляем счетчик или другие элементы при необходимости
+                                    updateComponentsCounter();
+                                }, 300);
+                                
+                                // Показываем уведомление
+                                showFlashMessage(data.message, 'success');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Ошибка:', error);
+                            showFlashMessage('Ошибка при удалении', 'error');
+                        });
+                    }
+
+                    // Функция для показа уведомлений
+                    function showFlashMessage(message, type) {
+                        const flash = document.createElement('div');
+                        flash.className = `fixed top-4 right-4 px-4 py-2 rounded-md text-white ${
+                            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                        } z-50`;
+                        flash.textContent = message;
+                        document.body.appendChild(flash);
+                        
+                        setTimeout(() => {
+                            flash.style.transition = 'opacity 0.5s';
+                            flash.style.opacity = '0';
+                            setTimeout(() => flash.remove(), 500);
+                        }, 3000);
+                    }
+
+                    // Если нужно обновить счетчик компонентов
+                    function updateComponentsCounter() {
+                        const counter = document.getElementById('components-counter');
+                        if (counter) {
+                            counter.textContent = parseInt(counter.textContent) - 1;
+                        }
+                    }
+                </script>
 </body>
 </html>
