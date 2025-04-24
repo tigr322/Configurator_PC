@@ -40,7 +40,7 @@ class ParserController extends Controller
     }
 
     Log::info('Starting spider with params:', $validated);
-//dd($marketUrl->url);
+
     if ($validated['market_id'] == 1) { 
         Roach::startSpider(
             ComponentSpider::class,

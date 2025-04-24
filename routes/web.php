@@ -16,7 +16,7 @@ Route::post('/configurations', [ConfigurationController::class, 'store'])->middl
 //Route::get('/catalog', [ComponentController::class,'catalog'])->name('catalog');
 //загрузка всех конфигурации из бд
 Route::get('/builds', [ConfigurationController::class,'configurations'])->name(name: 'builds');
-
+Route::get('/admin/get-urls', [ComponentController::class, 'getUrlsByMarket'])->name('admin.get.urls');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile/users', [ProfileController::class, 'edit'])->name('profile.edit');

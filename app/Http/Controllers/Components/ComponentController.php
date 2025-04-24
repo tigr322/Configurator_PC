@@ -73,7 +73,13 @@ class ComponentController extends Controller
         $marketsUrls = MarketsUrls::all();
         return view('pccomponents.catalog', compact('components', 'categories', 'rules','markets', 'marketsUrls'));
     }
-
+    public function getUrlsByMarket(Request $request)
+    {
+        $marketId = $request->input('market_id');
+        $urls = MarketsUrls::getByMarket($marketId);
+        
+        return response()->json($urls);
+    }
     /**
      * Показать один компонент
      */

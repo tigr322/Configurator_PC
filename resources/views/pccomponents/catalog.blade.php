@@ -101,28 +101,29 @@
         🔍 Парсинг
     </button>
     <div class="panel hidden mt-2">
-        <form method="POST" action="{{ route('admin.parse') }}">
+        <form method="POST" action="{{ route('admin.parse') }}" id="parser-form">
             @csrf
-            <div class="mb-2">
-                <label for="category_id" class="block   mb-1">Категория</label>
-                <select id="category_id" name="category_id" required
-                    class="w-full px-2 py-1 border rounded text-black   bg-white">
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
-            </div>
             <div class="mb-3">
-                <label for="market-selectd" class="block mb-1 text-sm">Выберите магазин:</label>
-                <select id="market-selectd" name="market_id" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                <label for="markets-select" class="block mb-1 text-sm">Выберите магазин:</label>
+                <select id="markets-select" name="market_id" required 
+                        class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
                     <option value="">— Выберите —</option>
                     @foreach($markets as $market)
                         <option value="{{ $market->id }}">{{ $market->name }}</option>
                     @endforeach
                 </select>
             </div>
-            <button type="submit"
-                class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
+        
+            <div id="urls-container" class="mb-3 hidden">
+                <label for="category_id" class="block mb-1">Доступные категории:</label>
+                <select id="categories_id" name="category_id" required
+                        class="w-full px-2 py-1 border rounded text-black bg-white">
+                    <!-- Опции будут загружены через AJAX -->
+                </select>
+            </div>
+        
+            <button type="submit" id="submit-btn" disabled
+                    class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition opacity-50">
                 Начать парсинг
             </button>
         </form>
@@ -602,6 +603,51 @@
     });
     </script>
     
+    <script>
+        document.getElementById('markets-select').addEventListener('change', function() {
+            const marketId = this.value;
+            const urlsContainer = document.getElementById('urls-container');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            if (!marketId) {
+                urlsContainer.classList.add('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50');
+                return;
+            }
         
+            // AJAX-запрос для получения URL
+            fetch(`/admin/get-urls?market_id=${marketId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('categories_id');
+                    select.innerHTML = '';
+                    
+                    if (Object.keys(data).length === 0) {
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'Нет доступных категорий';
+                        select.appendChild(option);
+                        submitBtn.disabled = true;
+                        submitBtn.classList.add('opacity-50');
+                    } else {
+                        for (const [categoryId, urls] of Object.entries(data)) {
+    const categoryName = urls[0].category.name;
+    urls.forEach(url => {
+        const option = document.createElement('option');
+        option.value = categoryId;
+        option.textContent = `${categoryName} - ${url.url}`;
+        option.dataset.categoryId = categoryId; // Дополнительная проверка
+        select.appendChild(option);
+    });
+}
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('opacity-50');
+                    }
+                    
+                    urlsContainer.classList.remove('hidden');
+                });
+        });
+        </script>
 </body>
 </html>

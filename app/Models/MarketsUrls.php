@@ -23,9 +23,17 @@ class MarketsUrls extends Model
         return $this->belongsTo(Category::class);
     }
 
-    // Связь с маркетом
     public function market()
     {
         return $this->belongsTo(Markets::class);
+    }
+
+    // Новый метод для получения URL по магазину
+    public static function getByMarket($marketId)
+    {
+        return self::with('category')
+            ->where('market_id', $marketId)
+            ->get()
+            ->groupBy('category_id');
     }
 }
