@@ -79,9 +79,9 @@ class ProfileController extends Controller
     public function updateUsers(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'password' => [
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+        'password' => [
         'nullable',
         'confirmed', // Добавляем проверку совпадения с password_confirmation
         Password::min(8) // Минимальная длина 8 символов
@@ -93,7 +93,7 @@ class ProfileController extends Controller
           
             'admin' => ['nullable', 'integer', 'max:1'],
         ]);
-    
+        
         $user->name = $validated['name'];
         $user->email = $validated['email'];
         $user->admin = $validated['admin'] ?? $user->admin;
@@ -101,7 +101,9 @@ class ProfileController extends Controller
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
-    
+        if($validated){
+            return back()->with('error', 'user-updated-' . $user->id);
+        }
         $user->save();
     
         return back()->with('status', 'user-updated-' . $user->id);

@@ -64,7 +64,7 @@
                             <td class="px-4 py-2">
                                 <x-primary-button class="text-sm">{{ __('Сохранить') }}</x-primary-button>
                                
-                                @if (session('status') === 'user-updated-'.$user->id)
+                                @if (session('success') === 'user-updated-'.$user->id)
                                 <!-- Сообщение об успешном сохранении -->
                                 <div 
                                     x-data="{ show: true }" 
@@ -78,7 +78,7 @@
                                     </svg>
                                     {{ __('Данные успешно сохранены!') }}
                                 </div>
-                            @elseif (session('status') === 'error')
+                            @elseif (session('error')=== 'user-updated-'.$user->id)
                                
                                 <div 
                                     x-data="{ show: true }" 
