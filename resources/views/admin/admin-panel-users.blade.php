@@ -7,7 +7,6 @@
 </head>
 
 @include('layouts.navigation')
-
 <body>
    
 
@@ -49,31 +48,31 @@
                         
                         <td class="px-2 sm:px-4 py-2 block sm:table-cell">
                             <span class="sm:hidden font-medium">Имя: </span>
-                            <x-text-input name="name" value="{{ $user->name }}" 
+                            <input name="name" value="{{ $user->name }}" 
                                          class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" required />
                         </td>
                         
                         <td class="px-2 sm:px-4 py-2 block sm:table-cell">
                             <span class="sm:hidden font-medium">Email: </span>
-                            <x-text-input name="email" value="{{ $user->email }}" type="email"
+                            <input name="email" value="{{ $user->email }}" type="email"
                                          class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" required />
                         </td>
                         
                         <td class="px-2 sm:px-4 py-2 block sm:table-cell">
                             <span class="sm:hidden font-medium">Пароль: </span>
-                            <x-text-input name="password" type="password" placeholder="••••••••"
+                            <input name="password" type="password" placeholder="••••••••"
                                          class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
                         </td>
                         
                         <td class="px-2 sm:px-4 py-2 block sm:table-cell">
                             <span class="sm:hidden font-medium">Подтверждение: </span>
-                            <x-text-input name="password_confirmation" type="password" placeholder="••••••••"
+                            <input name="password_confirmation" type="password" placeholder="••••••••"
                                          class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
                         </td>
                         
                         <td class="px-2 sm:px-4 py-2 block sm:table-cell">
                             <span class="sm:hidden font-medium">Админ: </span>
-                            <x-text-input name="admin" type="number" value="{{ $user->admin ?? '' }}"
+                            <input name="admin" type="number" value="{{ $user->admin ?? '' }}"
                                          class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
                         </td>
                         

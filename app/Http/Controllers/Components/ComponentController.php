@@ -18,61 +18,64 @@ class ComponentController extends Controller
       Показать список всех комплектующих с фильтрацией и сортировкой
      */
     public function index(Request $request)
-    {
-        $query = Component::query()->with('category')->with('markets');
+{
+    $query = Component::query()->with('category')->with('markets');
 
-        // Фильтрация
-        if ($request->filled('category')) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('name', $request->category);
-            });
-        }
-        if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->name . '%');
-        }
-        if ($request->filled('brand')) {
-            $query->where('brand', 'like', '%' . $request->brand . '%');
-        }
-
-        if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        }
-//d
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
-        }
-        if ($request->filled('pagination')) {
-            $perPage = (int) $request->input('pagination');
-            $components = $query->paginate($perPage);
-        } else {
-            $components = $query->paginate(12); 
-        }
-       
-        if ($request->filled('sort')) {
-            switch ($request->sort) {
-                case 'price_asc':
-                    $query->orderBy('price', 'asc');
-                    break;
-                case 'price_desc':
-                    $query->orderBy('price', 'desc');
-                    break;
-                default:
-                    $query->latest();
-            }
-        } else {
-            $query->latest();
-        }
-
-        // Пагинация
-      
-
-        // Все категории для фильтра
-        $categories = Category::all();
-        $rules = CompatibilityRule::all();
-        $markets = Markets::all();
-        $marketsUrls = MarketsUrls::all();
-        return view('pccomponents.catalog', compact('components', 'categories', 'rules','markets', 'marketsUrls'));
+    // Фильтрация
+    if ($request->filled('category')) {
+        $query->whereHas('category', function($q) use ($request) {
+            $q->where('name', $request->category);
+        });
     }
+    
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%'.$request->name.'%');
+    }
+    
+    if ($request->filled('brand')) {
+        $query->where('brand', 'like', '%'.$request->brand.'%');
+    }
+    
+    if ($request->filled('min_price')) {
+        $query->where('price', '>=', $request->min_price);
+    }
+    
+    if ($request->filled('max_price')) {
+        $query->where('price', '<=', $request->max_price);
+    }
+    
+    // Фильтрация по сокету ДО пагинации
+    if ($request->filled('socket')) {
+        $query->whereJsonContains('compatibility_data->socket', $request->socket);
+    }
+    
+    // Сортировка
+    if ($request->filled('sort')) {
+        switch ($request->sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            default:
+                $query->latest();
+        }
+    } else {
+        $query->latest();
+    }
+
+    // Пагинация
+    $perPage = $request->filled('pagination') ? (int)$request->pagination : 12;
+    $components = $query->paginate($perPage);
+
+    $categories = Category::all();
+    $rules = CompatibilityRule::all();
+    $markets = Markets::all();
+    $marketsUrls = MarketsUrls::all();
+    
+    return view('pccomponents.catalog', compact('components', 'categories', 'rules', 'markets', 'marketsUrls'));
+}
     public function getUrlsByMarket(Request $request)
     {
         $marketId = $request->input('market_id');

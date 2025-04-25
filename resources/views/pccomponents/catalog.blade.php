@@ -11,12 +11,8 @@
 
     @include('layouts.navigation')
    
-    <div>
-       
-        {{-- Форма фильтрации --}}
-       
-</div>
-    <div class="container mx-auto px-4 py-3 ">
+    
+    <div class="container mx-auto">
         @if (session('success'))
             <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
                 {{ session('success') }}
@@ -32,320 +28,331 @@
                 </ul>
             </div>
         @endif
-        <div class="container mx-auto px-4 py-3 flex flex-wrap">
-            <div 
-            class="Filters shadow-md"
-            style="
-                @if (!auth()->check() || auth()->user()->admin != 1)
-                    width: 100%;
-                @else
-                    width: 30%;
-                @endif
-            "
-        >
-            <h2 class="text-xl font-bold mb-6" style="font-size: 20px;" >Фильтрация</h2>
-        <form method="GET" action="{{ route('catalog') }}" class="mb-3 flex flex-col gap-2">
-            <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="category" class="border p-2 rounded">
-                <option value="">Все категории</option>
-                @foreach ($categories as $category)
-                    <option value="{{ $category->name }}" {{ request('category') === $category->name ? 'selected' : '' }}>
-                        {{ $category->name }}
-                    </option>
-                @endforeach
-            </select>
-
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"  type="text" name="name" placeholder="Название" value="{{ request('name') }}" class="border p-2 rounded">
-
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"  type="text" name="brand" placeholder="Бренд" value="{{ request('brand') }}" class="border p-2 rounded">
-
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="min_price" placeholder="Мин. цена" value="{{ request('min_price') }}" class="border p-2 rounded">
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="max_price" placeholder="Макс. цена" value="{{ request('max_price') }}" class="border p-2 rounded">
-            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
-            type="number" name="pagination" placeholder="Пагинация" value="{{ request('pagination') }}" class="border p-2 rounded">
-            <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="sort" class="border p-2 rounded">
-                <option value="">Сортировка</option>
-                <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
-                <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
-            </select>
-
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
-        </form>
-    </div>
         
-@if (auth()->check() && auth()->user()->admin == 1)
-    
-<div style="width: 50%; margin: 0 auto;">
-    <h2 class=" font-bold mb-6">🔧 Админ-панель</h2>
-
-    <!-- Добавление категории -->
-    <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
-        ➕ Категория
-    </button>
-    <div class="panel hidden mt-2">
-        <form method="POST" action="{{ route('admin.addCategory') }}">
-            @csrf
-            <div class="mb-2">
-                <label for="category_name" class="block   mb-1">Новая категория</label>
-                <input type="text" name="category_name" id="category_name" required
-                    class="w-full px-2 py-1 border rounded text-black   bg-white">
-            </div>
-            <button type="submit"
-                class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
-                Добавить
-            </button>
-        </form>
-    </div>
-
-    <!-- Парсинг -->
-    <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
-        🔍 Парсинг
-    </button>
-    <div class="panel hidden mt-2">
-        <form method="POST" action="{{ route('admin.parse') }}" id="parser-form">
-            @csrf
-            <div class="mb-3">
-                <label for="markets-select" class="block mb-1 text-sm">Выберите магазин:</label>
-                <select id="markets-select" name="market_id" required 
-                        class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
-                    <option value="">— Выберите —</option>
-                    @foreach($markets as $market)
-                        <option value="{{ $market->id }}">{{ $market->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        
-            <div id="urls-container" class="mb-3 hidden">
-                <label for="category_id" class="block mb-1">Доступные категории:</label>
-                <select id="categories_id" name="category_id" required
-                        class="w-full px-2 py-1 border rounded text-black bg-white">
-                    <!-- Опции будут загружены через AJAX -->
-                </select>
-            </div>
-        
-            <button type="submit" id="submit-btn" disabled
-                    class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition opacity-50">
-                Начать парсинг
-            </button>
-        </form>
-    </div>
-    <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
-        ✏ Добавить комплектующие в ручную 
-    </button>
-    <div class="panel hidden mt-2">
-        <form method="POST" action="{{ route('admin.addComponent') }}" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-2">
-                <label for="category_id" class="block   mb-1">Категория</label>
-                <select id="category_id" name="category_id" required
-                    class="w-full px-2 py-1 border rounded text-black   bg-white">
+        {{-- Список компонентов --}}
+        <div class="flex flex-col lg:flex-row">
+            <div class="lg:w-1/4">
+                <div 
+                class=""
+                style="padding-top:60px; padding-right: 20px;
+                "
+            >
+                <h2 class="text-xl font-bold mb-6" style="font-size: 20px;" >Фильтрация</h2>
+            <form method="GET" action="{{ route('catalog') }}" class="mb-3 flex flex-col gap-2">
+                <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="category" class="border p-2 rounded">
+                    <option value="">Все категории</option>
                     @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        <option value="{{ $category->name }}" {{ request('category') === $category->name ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
                     @endforeach
                 </select>
-            </div>
-            <div class="mb-2">
-                <label for="market_id" class="block   mb-1">Магазин</label>
-                <select id="market_id" name="market_id" required
-                    class="w-full px-2 py-1 border rounded text-black   bg-white">
-                    @foreach ($markets as $market)
-                        <option value="{{ $market->id }}">{{ $market->name }}</option>
-                    @endforeach
+    
+                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"  type="text" name="name" placeholder="Название" value="{{ request('name') }}" class="border p-2 rounded">
+    
+                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"  type="text" name="brand" placeholder="Бренд" value="{{ request('brand') }}" class="border p-2 rounded">
+    
+                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="min_price" placeholder="Мин. цена" value="{{ request('min_price') }}" class="border p-2 rounded">
+                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="max_price" placeholder="Макс. цена" value="{{ request('max_price') }}" class="border p-2 rounded">
+                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
+                type="number" name="pagination" placeholder="Пагинация" value="{{ request('pagination') }}" class="border p-2 rounded">
+                <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="sort" class="border p-2 rounded">
+                    <option value="">Сортировка</option>
+                    <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
+                    <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
                 </select>
-            </div>
-            <div class="mb-2">
-                <label for="component_name" class="block   mb-1">Название</label>
-                <input type="text" name="component_name" id="component_name" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
-            </div>
-            <div class="mb-2">
-                <label for="component_price" class="block   mb-1">Цена (руб)</label>
-                <input type="number" name="component_price" id="component_price" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
-            </div>
-            <div class="mb-2">
-                <label for="component_brand" class="block   mb-1">Бренд</label>
-                <input type="text" name="component_brand" id="component_brand" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
-            </div>
     
-            <div class="mb-2">
-                <label for="component_market_url" class="block   mb-1">Ссылка на товар</label>
-                <input type="url" name="component_market_url" id="component_market_url" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
-            </div>
-            <div class="mb-2">
-                <label class="block font-semibold   mb-1">Характеристика</label>
-                <textarea name="charastiristics"
-                          class="w-full border p-2 rounded h-28   bg-gray-100 text-black resize-none"
-                          placeholder=''></textarea>
-            </div>
-            <div class="mb-2">
-                <label class="block font-semibold   mb-1">Совместимость (JSON)</label>
-                <textarea name="compatibility_data"
-                          class="w-full border p-2 rounded h-28   bg-gray-100 text-black resize-none"
-                          placeholder='{"socket": "AM4", "form_factor": "ATX"}'></textarea>
-            </div>
-    
-            <div class="mb-3">
-                <label for="component_image" class="block   mb-1">Изображение</label>
-                <input type="file" name="component_image" id="component_image"
-                       class="w-full border rounded   px-2 py-1 bg-white text-black file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:  file:bg-green-600 file:text-white hover:file:bg-green-700">
-            </div>
-    
-            <button type="submit"
-                class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
-                Добавить
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
+            </form>
+        </div>
+        <div class="mb-6 flex flex-wrap gap-2">
+            <button onclick="filterBySocket('AM4')" class="px-3 py-1  rounded-full text-sm transition">
+                AM4
             </button>
-        </form>
-    </div>
-    <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
-        ✏ Правила совместимости комплектующих
-    </button>
-    <div class="panel hidden mt-2">
-        <form id="compatibility-form" action="{{ route('save.compatibility.rules') }}" method="POST">
-            @csrf
-            <table class="w-full border mt-2 text-sm" id="compatibility-table">
-                <thead>
-                    <tr>
-                        <th class="border px-2 py-1">ID</th>
-                        <th class="border px-2 py-1">Категория 1</th>
-                        <th class="border px-2 py-1">Категория 2</th>
-                        <th class="border px-2 py-1">Правила (JSON)</th>
-                        <th class="border px-2 py-1">Удалить</th>
-                    </tr>
-                </thead>
-                <tbody id="compatibility-rows">
-                    @foreach ($rules as $index => $rule)
-                    <tr>
-                        <td class="border px-2 py-1">
-                            {{ $rule->id }}
-                            <input type="hidden" name="rules[{{ $index }}][id]" value="{{ $rule->id }}">
-                        </td>
-                        <td class="border px-2 py-1">
-                            <select name="rules[{{ $index }}][category1_id]" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ $category->id == $rule->category1_id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td class="border px-2 py-1">
-                            <select name="rules[{{ $index }}][category2_id]" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ $category->id == $rule->category2_id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        
-                        <td class="border px-2 py-1">
-                            <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="rules[{{ $index }}][condition]" value="{{ json_encode($rule->condition) }}" class="w-full border px-1">
-                        </td>
-                        <td class="border px-2 py-1 text-center">
-                            <button type="button" class="remove-row text-red-600" data-id="{{ $rule->id }}">✖</button>
-
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <button onclick="filterBySocket('AM5')" class="px-3 py-1 rounded-full text-sm transition">
+                AM5
+            </button>
+            <button onclick="filterBySocket('LGA1700')" class="px-3 py-1rounded-full text-sm transition">
+                LGA1700
+            </button>
+            <button onclick="filterBySocket('LGA1200')" class="px-3 py-1 rounded-full text-sm transition">
+                LGA1200
+            </button>
+            <button onclick="clearSocketFilter()" class="px-3 py-1 rounded-full text-sm transition">
+                Сбросить
+            </button>
+        </div>
+    @if (auth()->check() && auth()->user()->admin == 1)
         
-            <button type="button" id="add-rule" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
-                ➕ Добавить правило
-            </button>
-            <input type="hidden" id="deleted-rules" name="deleted_rules" value="[]">
-            <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-2">
-                💾 Сохранить изменения
-            </button>
-        </form>
+    <div style="padding-right: 20px;">
+        <h2 class=" font-bold mb-6">🔧 Админ-панель</h2>
+    
+        <!-- Добавление категории -->
+        <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+            ➕ Категория
+        </button>
+        <div class="panel hidden mt-2">
+            <form method="POST" action="{{ route('admin.addCategory') }}">
+                @csrf
+                <div class="mb-2">
+                    <label for="category_name" class="block   mb-1">Новая категория</label>
+                    <input type="text" name="category_name" id="category_name" required
+                        class="w-full px-2 py-1 border rounded text-black   bg-white">
+                </div>
+                <button type="submit"
+                    class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
+                    Добавить
+                </button>
+            </form>
+        </div>
+    
+        <!-- Парсинг -->
+        <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+            🔍 Парсинг
+        </button>
+        <div class="panel hidden mt-2">
+            <form method="POST" action="{{ route('admin.parse') }}" id="parser-form">
+                @csrf
+                <div class="mb-3">
+                    <label for="markets-select" class="block mb-1 text-sm">Выберите магазин:</label>
+                    <select id="markets-select" name="market_id" required 
+                            class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                        <option value="">— Выберите —</option>
+                        @foreach($markets as $market)
+                            <option value="{{ $market->id }}">{{ $market->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            
+                <div id="urls-container" class="mb-3 hidden">
+                    <label for="category_id" class="block mb-1">Доступные категории:</label>
+                    <select id="categories_id" name="category_id" required
+                            class="w-full px-2 py-1 border rounded text-black bg-white">
+                        <!-- Опции будут загружены через AJAX -->
+                    </select>
+                </div>
+            
+                <button type="submit" id="submit-btn" disabled
+                        class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition opacity-50">
+                    Начать парсинг
+                </button>
+            </form>
+        </div>
+        <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+            ✏ Добавить комплектующие в ручную 
+        </button>
+        <div class="panel hidden mt-2">
+            <form method="POST" action="{{ route('admin.addComponent') }}" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-2">
+                    <label for="category_id" class="block   mb-1">Категория</label>
+                    <select id="category_id" name="category_id" required
+                        class="w-full px-2 py-1 border rounded text-black   bg-white">
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="market_id" class="block   mb-1">Магазин</label>
+                    <select id="market_id" name="market_id" required
+                        class="w-full px-2 py-1 border rounded text-black   bg-white">
+                        @foreach ($markets as $market)
+                            <option value="{{ $market->id }}">{{ $market->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="component_name" class="block   mb-1">Название</label>
+                    <input type="text" name="component_name" id="component_name" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                </div>
+                <div class="mb-2">
+                    <label for="component_price" class="block   mb-1">Цена (руб)</label>
+                    <input type="number" name="component_price" id="component_price" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                </div>
+                <div class="mb-2">
+                    <label for="component_brand" class="block   mb-1">Бренд</label>
+                    <input type="text" name="component_brand" id="component_brand" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                </div>
         
-    </div>
-    <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
-        ✏ Добавить URL магазина
-    </button>
-    <div class="panel hidden mt-2">
-        <form id="markets-urls-form" action="{{ route('markets_urls.save') }}" method="POST">
-            @csrf
-    
-            <div class="mb-3">
-                <label for="market-select" class="block mb-1 text-sm">Выберите магазин:</label>
-                <select id="market-select" name="market_id" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
-                    <option value="">— Выберите —</option>
-                    @foreach($markets as $market)
-                        <option value="{{ $market->id }}">{{ $market->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-    
-            <div id="categories-url-table-wrapper" class="hidden">
-                <table id="categories-url-table" class="table-auto w-full">
+                <div class="mb-2">
+                    <label for="component_market_url" class="block   mb-1">Ссылка на товар</label>
+                    <input type="url" name="component_market_url" id="component_market_url" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
+                </div>
+                <div class="mb-2">
+                    <label class="block font-semibold   mb-1">Характеристика</label>
+                    <textarea name="charastiristics"
+                              class="w-full border p-2 rounded h-28   bg-gray-100 text-black resize-none"
+                              placeholder=''></textarea>
+                </div>
+                <div class="mb-2">
+                    <label class="block font-semibold   mb-1">Совместимость (JSON)</label>
+                    <textarea name="compatibility_data"
+                              class="w-full border p-2 rounded h-28   bg-gray-100 text-black resize-none"
+                              placeholder='{"socket": "AM4", "form_factor": "ATX"}'></textarea>
+                </div>
+        
+                <div class="mb-3">
+                    <label for="component_image" class="block   mb-1">Изображение</label>
+                    <input type="file" name="component_image" id="component_image"
+                           class="w-full border rounded   px-2 py-1 bg-white text-black file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:  file:bg-green-600 file:text-white hover:file:bg-green-700">
+                </div>
+        
+                <button type="submit"
+                    class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
+                    Добавить
+                </button>
+            </form>
+        </div>
+        <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+            ✏ Правила совместимости комплектующих
+        </button>
+        <div class="panel hidden mt-2">
+            <form id="compatibility-form" action="{{ route('save.compatibility.rules') }}" method="POST">
+                @csrf
+                <table class="w-full border mt-2 text-sm" id="compatibility-table">
                     <thead>
                         <tr>
-                            <th class="border px-2 py-1">Категория</th>
-                            <th class="border px-2 py-1">URL</th>
+                            <th class="border px-2 py-1">ID</th>
+                            <th class="border px-2 py-1">Категория 1</th>
+                            <th class="border px-2 py-1">Категория 2</th>
+                            <th class="border px-2 py-1">Правила (JSON)</th>
                             <th class="border px-2 py-1">Удалить</th>
                         </tr>
                     </thead>
-                    <tbody id="categories-url-body">
-                        @foreach($marketsUrls as $index => $marketUrl)
-                            <tr>
-                                <td class="border px-2 py-1">
-                                    <select name="urls[{{ $index }}][category_id]" class="category-select w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
-                                        <option value="">— Категория —</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ $marketUrl->category_id == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td class="border px-2 py-1">
-                                    <input type="text" name="urls[{{ $index }}][url]" class="w-full border px-2 py-1 rounded bg-gray-100 text-black" value="{{ $marketUrl->url }}">
-                                </td>
-                                <td class="border px-2 py-1 text-center">
-                                    <button type="button" class="remove-row text-red-600" data-id="{{ $marketUrl->id }}">✖</button>
-
-                                </td>
-                            </tr>
+                    <tbody id="compatibility-rows">
+                        @foreach ($rules as $index => $rule)
+                        <tr>
+                            <td class="border px-2 py-1">
+                                {{ $rule->id }}
+                                <input type="hidden" name="rules[{{ $index }}][id]" value="{{ $rule->id }}">
+                            </td>
+                            <td class="border px-2 py-1">
+                                <select name="rules[{{ $index }}][category1_id]" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ $category->id == $rule->category1_id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td class="border px-2 py-1">
+                                <select name="rules[{{ $index }}][category2_id]" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ $category->id == $rule->category2_id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            
+                            <td class="border px-2 py-1">
+                                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="rules[{{ $index }}][condition]" value="{{ json_encode($rule->condition) }}" class="w-full border px-1">
+                            </td>
+                            <td class="border px-2 py-1 text-center">
+                                <button type="button" class="remove-row text-red-600" data-id="{{ $rule->id }}">✖</button>
+    
+                            </td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
-                
-    
-                <button type="button" id="add-row" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
-                    ➕ Добавить строку
+            
+                <button type="button" id="add-rule" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
+                    ➕ Добавить правило
                 </button>
-            </div>
+                <input type="hidden" id="deleted-rules" name="deleted_rules" value="[]">
+                <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-2">
+                    💾 Сохранить изменения
+                </button>
+            </form>
+            
+        </div>
+        <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+            ✏ Добавить URL магазина
+        </button>
+        <div class="panel hidden mt-2">
+            <form id="markets-urls-form" action="{{ route('markets_urls.save') }}" method="POST">
+                @csrf
+        
+                <div class="mb-3">
+                    <label for="market-select" class="block mb-1 text-sm">Выберите магазин:</label>
+                    <select id="market-select" name="market_id" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                        <option value="">— Выберите —</option>
+                        @foreach($markets as $market)
+                            <option value="{{ $market->id }}">{{ $market->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+        
+                <div id="categories-url-table-wrapper" class="hidden">
+                    <table id="categories-url-table" class="table-auto w-full">
+                        <thead>
+                            <tr>
+                                <th class="border px-2 py-1">Категория</th>
+                                <th class="border px-2 py-1">URL</th>
+                                <th class="border px-2 py-1">Удалить</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categories-url-body">
+                            @foreach($marketsUrls as $index => $marketUrl)
+                                <tr>
+                                    <td class="border px-2 py-1">
+                                        <select name="urls[{{ $index }}][category_id]" class="category-select w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                                            <option value="">— Категория —</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ $marketUrl->category_id == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td class="border px-2 py-1">
+                                        <input type="text" name="urls[{{ $index }}][url]" class="w-full border px-2 py-1 rounded bg-gray-100 text-black" value="{{ $marketUrl->url }}">
+                                    </td>
+                                    <td class="border px-2 py-1 text-center">
+                                        <button type="button" class="remove-row text-red-600" data-id="{{ $marketUrl->id }}">✖</button>
     
-            <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-3">
-                💾 Сохранить
-            </button>
-        </form>
-    </div>
-    <div class="mb-4  py-3">
-    <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition mb-6">
-        ➕ Добавить магазин
-    </button>
-    <div class="panel hidden mt-2">
-        <form method="POST" action="{{ route('admin.addMarket') }}">
-            @csrf
-            <div class="mb-2">
-                <label for="market_name" class="block   mb-1">Новая магазин</label>
-                <input type="text" name="market_name" id="market_name" required
-                    class="w-full px-2 py-1 border rounded text-black   bg-white">
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    
+        
+                    <button type="button" id="add-row" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
+                        ➕ Добавить строку
+                    </button>
+                </div>
+        
+                <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-3">
+                    💾 Сохранить
+                </button>
+            </form>
+        </div>
+        <div class="mb-4  py-3">
+        <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition mb-6">
+            ➕ Добавить магазин
+        </button>
+        <div class="panel hidden mt-2">
+            <form method="POST" action="{{ route('admin.addMarket') }}">
+                @csrf
+                <div class="mb-2">
+                    <label for="market_name" class="block   mb-1">Новая магазин</label>
+                    <input type="text" name="market_name" id="market_name" required
+                        class="w-full px-2 py-1 border rounded text-black   bg-white">
+                </div>
+                <button type="submit"
+                    class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
+                    Добавить
+                </button>
+            </form>
             </div>
-            <button type="submit"
-                class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
-                Добавить
-            </button>
-        </form>
-    </div>
-    </div>
-</div>
-
-
-@endif
-</div>
-        {{-- Список компонентов --}}
-        <div class="">
+            </div>
+        </div>
+            @endif
+        </div>      
+            <div class="lg:w-3/4">
             <div class="flex justify-between items-center">
                 
                 <!-- Переключатель вида -->
@@ -366,8 +373,8 @@
             <h1 class="text-3xl font-bold">Каталог комплектующих</h1>
                 
             <!-- Версия плиткой (по умолчанию) -->
-            <div>
-                <div class="mx-auto max-w-2xl sm:py-24 lg:max-w-7xl lg:px-8">
+            
+                <div class="mx-auto max-w-2xl lg:max-w-7xl lg:px-8">
                 
                   <div id="grid-version" class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
                     @forelse ($components as $component)
@@ -423,7 +430,7 @@
                     @endforelse
                   </div>
                 </div>
-              </div>
+             
               <div id="list-version" class="hidden space-y-4">
                 @forelse ($components as $component)
                 <form method="POST" action="{{ route('delete', $component->id) }}" class="w-full">
@@ -508,6 +515,8 @@
             {{ $components->withQueryString()->links() }}
         </div>
     </div>
+</div>
+</div>
     <script>
        
     var acc = document.getElementsByClassName("accordion");
@@ -858,5 +867,33 @@
                         }
                     }
                 </script>
+
+<script>
+    // Фильтрация по сокету
+    function filterBySocket(socket) {
+        document.getElementById('socket-filter').value = socket;
+        document.getElementById('filter-form').submit();
+    }
+    
+    // Сброс фильтра по сокету
+    function clearSocketFilter() {
+        document.getElementById('socket-filter').value = '';
+        document.getElementById('filter-form').submit();
+    }
+    
+    // Клиентская фильтрация (без перезагрузки)
+    function filterComponentsBySocket(socket) {
+        const components = document.querySelectorAll('#components-grid > div');
+        
+        components.forEach(component => {
+            const componentSocket = component.getAttribute('data-socket');
+            if (!socket || componentSocket === socket) {
+                component.classList.remove('hidden');
+            } else {
+                component.classList.add('hidden');
+            }
+        });
+    }
+    </script>
 </body>
 </html>
