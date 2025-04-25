@@ -61,27 +61,79 @@
                     <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
                     <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
                 </select>
-    
+                <input type="hidden" name="socket" id="socket-filter" value="{{ request('socket') }}">
+                <input type="hidden" name="manufacturer" id="manufacturer-filter" value="{{ request('brand') }}">
+                <input type="hidden" name="memory_type" id="memory-type-filter" value="{{ request('memory_type') }}">
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
             </form>
         </div>
-        <div class="mb-6 flex flex-wrap gap-2">
-            <button onclick="filterBySocket('AM4')" class="px-3 py-1  rounded-full text-sm transition">
-                AM4
-            </button>
-            <button onclick="filterBySocket('AM5')" class="px-3 py-1 rounded-full text-sm transition">
-                AM5
-            </button>
-            <button onclick="filterBySocket('LGA1700')" class="px-3 py-1rounded-full text-sm transition">
-                LGA1700
-            </button>
-            <button onclick="filterBySocket('LGA1200')" class="px-3 py-1 rounded-full text-sm transition">
-                LGA1200
-            </button>
-            <button onclick="clearSocketFilter()" class="px-3 py-1 rounded-full text-sm transition">
-                Сбросить
-            </button>
+        <div class="mb-6 space-y-4">
+            <!-- Группа фильтров по сокетам процессоров -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 mb-2">Сокеты процессоров</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterBySocket('AM4')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        AM4
+                    </button>
+                    <button onclick="filterBySocket('AM5')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        AM5
+                    </button>
+                    <button onclick="filterBySocket('LGA1700')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        LGA1700
+                    </button>
+                    <button onclick="filterBySocket('LGA1200')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        LGA1200
+                    </button>
+                </div>
+            </div>
+        
+            <!-- Группа фильтров по производителям видеокарт -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 mb-2">Производители видеокарт</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterByManufacturer('NVIDIA')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        NVIDIA
+                    </button>
+                    <button onclick="filterByManufacturer('AMD')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        AMD
+                    </button>
+                    <button onclick="filterByManufacturer('Intel')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        Intel ARC
+                    </button>
+                </div>
+            </div>
+        
+            <!-- Группа фильтров по типу памяти -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 mb-2">Тип памяти</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterByMemoryType('DDR4')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        DDR4
+                    </button>
+                    <button onclick="filterByMemoryType('DDR5')" 
+                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                        DDR5
+                    </button>
+                </div>
+            </div>
+        
+            <!-- Кнопка сброса -->
+            <div class="pt-2">
+                <button onclick="clearAllFilters()" 
+                        class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-200 text-blue-600">
+                    Сбросить все фильтры
+                </button>
+            </div>
         </div>
+     
     @if (auth()->check() && auth()->user()->admin == 1)
         
     <div style="padding-right: 20px;">
@@ -875,24 +927,24 @@
         document.getElementById('filter-form').submit();
     }
     
-    // Сброс фильтра по сокету
-    function clearSocketFilter() {
-        document.getElementById('socket-filter').value = '';
+    // Фильтрация по производителю
+    function filterByManufacturer(brand) {
+        document.getElementById('manufacturer-filter').value = brand;
         document.getElementById('filter-form').submit();
     }
     
-    // Клиентская фильтрация (без перезагрузки)
-    function filterComponentsBySocket(socket) {
-        const components = document.querySelectorAll('#components-grid > div');
-        
-        components.forEach(component => {
-            const componentSocket = component.getAttribute('data-socket');
-            if (!socket || componentSocket === socket) {
-                component.classList.remove('hidden');
-            } else {
-                component.classList.add('hidden');
-            }
-        });
+    // Фильтрация по типу памяти
+    function filterByMemoryType(memoryType) {
+        document.getElementById('memory-type-filter').value = memoryType;
+        document.getElementById('filter-form').submit();
+    }
+    
+    // Сброс всех фильтров
+    function clearAllFilters() {
+        document.getElementById('socket-filter').value = '';
+        document.getElementById('manufacturer-filter').value = '';
+        document.getElementById('memory-type-filter').value = '';
+        document.getElementById('filter-form').submit();
     }
     </script>
 </body>
