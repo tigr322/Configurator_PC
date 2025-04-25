@@ -780,7 +780,7 @@
                     listViewBtn.classList.add('bg-blue-100', 'text-blue-600');
                 }
                 
-                // Обработчики кликов
+                // Обработчики кликовd
                 gridViewBtn.addEventListener('click', function() {
                     gridVersion.classList.remove('hidden');
                     listVersion.classList.add('hidden');
