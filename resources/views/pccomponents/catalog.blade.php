@@ -731,7 +731,7 @@
         if (e.target.classList.contains('remove-row')) {
             e.target.closest('tr').remove();
         }
-    });ы
+    });
         tableBody.addEventListener('click', function (e) {
             if (e.target.classList.contains('remove-row')) {
                 const row = e.target.closest('tr');
