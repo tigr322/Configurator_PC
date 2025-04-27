@@ -256,72 +256,86 @@
                 </button>
             </form>
         </div>
-        <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
+        <button id="open-modal" class="w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
             ✏ Правила совместимости комплектующих
         </button>
-        <div class="panel hidden mt-2">
-            <form id="compatibility-form" action="{{ route('save.compatibility.rules') }}" method="POST">
-                @csrf
-                <table class="w-full border mt-2 text-sm" id="compatibility-table">
-                    <thead>
-                        <tr>
-                            <th class="border px-2 py-1">ID</th>
-                            <th class="border px-2 py-1">Категория 1</th>
-                            <th class="border px-2 py-1">Категория 2</th>
-                            <th class="border px-2 py-1">Правила (JSON)</th>
-                            <th class="border px-2 py-1">Удалить</th>
-                        </tr>
-                    </thead>
-                    <tbody id="compatibility-rows">
-                        @foreach ($rules as $index => $rule)
-                        <tr>
-                            <td class="border px-2 py-1">
-                                {{ $rule->id }}
-                                <input type="hidden" name="rules[{{ $index }}][id]" value="{{ $rule->id }}">
-                            </td>
-                            <td class="border px-2 py-1">
-                                <select name="rules[{{ $index }}][category1_id]" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ $category->id == $rule->category1_id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td class="border px-2 py-1">
-                                <select name="rules[{{ $index }}][category2_id]" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ $category->id == $rule->category2_id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            
-                            <td class="border px-2 py-1">
-                                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="text" name="rules[{{ $index }}][condition]" value="{{ json_encode($rule->condition) }}" class="w-full border px-1">
-                            </td>
-                            <td class="border px-2 py-1 text-center">
-                                <button type="button" class="remove-row text-red-600" data-id="{{ $rule->id }}">✖</button>
-    
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            
-                <button type="button" id="add-rule" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
-                    ➕ Добавить правило
-                </button>
-                <input type="hidden" id="deleted-rules" name="deleted_rules" value="[]">
-                <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-2">
-                    💾 Сохранить изменения
-                </button>
-            </form>
-            
+        
+        <!-- Затемнение фона + Модальное окно -->
+        <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div style="background-color: black;" class="text-white p-6 rounded-lg shadow-lg w-full max-w-6xl overflow-auto max-h-[90vh] relative">
+
+
+        
+                <!-- Кнопка закрытия -->
+                <button id="close-modal" class="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl">&times;</button>
+        
+                <!-- Форма -->
+                <form id="compatibility-form" action="{{ route('save.compatibility.rules') }}" method="POST">
+                    @csrf
+                    <table class="w-full border mt-2 text-sm" id="compatibility-table">
+                        <thead>
+                            <tr>
+                                <th class="border px-2 py-1">ID</th>
+                                <th class="border px-2 py-1">Категория 1</th>
+                                <th class="border px-2 py-1">Категория 2</th>
+                                <th class="border px-2 py-1">Правила (JSON)</th>
+                                <th class="border px-2 py-1">Удалить</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compatibility-rows">
+                            @foreach ($rules as $index => $rule)
+                            <tr>
+                                <td class="border px-2 py-1">
+                                    {{ $rule->id }}
+                                    <input type="hidden" name="rules[{{ $index }}][id]" value="{{ $rule->id }}">
+                                </td>
+                                <td class="border px-2 py-1">
+                                    <select name="rules[{{ $index }}][category1_id]" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ $category->id == $rule->category1_id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="border px-2 py-1">
+                                    <select name="rules[{{ $index }}][category2_id]" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ $category->id == $rule->category2_id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="border px-2 py-1">
+                                    <textarea name="rules[{{ $index }}][condition]" 
+                                              class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded" 
+                                              style="min-height: 40px;">
+                                        {{ json_encode($rule->condition) }}
+                                    </textarea>
+                                </td>
+                                <td class="border px-2 py-1 text-center">
+                                    <button type="button" class="remove-row text-red-600" data-id="{{ $rule->id }}">✖</button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+        
+                    <button type="button" id="add-rule" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
+                        ➕ Добавить правило
+                    </button>
+        
+                    <input type="hidden" id="deleted-rules" name="deleted_rules" value="[]">
+        
+                    <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-2">
+                        💾 Сохранить изменения
+                    </button>
+                </form>
+            </div>
         </div>
         <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
-            ✏ Добавить URL магазина
+            ✏ Добавить URL магазина для парсинга
         </button>
         <div class="panel hidden mt-2">
             <form id="markets-urls-form" action="{{ route('markets_urls.save') }}" method="POST">
@@ -949,5 +963,29 @@
         document.getElementById('filter-form').submit();
     }
     </script>
+
+
+
+<!-- JS для открытия/закрытия модального окна -->
+<script>
+    const openModal = document.getElementById('open-modal');
+    const closeModal = document.getElementById('close-modal');
+    const modal = document.getElementById('modal');
+
+    openModal.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+    });
+
+    closeModal.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    // Закрытие по клику на затемнение
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+</script>
 </body>
 </html>
