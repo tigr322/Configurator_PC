@@ -73,19 +73,19 @@
                 <h3 class="text-sm font-semibold text-gray-500 mb-2">Сокеты процессоров</h3>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="filterBySocket('AM4')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         AM4
                     </button>
                     <button onclick="filterBySocket('AM5')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         AM5
                     </button>
                     <button onclick="filterBySocket('LGA1700')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         LGA1700
                     </button>
                     <button onclick="filterBySocket('LGA1200')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         LGA1200
                     </button>
                 </div>
@@ -96,15 +96,15 @@
                 <h3 class="text-sm font-semibold text-gray-500 mb-2">Производители видеокарт</h3>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="filterByManufacturer('NVIDIA')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         NVIDIA
                     </button>
                     <button onclick="filterByManufacturer('AMD')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         AMD
                     </button>
                     <button onclick="filterByManufacturer('Intel')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         Intel ARC
                     </button>
                 </div>
@@ -115,11 +115,11 @@
                 <h3 class="text-sm font-semibold text-gray-500 mb-2">Тип памяти</h3>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="filterByMemoryType('DDR4')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         DDR4
                     </button>
                     <button onclick="filterByMemoryType('DDR5')" 
-                            class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
+                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
                         DDR5
                     </button>
                 </div>
@@ -128,7 +128,7 @@
             <!-- Кнопка сброса -->
             <div class="pt-2">
                 <button onclick="clearAllFilters()" 
-                        class="px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-full text-sm transition border border-blue-200 text-blue-600">
+                        class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-200 text-blue-600">
                     Сбросить все фильтры
                 </button>
             </div>
@@ -264,10 +264,9 @@
         <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
             <div style="background-color: black;" class="text-white p-6 rounded-lg shadow-lg w-full max-w-6xl overflow-auto max-h-[90vh] relative">
 
-
         
                 <!-- Кнопка закрытия -->
-                <button id="close-modal" class="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl">&times;</button>
+                <button id="close-modal" class="absolute top-3 right-4 text-gray-600 hover:text-black text-2xl">&times;</button>
         
                 <!-- Форма -->
                 <form id="compatibility-form" action="{{ route('save.compatibility.rules') }}" method="POST">
