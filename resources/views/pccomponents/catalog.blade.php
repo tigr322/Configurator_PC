@@ -469,10 +469,11 @@
                           </div>
                           
                           @if (auth()->check() && auth()->user()->admin == 1)
-                          <button type="submit" 
-                                  class="mt-2 text-sm font-medium text-red-600 hover:text-red-500 w-full text-left">
-                            Удалить
-                          </button>
+                          <button type="button" 
+                          onclick="deleteComponent(event, {{ $component->id }})" 
+                          class="text-red-600 hover:text-red-800 text-sm font-medium">
+                      Удалить
+                  </button>
                           @endif
                         </div>
                       </div>
