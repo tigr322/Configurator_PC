@@ -486,7 +486,8 @@
              
               <div id="list-version" class="hidden space-y-4">
                 @forelse ($components as $component)
-                <form method="POST" action="{{ route('delete', $component->id) }}" class="w-full">
+                <form method="POST" action="{{ route('delete', $component->id) }}" class="w-full group">
+
                     @csrf
                     @method('DELETE')
                     <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4">
@@ -499,12 +500,12 @@
                                 @endphp
                                 <img src="{{ $url }}" 
                                      alt="{{ $component->name }}" 
-                                     class="w-full h-full object-contain"
+                                    class="w-full h-full object-contain group-hover:opacity-75"
                                      onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
                             @else
                                 <img src="{{ asset('images/defaulte_image.jpg') }}" 
                                      alt="Default product image" 
-                                     class="w-full h-full object-contain">
+                                     class="w-full h-full object-contain group-hover:opacity-75">
                             @endif
                         </div>
                         
