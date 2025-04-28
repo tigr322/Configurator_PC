@@ -152,7 +152,7 @@
               
                 </div>
             @endforeach
-            <div class="mt-2 text-sm text-gray-700" id="vote-counts-{{ $build->id }}">
+            <div class="mt-2 text-sm" id="vote-counts-{{ $build->id }}">
                 👍 Лайков: <span id="likes-{{ $build->id }}">{{ $build->likes()->count() }}</span> |
                 👎 Дизлайков: <span id="dislikes-{{ $build->id }}">{{ $build->dislikes()->count() }}</span> |
                 🏆 Голосов за лучшую сборку: <span id="best-{{ $build->id }}">{{ $build->bestBuildVotes()->count() }}</span>
@@ -180,7 +180,7 @@
             </form>
             <div class="flex gap-4 mt-4" id="votes-{{ $build->id }}">
                 <button 
-                    class="vote-button px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200" 
+                    class="vote-button px-3 py-1  text-green-700 rounded hover:bg-green-200" 
                     data-url="{{ route('configurations.like', $build) }}" 
                     data-type="like">
                     👍 Лайк
@@ -194,7 +194,7 @@
                 </button>
             
                 <button 
-                    class="vote-button px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200" 
+                    class="vote-button px-3 py-1 text-yellow-700 rounded hover:bg-yellow-200" 
                     data-url="{{ route('configurations.bestBuild', $build) }}" 
                     data-type="best">
                     🏆 За лучшую сборку
