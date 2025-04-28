@@ -187,7 +187,7 @@
                 </button>
             
                 <button 
-                    class="vote-button px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200" 
+                    class="vote-button px-3 py-1 text-red-700 rounded hover:bg-red-200" 
                     data-url="{{ route('configurations.dislike', $build) }}" 
                     data-type="dislike">
                     👎 Дизлайк
