@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="//unpkg.com/alpinejs" defer></script>
 
     <title>Каталог конфигурации</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -130,8 +131,14 @@
                 </button>
             </form>
             @endif
+            <div x-data="{ showComments: false }" class="max-w-4xl mx-auto my-6">
             <h2>Комментарии:</h2>
-
+            <button @click="showComments = !showComments"
+            class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 focus:outline-none mb-4">
+            <span x-show="!showComments">Показать комментарии</span>
+            <span x-show="showComments">Скрыть комментарии</span>
+            </button>
+            <div x-show="showComments" x-transition class="space-y-4">
             @foreach ($build->comments as $comment)
                 <div>
                     <strong>{{ $comment->user->name }}</strong> написал:
@@ -154,6 +161,8 @@
               
                 </div>
             @endforeach
+        </div>
+    </div>
             <div class="mt-2 text-sm" id="vote-counts-{{ $build->id }}">
                 👍 Лайков: <span id="likes-{{ $build->id }}">{{ $build->likes()->count() }}</span> |
                 👎 Дизлайков: <span id="dislikes-{{ $build->id }}">{{ $build->dislikes()->count() }}</span> |
