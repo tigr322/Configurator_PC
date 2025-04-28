@@ -2,6 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>Каталог конфигурации</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
@@ -181,21 +183,21 @@
             <div class="flex gap-4 mt-4" id="votes-{{ $build->id }}">
                 <button 
                     class="vote-button px-3 py-1  text-green-700 rounded hover:bg-green-200" 
-                    data-url="{{ route('configurations.like', $build) }}" 
+                    onclick="vote('/configurations/{{ $build->id }}/like')" 
                     data-type="like">
                     👍 Лайк
                 </button>
             
                 <button 
                     class="vote-button px-3 py-1 text-red-700 rounded hover:bg-red-200" 
-                    data-url="{{ route('configurations.dislike', $build) }}" 
+                    onclick="vote('/configurations/{{ $build->id }}/dislike')"
                     data-type="dislike">
                     👎 Дизлайк
                 </button>
             
                 <button 
                     class="vote-button px-3 py-1 text-yellow-700 rounded hover:bg-yellow-200" 
-                    data-url="{{ route('configurations.bestBuild', $build) }}" 
+                   onclick="vote('/configurations/{{ $build->id }}/best')"
                     data-type="best">
                     🏆 За лучшую сборку
                 </button>
@@ -263,35 +265,34 @@
     }
     </script>
    <script>
-    document.querySelectorAll('.vote-button').forEach(button => {
-        button.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const url = button.dataset.url;
-            const type = button.dataset.type;
-    
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                });
-    
-                if (response.ok) {
-                    const data = await response.json();
-    
-                    const buildId = data.build_id;
-    
-                    document.getElementById(`likes-${buildId}`).textContent = data.likes;
-                    document.getElementById(`dislikes-${buildId}`).textContent = data.dislikes;
-                    document.getElementById(`best-${buildId}`).textContent = data.best_votes;
-                }
-            } catch (error) {
-                console.error('Ошибка голосования:', error);
+   async function vote(url) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
             }
         });
-    });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ошибка! Статус: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const buildId = data.build_id;
+
+        document.getElementById(`likes-${buildId}`).textContent = data.likes;
+        document.getElementById(`dislikes-${buildId}`).textContent = data.dislikes;
+        document.getElementById(`best-${buildId}`).textContent = data.best_votes;
+
+    } catch (error) {
+        console.error('Ошибка голосования:', error);
+        alert('Произошла ошибка при голосовании. Попробуйте позже.');
+    }
+}
+
     </script>
     
 </body>

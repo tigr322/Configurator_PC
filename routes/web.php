@@ -71,7 +71,7 @@ Route::delete('/comments/{comment}', [ConfigurationController::class, 'destroyCo
 //Голосование за конфигурацию
 Route::post('/configurations/{configuration}/like', [ConfigurationController::class, 'like'])->name('configurations.like');
 Route::post('/configurations/{configuration}/dislike', [ConfigurationController::class, 'dislike'])->name('configurations.dislike');
-Route::post('/configurations/{configuration}/best-build', [ConfigurationController::class, 'bestBuild'])->name('configurations.bestBuild');
+Route::post('/configurations/{configuration}/best', [ConfigurationController::class, 'bestBuild'])->name('configurations.bestBuild');
 
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор
