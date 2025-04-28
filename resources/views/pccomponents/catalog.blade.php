@@ -45,7 +45,7 @@
                     Фильтры
                 </button>
             </div>
-            <div  class="hidden lg:block lg:bg-transparent p-4 lg:p-0 lg:pt-15 lg:pr-5">
+            <div  id="filter"  class="hidden lg:block lg:bg-transparent p-4 lg:p-0 lg:pt-15 lg:pr-5">
                 <h2 class="text-xl font-bold mb-6" style="font-size: 20px;" >Фильтрация</h2>
             <form id="filter-form"  method="GET"  action="{{ route('catalog') }}" class="mb-3 flex flex-col gap-2">
                 <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="category" class="border p-2 rounded">
@@ -1011,7 +1011,7 @@
 </script>
 <script>
     function toggleSidebar() {
-        const sidebar = document.getElementById('filter-form');
+        const sidebar = document.getElementById('filter');
         sidebar.classList.toggle('hidden');
     }
 </script>
