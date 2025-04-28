@@ -158,7 +158,7 @@
                 🏆 Голосов за лучшую сборку: <span id="best-{{ $build->id }}">{{ $build->bestBuildVotes()->count() }}</span>
             </div>
             @if (auth()->check())
-                
+                <!---->
            
             <form method="POST" action="{{ route('comments.store') }}" class="max-w-xl mx-auto p-6 rounded-2xl shadow-md">
                 @csrf
