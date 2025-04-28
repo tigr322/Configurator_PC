@@ -106,7 +106,7 @@
             
                 <!-- Группа фильтров по производителям видеокарт -->
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Производители видеокарт</h3>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Вендоры</h3>
                     <div class="flex flex-wrap gap-2">
                         <button type="button" onclick="filterByManufacturer('Gigabyte')" 
                                 class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
