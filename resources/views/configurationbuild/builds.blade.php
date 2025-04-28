@@ -27,28 +27,52 @@
 
 <div class="container mx-auto px-4 py-3">
     <form method="GET" action="{{ route('configurations') }}"
-    class="mb-6 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-4 items-center justify-center">
-  <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
-         type="text" name="search" placeholder="Название" value="{{ request('search') }}" class="border p-2 rounded">
-  
-  <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
-         type="text" name="component" placeholder="Компонент" value="{{ request('component') }}" class="border p-2 rounded">
-  <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
-         type="number" name="pagination" placeholder="Пагинация" value="{{ request('pagination') }}" class="border p-2 rounded">
-  <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
-          name="sort" class="border p-2 rounded">
-      <option value="">Сортировка</option>
-      <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
-      <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
-  </select>
-  
-  <div class=" flex justify-center">
-    <button type="submit" class="inline-block px-5 py-1.5 border border-transparent hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
-        Применить
-    </button>
-</div>
+    class="mb-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-4 items-center p-6 rounded-2xl shadow">
+
+    <input 
+        type="text" 
+        name="search" 
+        placeholder="Название сборки" 
+        value="{{ request('search') }}"
+        class="w-full px-4 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none"
+    >
+
+    <input 
+        type="text" 
+        name="component" 
+        placeholder="Название компонента" 
+        value="{{ request('component') }}"
+        class="w-full px-4 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none"
+    >
+
+    <input 
+        type="number" 
+        name="pagination" 
+        placeholder="Количество на странице" 
+        value="{{ request('pagination') }}"
+        class="w-full px-4 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none"
+    >
+
+    <select 
+        name="sort"
+        class="w-full px-4 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none"
+    >
+        <option value="">Сортировка</option>
+        <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
+        <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
+    </select>
+
+    <div class="flex justify-center">
+        <button 
+            type="submit"
+            class="w-full md:w-auto px-6 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all"
+        >
+            Применить
+        </button>
+    </div>
 
 </form>
+
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
     @forelse ($builds as $build)
@@ -94,22 +118,6 @@
                     class="text-sm sm:text-base text-green-600 hover:text-green-800 transition-colors">
                 Поделиться
             </button>
-            <h2>Комментарии:</h2>
-
-            @foreach ($build->comments as $comment)
-                <div>
-                    <strong>{{ $comment->user->name }}</strong> написал:
-                    <p>{{ $comment->body }}</p>
-                    <small>{{ $comment->created_at->diffForHumans() }}</small>
-                </div>
-            @endforeach
-            <form method="POST" action="{{ route('comments.store') }}">
-                @csrf
-                <input type="hidden" name="configuration_id" value="{{ $build->id }}">
-                <textarea name="body" required></textarea>
-                <button type="submit">Добавить комментарий</button>
-            </form>
-            
             @if (auth()->check() && auth()->user()->admin == 1)
             <form action="{{ route('builds.destroy', $build->id) }}" method="POST" 
                   onsubmit="return confirm('Удалить эту конфигурацию?');" class="inline">
@@ -120,6 +128,51 @@
                 </button>
             </form>
             @endif
+            <h2>Комментарии:</h2>
+
+            @foreach ($build->comments as $comment)
+                <div>
+                    <strong>{{ $comment->user->name }}</strong> написал:
+                    <p>{{ $comment->body }}</p>
+                    <small>{{ $comment->created_at->diffForHumans() }}</small>
+                    @if (auth()->id() === $comment->user_id || (auth()->check() && auth()->user()->admin == 1))
+                    <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline-block">
+                        @csrf
+                        @method('DELETE')
+                        <button 
+                            type="submit"
+                            onclick="return confirm('Удалить комментарий?')"
+                            class="px-3 py-1 text-sm font-medium text-red-600 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 hover:text-red-700 transition-all"
+                        >
+                            Удалить
+                        </button>
+                    </form>
+                @endif
+                
+              
+                </div>
+            @endforeach
+            <form method="POST" action="{{ route('comments.store') }}" class="max-w-xl mx-auto p-6 rounded-2xl shadow-md">
+                @csrf
+                <input type="hidden" name="configuration_id" value="{{ $build->id }}">
+            
+                <div class="mb-4">
+                    <label for="body" class="block text-sm font-semibold mb-2">Ваш комментарий:</label>
+                    <textarea name="body" id="body" rows="4" required
+                        class="w-full text-black px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        placeholder="Введите ваш комментарий..."></textarea>
+                </div>
+            
+                <div class="text-right">
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-600 font-semibold py-2 px-6 rounded-lg transition duration-300">
+                        Добавить комментарий
+                    </button>
+                </div>
+            </form>
+            
+            
+            
         </div>
 
         <!-- Скрытый контент (список компонентов) -->

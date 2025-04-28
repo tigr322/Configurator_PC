@@ -74,6 +74,20 @@ public function comments(Request $request)
 
         return back();
     }
+    public function destroyComments(Comment $comment)
+    {
+        $user = Auth::user();
+        $userId = $user->id;
+        // Проверка: только автор или админ может удалить комментарий
+        if ($userId !== $comment->user_id && (User::where("id",$userId)->admin)!=1) {
+            abort(403);
+        }
+    
+        $comment->delete();
+    
+        return back()->with('success', 'Комментарий удалён!');
+    }
+    
 /*public function edit($id)
 {
     $build = Configurations::with('components.category')->findOrFail($id);
