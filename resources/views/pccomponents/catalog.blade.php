@@ -1011,7 +1011,7 @@
 </script>
 <script>
     function toggleSidebar() {
-        const sidebar = document.getElementById(' filter-form');
+        const sidebar = document.getElementById('filter-form');
         sidebar.classList.toggle('hidden');
     }
 </script>
