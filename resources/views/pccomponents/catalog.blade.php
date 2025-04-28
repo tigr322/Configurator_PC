@@ -987,7 +987,7 @@
     </script>
 
 
-
+<!-- JS для открытия/закрытия модального окна -->
 <!-- JS для открытия/закрытия модального окна -->
 <script>
     const openModal = document.getElementById('open-modal');

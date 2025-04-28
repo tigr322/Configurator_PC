@@ -285,6 +285,7 @@ footer {
         max-width: 30px !important;
         max-height: 30px !important;
     }
+    
     .navigation nav {
         display: flex;
         flex-wrap: wrap;
