@@ -14,5 +14,9 @@ class Configurations extends Model
     {
         return $this->belongsToMany(Component::class, 'configuration_components', 'configuration_id', 'component_id')->with('category');
     }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'configuration_id');
+    }
 
 }   

@@ -79,7 +79,7 @@
             <div class="mb-6 space-y-4">
                 <!-- Группа фильтров по сокетам процессоров -->
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Сокеты процессоров</h3>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Сокеты</h3>
                     <div class="flex flex-wrap gap-2">
                         <button type="button" onclick="filterBySocket('AM4')" 
                                 class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 

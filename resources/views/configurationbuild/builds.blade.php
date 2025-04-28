@@ -94,7 +94,22 @@
                     class="text-sm sm:text-base text-green-600 hover:text-green-800 transition-colors">
                 Поделиться
             </button>
+            <h2>Комментарии:</h2>
 
+            @foreach ($build->comments as $comment)
+                <div>
+                    <strong>{{ $comment->user->name }}</strong> написал:
+                    <p>{{ $comment->body }}</p>
+                    <small>{{ $comment->created_at->diffForHumans() }}</small>
+                </div>
+            @endforeach
+            <form method="POST" action="{{ route('comments.store') }}">
+                @csrf
+                <input type="hidden" name="configuration_id" value="{{ $build->id }}">
+                <textarea name="body" required></textarea>
+                <button type="submit">Добавить комментарий</button>
+            </form>
+            
             @if (auth()->check() && auth()->user()->admin == 1)
             <form action="{{ route('builds.destroy', $build->id) }}" method="POST" 
                   onsubmit="return confirm('Удалить эту конфигурацию?');" class="inline">

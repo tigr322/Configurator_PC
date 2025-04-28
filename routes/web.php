@@ -64,6 +64,8 @@ Route::put('builds/{build}', [ConfigurationController::class, 'update'])->name('
 Route::delete('builds/{build}', [ConfigurationController::class, 'destroy'])->name('builds.destroy');
 Route::get('/public-build/{id}', [ConfigurationController::class, 'publicShow'])->name('builds.public');
 Route::get('/markets-urls/{market}', [ComponentController::class, 'getUrls'])->name('markets_urls.get');
+//Комментарии
+Route::post('/comments', [ConfigurationController::class, 'comments'])->name('comments.store');
 
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор

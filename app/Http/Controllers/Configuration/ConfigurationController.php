@@ -8,13 +8,15 @@ use Illuminate\Http\Request;
 use App\Models\Configurations;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\Comment;
 use App\Models\Component;
 class ConfigurationController extends Controller
 {
     public function configurations(Request $request)
 {
     // Начинаем запрос с моделей Configurations и их компонентов
-    $query = Configurations::query()->with('components');
+    $query = Configurations::query()->with(['components', 'comments.user']);
+
     
     // Фильтрация по имени конфигурации
     if ($request->filled('search')) {
@@ -56,6 +58,22 @@ class ConfigurationController extends Controller
     // Передаем конфигурации в представление
     return view('configurationbuild.builds', compact('builds', 'col'));
 }
+public function comments(Request $request)
+    {
+        $request->validate([
+            'configuration_id' => 'required|exists:configurations,id',
+            'body' => 'required|string',
+        ]);
+        $user = Auth::user();
+        $userId = $user->id;
+        Comment::create([
+            'configuration_id' => $request->configuration_id,
+            'user_id' => $userId,
+            'body' => $request->body,
+        ]);
+
+        return back();
+    }
 /*public function edit($id)
 {
     $build = Configurations::with('components.category')->findOrFail($id);
