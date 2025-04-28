@@ -18,5 +18,28 @@ class Configurations extends Model
     {
         return $this->hasMany(Comment::class, 'configuration_id');
     }
+    public function votes()
+{
+    return $this->hasMany(ConfigurationVote::class, 'configuration_id');
+}
+
+// Подсчёт лайков
+public function likes()
+{
+    return $this->votes()->where('is_like', true);
+}
+
+// Подсчёт дизлайков
+public function dislikes()
+{
+    return $this->votes()->where('is_like', false);
+}
+
+// Подсчёт голосов за "лучшую сборку"
+public function bestBuildVotes()
+{
+    return $this->votes()->where('is_best_build_vote', true);
+}
+
 
 }   

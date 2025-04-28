@@ -27,4 +27,4 @@ yarn-error.log
 /docker/php/Dockerfile
 docker-compose.yml
 backup.sql
-
+/public/css/app

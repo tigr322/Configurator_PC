@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Configurations;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\ConfigurationVote;
 use App\Models\Comment;
 use App\Models\Component;
 class ConfigurationController extends Controller
@@ -125,6 +126,56 @@ public function destroy($id)
     public function publicShow($id){
         $build = Configurations::with('components.category')->findOrFail($id);
         return view('configurationbuild.publicBuild', compact('build'));
+    }
+    //голосование
+    public function like(Configurations $configuration)
+    {
+        $this->vote($configuration, true, null);
+    
+        return response()->json([
+            'build_id' => $configuration->id,
+            'likes' => $configuration->likes()->count(),
+            'dislikes' => $configuration->dislikes()->count(),
+            'best_votes' => $configuration->bestBuildVotes()->count(),
+        ]);
+    }
+
+    public function dislike(Configurations $configuration)
+    {
+        $this->vote($configuration, false, null);
+        return response()->json([
+            'build_id' => $configuration->id,
+            'likes' => $configuration->likes()->count(),
+            'dislikes' => $configuration->dislikes()->count(),
+            'best_votes' => $configuration->bestBuildVotes()->count(),
+        ]);
+    }
+
+    public function bestBuild(Configurations $configuration)
+    {
+        $this->vote($configuration, null, true);
+        return response()->json([
+            'build_id' => $configuration->id,
+            'likes' => $configuration->likes()->count(),
+            'dislikes' => $configuration->dislikes()->count(),
+            'best_votes' => $configuration->bestBuildVotes()->count(),
+        ]);
+    }
+
+    private function vote(Configurations $configuration, $isLike, $isBestBuildVote)
+    {
+        $user = Auth::user();
+        $userid = $user->id;
+        ConfigurationVote::updateOrCreate(
+            [
+                'user_id' =>  $userid,
+                'configuration_id' => $configuration->id,
+            ],
+            [
+                'is_like' => $isLike,
+                'is_best_build_vote' => $isBestBuildVote,
+            ]
+        );
     }
     //создание конфигурации и загрузки ее в бд
     public function store(Request $request)

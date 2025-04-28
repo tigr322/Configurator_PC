@@ -68,6 +68,10 @@ Route::get('/markets-urls/{market}', [ComponentController::class, 'getUrls'])->n
 Route::post('/comments', [ConfigurationController::class, 'comments'])->name('comments.store');
 // Управление комментариями
 Route::delete('/comments/{comment}', [ConfigurationController::class, 'destroyComments'])->name('comments.destroy');
+//Голосование за конфигурацию
+Route::post('/configurations/{configuration}/like', [ConfigurationController::class, 'like'])->name('configurations.like');
+Route::post('/configurations/{configuration}/dislike', [ConfigurationController::class, 'dislike'])->name('configurations.dislike');
+Route::post('/configurations/{configuration}/best-build', [ConfigurationController::class, 'bestBuild'])->name('configurations.bestBuild');
 
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор

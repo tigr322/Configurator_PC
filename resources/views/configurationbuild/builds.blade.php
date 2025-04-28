@@ -152,6 +152,14 @@
               
                 </div>
             @endforeach
+            <div class="mt-2 text-sm text-gray-700" id="vote-counts-{{ $build->id }}">
+                👍 Лайков: <span id="likes-{{ $build->id }}">{{ $build->likes()->count() }}</span> |
+                👎 Дизлайков: <span id="dislikes-{{ $build->id }}">{{ $build->dislikes()->count() }}</span> |
+                🏆 Голосов за лучшую сборку: <span id="best-{{ $build->id }}">{{ $build->bestBuildVotes()->count() }}</span>
+            </div>
+            @if (auth()->check())
+                
+           
             <form method="POST" action="{{ route('comments.store') }}" class="max-w-xl mx-auto p-6 rounded-2xl shadow-md">
                 @csrf
                 <input type="hidden" name="configuration_id" value="{{ $build->id }}">
@@ -165,12 +173,34 @@
             
                 <div class="text-right">
                     <button type="submit"
-                        class="bg-blue-500 hover:bg-blue-600 font-semibold py-2 px-6 rounded-lg transition duration-300">
+                        class="bg-blue-500 text-white hover:bg-blue-600 font-semibold py-2 px-6 rounded-lg transition duration-300">
                         Добавить комментарий
                     </button>
                 </div>
             </form>
+            <div class="flex gap-4 mt-4" id="votes-{{ $build->id }}">
+                <button 
+                    class="vote-button px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200" 
+                    data-url="{{ route('configurations.like', $build) }}" 
+                    data-type="like">
+                    👍 Лайк
+                </button>
             
+                <button 
+                    class="vote-button px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200" 
+                    data-url="{{ route('configurations.dislike', $build) }}" 
+                    data-type="dislike">
+                    👎 Дизлайк
+                </button>
+            
+                <button 
+                    class="vote-button px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200" 
+                    data-url="{{ route('configurations.bestBuild', $build) }}" 
+                    data-type="best">
+                    🏆 За лучшую сборку
+                </button>
+            </div>
+            @endif
             
             
         </div>
@@ -232,7 +262,38 @@
             .catch(() => alert('Ошибка при копировании ссылки'));
     }
     </script>
-   
+   <script>
+    document.querySelectorAll('.vote-button').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const url = button.dataset.url;
+            const type = button.dataset.type;
+    
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+    
+                    const buildId = data.build_id;
+    
+                    document.getElementById(`likes-${buildId}`).textContent = data.likes;
+                    document.getElementById(`dislikes-${buildId}`).textContent = data.dislikes;
+                    document.getElementById(`best-${buildId}`).textContent = data.best_votes;
+                }
+            } catch (error) {
+                console.error('Ошибка голосования:', error);
+            }
+        });
+    });
+    </script>
+    
 </body>
 </html>
 
