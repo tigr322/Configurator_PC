@@ -37,8 +37,17 @@
                 style="padding-top:60px; padding-right: 20px;
                 "
             >
+            <div class="lg:hidden mb-4">
+                <button onclick="toggleSidebar()" class="flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    Фильтры
+                </button>
+            </div>
+            <div  class="hidden lg:block lg:bg-transparent p-4 lg:p-0 lg:pt-15 lg:pr-5">
                 <h2 class="text-xl font-bold mb-6" style="font-size: 20px;" >Фильтрация</h2>
-            <form method="GET" action="{{ route('catalog') }}" class="mb-3 flex flex-col gap-2">
+            <form id="filter-form"  method="GET"  action="{{ route('catalog') }}" class="mb-3 flex flex-col gap-2">
                 <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="category" class="border p-2 rounded">
                     <option value="">Все категории</option>
                     @foreach ($categories as $category)
@@ -61,78 +70,89 @@
                     <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
                     <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
                 </select>
-                <input type="hidden" name="socket" id="socket-filter" value="{{ request('socket') }}">
-                <input type="hidden" name="manufacturer" id="manufacturer-filter" value="{{ request('brand') }}">
-                <input type="hidden" name="memory_type" id="memory-type-filter" value="{{ request('memory_type') }}">
+                <input type="hidden" id="socket-filter" name="socket" value="{{ request('socket') }}">
+                <input type="hidden" id="manufacturer-filter" name="manufacturer" value="{{ request('manufacturer') }}">
+                <input type="hidden" id="memory-type-filter" name="memory_type" value="{{ request('memory_type') }}">
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
             </form>
-        </div>
-        <div class="mb-6 space-y-4">
-            <!-- Группа фильтров по сокетам процессоров -->
-            <div>
-                <h3 class="text-sm font-semibold text-gray-500 mb-2">Сокеты процессоров</h3>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="filterBySocket('AM4')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        AM4
-                    </button>
-                    <button onclick="filterBySocket('AM5')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        AM5
-                    </button>
-                    <button onclick="filterBySocket('LGA1700')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        LGA1700
-                    </button>
-                    <button onclick="filterBySocket('LGA1200')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        LGA1200
+        
+            <div class="mb-6 space-y-4">
+                <!-- Группа фильтров по сокетам процессоров -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Сокеты процессоров</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="filterBySocket('AM4')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('socket') == 'AM4' ? 'bg-blue-100 border-blue-300' : '' }}">
+                            AM4
+                        </button>
+                        <button type="button" onclick="filterBySocket('AM5')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('socket') == 'AM5' ? 'bg-blue-100 border-blue-300' : '' }}">
+                            AM5
+                        </button>
+                        <button type="button" onclick="filterBySocket('LGA1700')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('socket') == 'LGA1700' ? 'bg-blue-100 border-blue-300' : '' }}">
+                            LGA1700
+                        </button>
+                        <button type="button" onclick="filterBySocket('LGA1200')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('socket') == 'LGA1200' ? 'bg-blue-100 border-blue-300' : '' }}">
+                            LGA1200
+                        </button>
+                    </div>
+                </div>
+            
+                <!-- Группа фильтров по производителям видеокарт -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Производители видеокарт</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="filterByManufacturer('Gigabyte')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('manufacturer') == 'Gigabyte' ? 'bg-blue-100 border-blue-300' : '' }}">
+                                       Gigabyte
+                        </button>
+                        <button type="button" onclick="filterByManufacturer('ASUS')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('manufacturer') == 'ASUS' ? 'bg-blue-100 border-blue-300' : '' }}">
+                                       ASUS
+                        </button>
+                        <button type="button" onclick="filterByManufacturer('Palit')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('manufacturer') == 'Palit' ? 'bg-blue-100 border-blue-300' : '' }}">
+                            Palit
+                        </button>
+                    </div>
+                </div>
+            
+                <!-- Группа фильтров по типу памяти -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Тип памяти</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="filterByMemoryType('DDR4')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('memory_type') == 'DDR4' ? 'bg-blue-100 border-blue-300' : '' }}">
+                            DDR4
+                        </button>
+                        <button type="button" onclick="filterByMemoryType('DDR5')" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('memory_type') == 'DDR5' ? 'bg-blue-100 border-blue-300' : '' }}">
+                            DDR5
+                        </button>
+                    </div>
+                </div>
+            
+                <!-- Кнопка сброса (показывается только если есть активные фильтры) -->
+                @if(request('socket') || request('manufacturer') || request('memory_type'))
+                <div class="pt-2">
+                    <button type="button" onclick="clearAllFilters()" 
+                            class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-200 text-blue-600">
+                        Сбросить все фильтры
                     </button>
                 </div>
+                @endif
             </div>
-        
-            <!-- Группа фильтров по производителям видеокарт -->
-            <div>
-                <h3 class="text-sm font-semibold text-gray-500 mb-2">Производители видеокарт</h3>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="filterByManufacturer('NVIDIA')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        NVIDIA
-                    </button>
-                    <button onclick="filterByManufacturer('AMD')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        AMD
-                    </button>
-                    <button onclick="filterByManufacturer('Intel')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        Intel ARC
-                    </button>
-                </div>
-            </div>
-        
-            <!-- Группа фильтров по типу памяти -->
-            <div>
-                <h3 class="text-sm font-semibold text-gray-500 mb-2">Тип памяти</h3>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="filterByMemoryType('DDR4')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        DDR4
-                    </button>
-                    <button onclick="filterByMemoryType('DDR5')" 
-                            class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-100">
-                        DDR5
-                    </button>
-                </div>
-            </div>
-        
-            <!-- Кнопка сброса -->
-            <div class="pt-2">
-                <button onclick="clearAllFilters()" 
-                        class="px-3 py-1   hover:bg-blue-100 rounded-full text-sm transition border border-blue-200 text-blue-600">
-                    Сбросить все фильтры
-                </button>
-            </div>
-        </div>
      
     @if (auth()->check() && auth()->user()->admin == 1)
         
@@ -256,6 +276,7 @@
                 </button>
             </form>
         </div>
+        
         <button id="open-modal" class="w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
             ✏ Правила совместимости комплектующих
         </button>
@@ -416,7 +437,9 @@
             </div>
         </div>
             @endif
-        </div>      
+        </div>
+    </div>
+    </div>      
             <div class="lg:w-3/4">
             <div class="flex justify-between items-center">
                 
@@ -985,6 +1008,12 @@
             modal.classList.add('hidden');
         }
     });
+</script>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById(' filter-form');
+        sidebar.classList.toggle('hidden');
+    }
 </script>
 </body>
 </html>

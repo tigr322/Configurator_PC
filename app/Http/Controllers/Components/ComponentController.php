@@ -18,64 +18,79 @@ class ComponentController extends Controller
       Показать список всех комплектующих с фильтрацией и сортировкой
      */
     public function index(Request $request)
-{
-    $query = Component::query()->with('category')->with('markets');
-
-    // Фильтрация
-    if ($request->filled('category')) {
-        $query->whereHas('category', function($q) use ($request) {
-            $q->where('name', $request->category);
-        });
-    }
+    {   
+        $validated = $request->validate([
+            'socket' => 'nullable|string',
+            'memory_type' => 'nullable|string',
+            'manufacturer' => 'nullable|string', // ← ДОБАВЬ ЭТО!
+        ]);
+        
+        
+        $query = Component::query()->with('category')->with('markets');
     
-    if ($request->filled('name')) {
-        $query->where('name', 'like', '%'.$request->name.'%');
-    }
-    
-    if ($request->filled('brand')) {
-        $query->where('brand', 'like', '%'.$request->brand.'%');
-    }
-    
-    if ($request->filled('min_price')) {
-        $query->where('price', '>=', $request->min_price);
-    }
-    
-    if ($request->filled('max_price')) {
-        $query->where('price', '<=', $request->max_price);
-    }
-    
-    // Фильтрация по сокету ДО пагинации
-    if ($request->filled('socket')) {
-        $query->whereJsonContains('compatibility_data->socket', $request->socket);
-    }
-    
-    // Сортировка
-    if ($request->filled('sort')) {
-        switch ($request->sort) {
-            case 'price_asc':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_desc':
-                $query->orderBy('price', 'desc');
-                break;
-            default:
-                $query->latest();
+        // Базовая фильтрация
+        if ($request->filled('category')) {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('name', $request->category);
+            });
         }
-    } else {
-        $query->latest();
-    }
-
-    // Пагинация
-    $perPage = $request->filled('pagination') ? (int)$request->pagination : 12;
-    $components = $query->paginate($perPage);
-
-    $categories = Category::all();
-    $rules = CompatibilityRule::all();
-    $markets = Markets::all();
-    $marketsUrls = MarketsUrls::all();
+        
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%'.$request->name.'%');
+        }
+        
+        if ($request->filled('brand')) {
+            $query->where('brand', 'like', '%'.$request->brand.'%');
+        }
+        
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+        
+        // Фильтрация по JSON-полю compatibility_data
+        if ($request->socket) {
+            $query->whereJsonContains('compatibility_data->socket', $request->socket);
+        }
+        
+        if ($request->manufacturer) {
+            $query->where('brand', $request->manufacturer);
+        }
+        
+        if ($request->memory_type) {
+            $query->whereJsonContains('compatibility_data->memory_type', $request->memory_type);
+        }
+        
+        // Сортировка
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'price_asc':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_desc':
+                    $query->orderBy('price', 'desc');
+                    break;
+                default:
+                    $query->latest();   
+            }
+        } else {
+            $query->latest();
+        }
     
-    return view('pccomponents.catalog', compact('components', 'categories', 'rules', 'markets', 'marketsUrls'));
-}
+        // Пагинация
+        $perPage = $request->filled('pagination') ? (int)$request->pagination : 8;
+        $components = $query->paginate($perPage);
+    
+        $categories = Category::all();
+        $rules = CompatibilityRule::all();
+        $markets = Markets::all();
+        $marketsUrls = MarketsUrls::all();
+        
+        return view('pccomponents.catalog', compact('components', 'categories', 'rules', 'markets', 'marketsUrls'));
+    }
     public function getUrlsByMarket(Request $request)
     {
         $marketId = $request->input('market_id');
