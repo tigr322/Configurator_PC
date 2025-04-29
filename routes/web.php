@@ -59,7 +59,6 @@ Route::delete('/delete/{id}', [ComponentController::class, 'delete'])->name('del
 Route::put('/components/{id}', [ComponentController::class, 'update'])->name('components.update');
 
 Route::post('/save-compatibility-rules', [ComponentController::class, 'saveRules'])->name('save.compatibility.rules');
-Route::get('builds/{build}/edit', [ConfigurationController::class, 'edit'])->name('builds.edit');
 Route::put('builds/{build}', [ConfigurationController::class, 'update'])->name('builds.update');
 Route::delete('builds/{build}', [ConfigurationController::class, 'destroy'])->name('builds.destroy');
 Route::get('/public-build/{id}', [ConfigurationController::class, 'publicShow'])->name('builds.public');

@@ -8,6 +8,16 @@
     <title>Каталог конфигурации</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
+        .accordion-content {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+}
+
+.accordion-content.open {
+    max-height: 1000px; /* Больше чем содержимое, чтобы всё влезло */
+}
+
         /* Медиазапросы для тонкой настройки */
         @media (max-width: 640px) {
             .accordion-item {
@@ -111,11 +121,35 @@
 
         <!-- Кнопки управления -->
         <div class="flex-wrap gap-3 mt-3">
-            <button class="accordion-toggle text-sm sm:text-base text-blue-500 hover:text-blue-700 transition-colors" 
-                    aria-expanded="false" 
-                    aria-controls="accordion-content-{{ $build->id }}">
-                Подробнее
-            </button>
+            <div class="card p-4 rounded-xl shadow-md text-white w-full sm:w-1/2">
+                <div class="flex justify-between items-center cursor-pointer" onclick="toggleAccordion(this)">
+                    <h3 class="text-lg font-semibold">{{ $build->name }}</h3> <!-- или другое название сборки -->
+                    <svg class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            
+                <div id="accordion-content-{{ $build->id }}" class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                    <ul class="space-y-2 w-full mx-auto" style="width: 65%">
+                        @foreach($build->components as $component)
+                            <li class="py-2 border-b border-gray-200 last:border-0">
+                                <div class="flex justify-between items-baseline">
+                                    <div class="truncate pr-2">
+                                        <a href="{{ route('components.show', $component->id) }}" 
+                                           class="text-sm hover:text-blue-600 transition-colors">
+                                            <span class="text-xs">{{ $component->category->name }}:</span>
+                                            <span class="ml-1 font-medium">{{ $component->name }}</span>
+                                        </a>
+                                    </div>
+                                    <span class="text-xs font-medium text-green-600 whitespace-nowrap">
+                                        {{ number_format($component->price, 0, '', ' ') }}₽
+                                    </span>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
             
             <button onclick="copyShareLink({{ $build->id }})" 
                     class="text-sm sm:text-base text-green-600 hover:text-green-800 transition-colors">
@@ -217,27 +251,7 @@
         </div>
 
         <!-- Скрытый контент (список компонентов) -->
-        <div id="accordion-content-{{ $build->id }}" class="accordion-content hidden mt-3">
-            <ul class="space-y-2 w-full mx-auto" style = "width: 65%">
-                @foreach($build->components as $component)
-                <li class="py-2 border-b border-gray-200 last:border-0" >
-                    <div class="flex justify-between items-baseline">
-                        <div class="truncate pr-2">
-                            <a href="{{ route('components.show', $component->id) }}" 
-                                class="text-sm hover:text-blue-600 transition-colors">
-                                 <span class="text-xs">{{ $component->category->name }}:</span>
-                                 <span class="ml-1 font-medium">{{ $component->name }}</span>
-                             </a>
-                        </div>
-                        <span class="text-xs font-medium text-green-600 whitespace-nowrap">
-                            {{ number_format($component->price, 0, '', ' ') }}₽
-                        </span>
-                    </div>
-                   
-                </li>
-                @endforeach
-            </ul>
-        </div>
+       
     </div>
     @empty
     <div class="col-span-full text-center py-8">
@@ -303,7 +317,23 @@
 }
 
     </script>
-    
+    <script>
+        function toggleAccordion(header) {
+    const card = header.parentElement;
+    const content = card.querySelector('.accordion-content');
+    const icon = header.querySelector('svg');
+
+    if (content.classList.contains('open')) {
+        content.style.maxHeight = null;
+        content.classList.remove('open');
+        icon.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.maxHeight = content.scrollHeight + 'px';
+        content.classList.add('open');
+        icon.style.transform = 'rotate(180deg)';
+    }
+}
+
+        </script>
 </body>
 </html>
-

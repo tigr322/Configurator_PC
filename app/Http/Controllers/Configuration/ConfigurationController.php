@@ -89,12 +89,15 @@ public function comments(Request $request)
         return back()->with('success', 'Комментарий удалён!');
     }
     
-/*public function edit($id)
+// В ConfigurationsController.php
+public function getComponentsHtml($id)
 {
     $build = Configurations::with('components.category')->findOrFail($id);
-    return view('builds.edit', compact('build'));
+
+    return view('configurationbuild.components_list', compact('build'));
 }
 
+/*
 public function update(Request $request, $id)
 {
     $build = Configurations::findOrFail($id);
