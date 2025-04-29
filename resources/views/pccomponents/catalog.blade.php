@@ -34,7 +34,7 @@
             <div class="lg:w-1/4">
                 <div 
                 class=""
-                style="padding-top:60px; padding-right: 20px;
+                style="padding-top:60px;
                 "
             >
             <div class="lg:hidden mb-4">
@@ -73,6 +73,7 @@
                 <input type="hidden" id="socket-filter" name="socket" value="{{ request('socket') }}">
                 <input type="hidden" id="manufacturer-filter" name="manufacturer" value="{{ request('manufacturer') }}">
                 <input type="hidden" id="memory-type-filter" name="memory_type" value="{{ request('memory_type') }}">
+                <input type="hidden" id="market-filter" name="market" value="{{ request('market') }}">
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
             </form>
         
@@ -142,7 +143,21 @@
                         </button>
                     </div>
                 </div>
-            
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 mb-2">Магазин</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="filterByMarket(1)" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('market') == 1 ? 'bg-blue-100 border-blue-300' : '' }}">
+                                       Citilink
+                        </button>
+                        <button type="button" onclick="filterByMarket(2)" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('market') == 2 ? 'bg-blue-100 border-blue-300' : '' }}">
+                                       Regard
+                        </button>
+                    </div>
+                </div>
                 <!-- Кнопка сброса (показывается только если есть активные фильтры) -->
                 @if(request('socket') || request('manufacturer') || request('memory_type'))
                 <div class="pt-2">
@@ -156,7 +171,7 @@
      
     @if (auth()->check() && auth()->user()->admin == 1)
         
-    <div style="padding-right: 20px;">
+    <div style="">
         <h2 class=" font-bold mb-6">🔧 Админ-панель</h2>
     
         <!-- Добавление категории -->
@@ -976,7 +991,10 @@
         document.getElementById('memory-type-filter').value = memoryType;
         document.getElementById('filter-form').submit();
     }
-    
+    function filterByMarket(MarketId) {
+        document.getElementById('market-filter').value = MarketId;
+        document.getElementById('filter-form').submit();
+    }
     // Сброс всех фильтров
     function clearAllFilters() {
         document.getElementById('socket-filter').value = '';

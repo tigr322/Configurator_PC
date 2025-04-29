@@ -108,7 +108,8 @@
                     $url = $hasImage ? asset('storage/' . $imagePath) : asset('images/defaulte_image.jpg');
                 @endphp
 
-                <div class="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+<div class="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 rounded-lg shadow-sm hover:shadow-md transition-shadow hover:ring-2 hover:ring-blue-400 hover:ring-opacity-50">
+
                     <img 
                         src="{{ $url }}" 
                         alt="{{ $component->name }}" 
@@ -121,16 +122,16 @@
 
         <!-- Кнопки управления -->
         <div class="flex-wrap gap-3 mt-3">
-            <div class="card p-4 rounded-xl shadow-md text-white w-full sm:w-1/2">
+            <div class="card p-4 rounded-xl shadow-md w-full">
                 <div class="flex justify-between items-center cursor-pointer" onclick="toggleAccordion(this)">
-                    <h3 class="text-lg font-semibold">{{ $build->name }}</h3> <!-- или другое название сборки -->
+                 
                     <svg class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </div>
             
                 <div id="accordion-content-{{ $build->id }}" class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
-                    <ul class="space-y-2 w-full mx-auto" style="width: 65%">
+                    <ul class="space-y-2 w-full mx-auto">
                         @foreach($build->components as $component)
                             <li class="py-2 border-b border-gray-200 last:border-0">
                                 <div class="flex justify-between items-baseline">
@@ -203,7 +204,7 @@
                 🏆 Голосов за лучшую сборку: <span id="best-{{ $build->id }}">{{ $build->bestBuildVotes()->count() }}</span>
             </div>
             @if (auth()->check())
-                <!---->
+              
            
             <form method="POST" action="{{ route('comments.store') }}" class="max-w-xl mx-auto p-6 rounded-2xl shadow-md">
                 @csrf

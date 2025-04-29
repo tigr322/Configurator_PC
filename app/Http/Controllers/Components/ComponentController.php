@@ -63,7 +63,9 @@ class ComponentController extends Controller
         if ($request->memory_type) {
             $query->whereJsonContains('compatibility_data->memory_type', $request->memory_type);
         }
-        
+        if ($request->market) {
+            $query->where('market_id', $request->market);
+        }
         // Сортировка
         if ($request->filled('sort')) {
             switch ($request->sort) {
@@ -81,7 +83,7 @@ class ComponentController extends Controller
         }
     
         // Пагинация
-        $perPage = $request->filled('pagination') ? (int)$request->pagination : 8;
+        $perPage = $request->filled('pagination') ? (int)$request->pagination : 12;
         $components = $query->paginate($perPage);
     
         $categories = Category::all();
@@ -103,88 +105,99 @@ class ComponentController extends Controller
      */
   
      public function checkCompatibilityMulti(Request $request)
-     {
-         $data = [
-             'selected_components' => $request->input('selected_components'),
-         ];
-     
-         $valided = Validator::make($data, [
-             'selected_components' => 'required|array|min:1',
-             'selected_components.*' => 'required|integer|exists:components,id',
-         ]);
-     
-         if ($valided->fails()) {
-             return response()->json($valided->errors(), 422);
-         }
-     
-         $selectedComponents = $request->input('selected_components', []);
-         $components = Component::whereIn('id', array_values($selectedComponents))
-             ->get()
-             ->keyBy('id');
-     
-         $result = [];
-         $rules = CompatibilityRule::all();
-     
-         foreach ($rules as $rule) {
-             $sourceCategoryId = $rule->category1_id;
-             $targetCategoryId = $rule->category2_id;
-             $conditions = $rule->condition;
-     
-             if (!isset($selectedComponents[$sourceCategoryId])) {
-                 continue;
-             }
-     
-             $sourceComponentId = $selectedComponents[$sourceCategoryId];
-             $sourceComponent = $components[$sourceComponentId] ?? null;
-             if (!$sourceComponent) continue;
-     
-             $sourceData = json_decode($sourceComponent->compatibility_data, true);
-             $targetComponents = Component::where('category_id', $targetCategoryId)->get();
-     
-             foreach ($targetComponents as $targetComponent) {
-                 $targetData = json_decode($targetComponent->compatibility_data, true);
-                 $isCompatible = true;
-     
-                 foreach ($conditions as $field => $operator) {
-                     $sourceValue = $sourceData[$field] ?? null;
-                     $targetValue = $targetData[$field] ?? null;
-     
-                     if (is_null($sourceValue) || is_null($targetValue)) {
-                         $isCompatible = false;
-                         break;
-                     }
-     
-                     // Специальная обработка для интерфейсов
-                     if ($field === 'interface') {
-                         $sourceInterfaces = (array)$sourceValue;
-                         $targetInterfaces = (array)$targetValue;
-                         
-                         // Проверяем пересечение массивов
-                         $isCompatible = count(array_intersect($sourceInterfaces, $targetInterfaces)) > 0;
-                         continue;
-                     }
-     
-                     // Стандартная проверка для других полей
-                     switch ($operator) {
-                         case '==': $isCompatible = $sourceValue == $targetValue; break;
-                         case '>=': $isCompatible = $sourceValue >= $targetValue; break;
-                         case '<=': $isCompatible = $sourceValue <= $targetValue; break;
-                         case '>':  $isCompatible = $sourceValue >  $targetValue; break;
-                         case '<':  $isCompatible = $sourceValue <  $targetValue; break;
-                         default:   $isCompatible = false; break;
-                     }
-     
-                     if (!$isCompatible) break;
-                 }
-     
-                 if (!$isCompatible) {
-                     $result[$targetCategoryId][] = $targetComponent->id;
-                 }
-             }
-         }
-     
-         return response()->json($result);
-     }
+{
+    $data = [
+        'selected_components' => $request->input('selected_components'),
+    ];
+
+    $validator = Validator::make($data, [
+        'selected_components' => 'required|array|min:1',
+        'selected_components.*' => 'required|integer|exists:components,id',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 422);
+    }
+
+    $selectedComponents = $request->input('selected_components', []);
+    $components = Component::whereIn('id', array_values($selectedComponents))
+        ->get()
+        ->keyBy('id');
+
+    $result = [];
+    $rules = CompatibilityRule::all();
+
+    foreach ($rules as $rule) {
+        $sourceCategoryId = $rule->category1_id;
+        $targetCategoryId = $rule->category2_id;
+        $conditions = $rule->condition;
+
+        if (!isset($selectedComponents[$sourceCategoryId])) {
+            continue;
+        }
+
+        $sourceComponentId = $selectedComponents[$sourceCategoryId];
+        $sourceComponent = $components[$sourceComponentId] ?? null;
+        if (!$sourceComponent) continue;
+
+        $sourceData = json_decode($sourceComponent->compatibility_data, true);
+        $targetComponents = Component::where('category_id', $targetCategoryId)->get();
+
+        foreach ($targetComponents as $targetComponent) {
+            $targetData = json_decode($targetComponent->compatibility_data, true);
+            $isCompatible = true;
+
+            foreach ($conditions as $field => $operator) {
+                $sourceValue = $sourceData[$field] ?? null;
+                $targetValue = $targetData[$field] ?? null;
+
+                if (is_null($sourceValue) || is_null($targetValue)) {
+                    $isCompatible = false;
+                    break;
+                }
+
+                // Нормализация значений в массивы
+                $sourceArray = $this->normalizeToArray($sourceValue);
+                $targetArray = $this->normalizeToArray($targetValue);
+
+                // Для полей типа form_factor проверяем пересечение
+                if ($field === 'form_factor' || $field === 'interface') {
+                    $isCompatible = count(array_intersect($sourceArray, $targetArray)) > 0;
+                    continue;
+                }
+                // Стандартная проверка для скалярных значений
+                switch ($operator) {
+                    case '==': $isCompatible = $sourceValue == $targetValue; break;
+                    case '>=': $isCompatible = $sourceValue >= $targetValue; break;
+                    case '<=': $isCompatible = $sourceValue <= $targetValue; break;
+                    case '>':  $isCompatible = $sourceValue >  $targetValue; break;
+                    case '<':  $isCompatible = $sourceValue <  $targetValue; break;
+                    default:   $isCompatible = false; break;
+                }
+
+                if (!$isCompatible) break;
+            }
+
+            if (!$isCompatible) {
+                $result[$targetCategoryId][] = $targetComponent->id;
+            }
+        }
+    }
+
+    return response()->json($result);
+}
+protected function normalizeToArray($value): array
+{
+    if (is_array($value)) {
+        return $value;
+    }
+    
+    if (is_string($value) && str_contains($value, ',')) {
+        return array_map('trim', explode(',', $value));
+    }
+    
+    return [$value];
+}
      public function delete($id) 
      {
          try {
