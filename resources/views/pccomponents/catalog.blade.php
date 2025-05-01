@@ -13,6 +13,13 @@
    
     
     <div class="container mx-auto">
+        
+        
+        {{-- Список компонентов --}}
+        <div class="flex flex-col lg:flex-row">
+           
+
+
         @if (session('success'))
             <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
                 {{ session('success') }}
@@ -28,9 +35,6 @@
                 </ul>
             </div>
         @endif
-        
-        {{-- Список компонентов --}}
-        <div class="flex flex-col lg:flex-row">
             <div class="lg:w-1/4">
                 <div 
                 class=""
@@ -457,6 +461,17 @@
     </div>      
             <div class="lg:w-3/4">
             <div class="flex justify-between items-center">
+              
+                @auth
+                    <div class="flex items-center justify-between mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <span class="text-blue-800 font-semibold">Режим Конфигуратора</span>
+                        <button id="toggleConfiguratorMode" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                            {{ session('configurator_mode') ? 'Выключить' : 'Включить' }}
+                        </button>
+                    </div>
+                @endauth
+
+               
                 
                 <!-- Переключатель вида -->
                 <div class="flex items-center space-x-2">
@@ -479,7 +494,7 @@
             
                 <div class="mx-auto max-w-2xl lg:max-w-7xl lg:px-8">
                 
-                  <div id="grid-version" class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+                  <div id="grid-version" class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-5">
                     @forelse ($components as $component)
                     <form method="POST" action="{{ route('delete', $component->id) }}" class="group">
                       @csrf
@@ -511,13 +526,13 @@
                         
                         <!-- Цена и кнопки -->
                         <div class="mt-4">
-                          <div class="flex items-center justify-between border-t pt-3">
+                         
                             <p class="text-lg font-medium text-green-600">{{ number_format($component->price, 0, '', ' ') }} ₽</p>
                             <a href="{{ route('components.show', $component->id) }}" 
                                class="text-sm font-medium text-blue-600 hover:text-blue-500">
                               Подробнее
                             </a>
-                          </div>
+                          
                           
                           @if (auth()->check() && auth()->user()->admin == 1)
                           <button type="button" 
@@ -526,6 +541,14 @@
                       Удалить
                   </button>
                           @endif
+                          @if (session('configurator_mode') == true)
+                          <button type="button" 
+                              onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $component->image_url ? asset('storage/products/' . basename($component->image_url)) : asset('images/defaulte_image.jpg') }}', {{ $component->category_id }})"
+                              class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
+                              Добавить в сборку
+                          </button>
+                      @endif
+                      
                         </div>
                       </div>
                     </form>
@@ -609,6 +632,7 @@
                         </div>
                     </div>
                 </form>
+                
                 @empty
                 <div class="text-center py-10">
                     <p class="text-gray-500">Комплектующие не найдены.</p>
@@ -620,6 +644,70 @@
             {{ $components->withQueryString()->links() }}
         </div>
     </div>
+    @if (session('configurator_mode') == true)
+    <div class="lg:w-1/4">
+        <form action="{{ route('configurations.store') }}" method="POST" class="space-y-4" id="configurator-form">
+            @csrf
+
+            <div class="mb-4">
+                <label for="config-name" class="block mb-1 font-medium text-sm">Название конфигурации:</label>
+                <input type="text" name="name" id="config-name" 
+                       class="w-full border border-gray-300 p-2 rounded text-sm focus:ring-blue-500 focus:border-blue-500" 
+                       placeholder="Моя игровая сборка" required>
+                @error('name')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <h2 class="text-lg font-medium mb-3 text-sm">Ваша сборка:</h2>
+            
+            <!-- Контейнер для выбранных компонентов -->
+            <div id="selected-components" class="space-y-3">
+                @foreach($categories as $category)
+                <div class="flex flex-col items-center p-3 border border-gray-200 rounded-lg" id="category-block-{{ $category->id }}">
+                    <div class="flex-1 min-w-0 text-center">
+                        <label class="block text-sm mb-2">{{ $category->name }}</label>
+                    </div>
+                    
+                    <img 
+                        id="preview_image_{{ $category->id }}" 
+                        src="{{ asset('images/defaulte_image.jpg') }}" 
+                        alt="Предпросмотр"
+                        style="width: 175px; height: 150px; object-fit: contain;"
+                        class="rounded shadow border border-gray-300 mb-2"
+                    />
+                    
+                    <p id="preview_name_{{ $category->id }}" class="text-xs text-gray-700 truncate">Не выбрано</p>
+                    
+                    <!-- Скрытый инпут для отправки выбранного компонента -->
+                    <input type="hidden" name="components[{{ $category->id }}]" id="component_input_{{ $category->id }}" value="">
+                </div>
+                
+                @endforeach
+            </div>
+
+            <div class="mt-4 flex items-center space-x-2">
+                <button type="submit" 
+                        class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                    Создать сборку
+                </button>
+                
+                <button type="button" 
+                        id="reset-configurator" 
+                        class="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded text-sm transition-colors">
+                    Сбросить всё
+                </button>
+            </div>
+            
+            <!-- Скрытые поля для хранения выбранных компонентов -->
+            <div id="hidden-fields-container"></div>
+        </form>
+    </div>
+
+    
+   
+  
+@endif
 </div>
 </div>
     <script>
@@ -1033,5 +1121,53 @@
         sidebar.classList.toggle('hidden');
     }
 </script>
+
+<script>
+    document.getElementById('toggleConfiguratorMode')?.addEventListener('click', function () {
+        fetch("{{ route('toggleConfiguratorMode') }}", {
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Перезагрузить страницу для применения режима
+            }
+        });
+    });
+</script>
+<script>
+
+function addToConfiguration(componentId, componentName, componentImageUrl, categoryId) {
+    // Найдем элементы по ID
+    const imageElement = document.getElementById('preview_image_' + categoryId);
+    const nameElement = document.getElementById('preview_name_' + categoryId);
+    const inputElement = document.getElementById('component_input_' + categoryId);
+
+    // Обновим содержимое
+    if (imageElement) {
+        imageElement.src = componentImageUrl;
+    }
+    if (nameElement) {
+        nameElement.textContent = componentName;
+    }
+    if (inputElement) {
+        inputElement.value = componentId;
+    }
+}
+document.getElementById('reset-configurator').addEventListener('click', function() {
+    @foreach($categories as $category)
+        document.getElementById('preview_image_{{ $category->id }}').src = "{{ asset('images/defaulte_image.jpg') }}";
+        document.getElementById('preview_name_{{ $category->id }}').textContent = "Не выбрано";
+        document.getElementById('component_input_{{ $category->id }}').value = "";
+    @endforeach
+});
+</script>
+
+
 </body>
 </html>

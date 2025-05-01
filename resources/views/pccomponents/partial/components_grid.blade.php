@@ -1,0 +1,63 @@
+<div id="grid-version" class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-5">
+    @forelse ($components as $component)
+    <form method="POST" action="{{ route('delete', $component->id) }}" class="group">
+      @csrf
+      @method('DELETE')
+      <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+        <!-- Изображение -->
+        <div class="aspect-square w-full rounded-lg bg-gray-100 flex items-center justify-center mb-4 overflow-hidden">
+          @if($component->image_url)
+            @php
+              $imagePath = 'products/' . basename($component->image_url);
+              $url = asset('storage/' . $imagePath);
+            @endphp
+            <img src="{{ $url }}" 
+                 alt="{{ $component->name }}" 
+                 class="w-full h-full object-contain group-hover:opacity-75"
+                 onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
+          @else
+            <img src="{{ asset('images/defaulte_image.jpg') }}" 
+                 alt="Default product image" 
+                 class="w-full h-full object-contain group-hover:opacity-75">
+          @endif
+        </div>
+        
+        <!-- Информация о товаре -->
+        <div class="flex-grow">
+          <h3 class="text-sm font-medium line-clamp-2 mb-1">{{ $component->name }}</h3>
+          <p class="text-xs text-gray-500">{{ $component->brand }}</p>
+        </div>
+        
+        <!-- Цена и кнопки -->
+        <div class="mt-4">
+         
+            <p class="text-lg font-medium text-green-600">{{ number_format($component->price, 0, '', ' ') }} ₽</p>
+            <a href="{{ route('components.show', $component->id) }}" 
+               class="text-sm font-medium text-blue-600 hover:text-blue-500">
+              Подробнее
+            </a>
+          
+          
+          @if (auth()->check() && auth()->user()->admin == 1)
+          <button type="button" 
+          onclick="deleteComponent(event, {{ $component->id }})" 
+          class="text-red-600 hover:text-red-800 text-sm font-medium">
+      Удалить
+  </button>
+          @endif
+          @if (session('configurator_mode') == true)
+          <button type="button" 
+              onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $component->image_url ? asset('storage/products/' . basename($component->image_url)) : asset('images/defaulte_image.jpg') }}', {{ $component->category_id }})"
+              class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
+              Добавить в сборку
+          </button>
+      @endif
+      
+        </div>
+      </div>
+    </form>
+    @empty
+      <p class="col-span-full text-center py-10 text-gray-500">Комплектующие не найдены.</p>
+    @endforelse
+  </div>
+</div>

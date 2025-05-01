@@ -74,6 +74,16 @@
         <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
         <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Цена ↓</option>
     </select>
+    <select 
+    name="like"
+    onchange="this.form.submit()" 
+    class="w-full px-4 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none"
+>
+    <option value="">Сортировать по</option>
+    <option value="like" {{ request('like') === 'like' ? 'selected' : '' }}>По лайкам</option>
+    <option value="dislike" {{ request('like') === 'dislike' ? 'selected' : '' }}>По дизлайкам</option>
+</select>
+
 
     <div class="flex justify-center">
         <button 

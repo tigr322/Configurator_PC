@@ -72,6 +72,10 @@ Route::post('/configurations/{configuration}/like', [ConfigurationController::cl
 Route::post('/configurations/{configuration}/dislike', [ConfigurationController::class, 'dislike'])->name('configurations.dislike');
 Route::post('/configurations/{configuration}/best', [ConfigurationController::class, 'bestBuild'])->name('configurations.bestBuild');
 
+
+Route::post('/toggle-configurator-mode', [ConfigurationController::class, 'toggleMode'])
+    ->name('toggleConfiguratorMode')
+    ->middleware('auth');
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор
 /* 

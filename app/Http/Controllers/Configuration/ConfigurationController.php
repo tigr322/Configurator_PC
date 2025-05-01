@@ -16,9 +16,28 @@ class ConfigurationController extends Controller
     public function configurations(Request $request)
 {
     // Начинаем запрос с моделей Configurations и их компонентов
-    $query = Configurations::query()->with(['components', 'comments.user']);
+    //$query = Configurations::query()->with(['components', 'comments.user']);
 
-    
+    $query = Configurations::query()
+        ->withCount([
+            'votes as likes_count' => function ($query) {
+                $query->where('is_like', true);
+            },
+            'votes as dislikes_count' => function ($query) {
+                $query->where('is_like', false);
+            }
+        ]);
+
+    if ($request->filled('like')) {
+        if ($request->like === 'like') {
+            $query->orderByDesc('likes_count');
+        } elseif ($request->like === 'dislike') {
+            $query->orderByDesc('dislikes_count');
+        }
+        else{
+            $query->orderByDesc('likes_count');
+        }
+    }
     // Фильтрация по имени конфигурации
     if ($request->filled('search')) {
         $query->where('name', 'like', '%' . $request->search . '%');
@@ -52,13 +71,36 @@ class ConfigurationController extends Controller
     } else {
         $query->latest();
     }
-   
+    
+    
     // Получаем все конфигурации после применения фильтров и сортировок
     $builds = $query->get();  // Используем get() вместо all(), чтобы получить только отфильтрованные данные
     
     // Передаем конфигурации в представление
     return view('configurationbuild.builds', compact('builds', 'col'));
 }
+
+public function toggleMode(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Необходима авторизация']);
+        }
+
+        // Получаем текущее состояние режима из сессии
+        $currentMode = session('configurator_mode', false);
+        
+        // Переключаем режим
+        session(['configurator_mode' => !$currentMode]);
+        
+        // Если нужно сохранять настройку для пользователя в БД
+        // Auth::user()->update(['configurator_mode' => !$currentMode]);
+        
+        return response()->json([
+            'success' => true,
+            'new_mode' => !$currentMode,
+            'message' => 'Режим конфигуратора ' . ($currentMode ? 'выключен' : 'включен')
+        ]);
+    }
 public function comments(Request $request)
     {
         $request->validate([
