@@ -667,7 +667,7 @@
                 @foreach($categories as $category)
                 <div class="flex flex-col items-center p-3 border border-gray-200 rounded-lg" id="category-block-{{ $category->id }}">
                     <div class="flex-1 min-w-0 text-center">
-                        <label class="block text-sm mb-2"> {{ Str::words($category->name, 4, '...') }}</label>
+                        <label class="block text-sm mb-2">{{ $category->name }}</label>
                     </div>
                     
                     <img 
@@ -678,7 +678,7 @@
                         class="rounded shadow border border-gray-300 mb-2"
                     />
                     
-                    <p id="preview_name_{{ $category->id }}" class="text-xs text-gray-700 truncate">Не выбрано</p>
+                    <div id="preview_name_{{ $category->id }}" class="line-clamp-2"></div>
                     
                     <!-- Скрытый инпут для отправки выбранного компонента -->
                     <input type="hidden" name="components[{{ $category->id }}]" id="component_input_{{ $category->id }}" value="">
@@ -1167,7 +1167,7 @@ function addToConfiguration(componentId, componentName, componentImageUrl, categ
         imageElement.src = componentImageUrl;
     }
     if (nameElement) {
-        nameElement.textContent = componentName;
+        nameElement.textContent = componentName; 
     }
     if (inputElement) {
         inputElement.value = componentId;
