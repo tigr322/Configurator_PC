@@ -561,78 +561,79 @@
              
               <div id="list-version" class="hidden space-y-4">
                 @forelse ($components as $component)
-                <form method="POST" action="{{ route('delete', $component->id) }}" class="w-full group">
-
+                <form method="POST" action="{{ route('delete', $component->id) }}" class="group">
                     @csrf
                     @method('DELETE')
-                    <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4">
-                        <!-- Контейнер изображения -->
-                        <div class="flex-shrink-0 w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                            @if($component->image_url)
-                                @php
-                                    $imagePath = 'products/' . basename($component->image_url);
-                                    $url = asset('storage/' . $imagePath);
-                                @endphp
-                                <img src="{{ $url }}" 
-                                     alt="{{ $component->name }}" 
-                                    class="w-full h-full object-contain group-hover:opacity-75"
-                                     onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
-                            @else
-                                <img src="{{ asset('images/defaulte_image.jpg') }}" 
-                                     alt="Default product image" 
-                                     class="w-full h-full object-contain group-hover:opacity-75">
-                            @endif
+                    
+                    <div class="p-3 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex  sm:flex-row gap-3">
+                        <!-- Изображение -->
+                        <div class="w-full sm:w-24 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+                            <img src="{{ $component->image_url ? asset('storage/products/' . basename($component->image_url)) : asset('images/defaulte_image.jpg') }}"
+                                 alt="{{ $component->name }}"
+                                 class="w-full h-full object-contain group-hover:opacity-75 transition-opacity"
+                                 onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}';">
                         </div>
                         
-                        <!-- Основной контент -->
+                        <!-- Контент -->
                         <div class="flex-1 min-w-0">
                             <!-- Заголовок и цена -->
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                                <h2 class="text-lg font-medium truncate">{{ $component->name }}</h2>
-                                <p class="text-lg font-semibold text-green-600 whitespace-nowrap">
+                            <div class="flex justify-between items-start gap-2 mb-1">
+                                <h3 class="text-sm font-medium line-clamp-2 leading-tight">{{ $component->name }}</h3>
+                                <span class="text-green-600 font-semibold text-sm whitespace-nowrap pl-2">
                                     {{ number_format($component->price, 0, '', ' ') }} ₽
-                                </p>
+                                </span>
                             </div>
                             
                             <!-- Бренд -->
-                            <p class="text-sm text-gray-500 mb-3">{{ $component->brand }}</p>
+                            <p class="text-xs text-gray-500 mb-2 truncate">{{ $component->brand }}</p>
                             
                             <!-- Характеристики -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                                @foreach(explode(',', $component->characteristics) as $char)
-                                <span class="text-sm px-2 py-1 rounded">
-                                    {{ trim($char) }}
-                                </span>
+                            <div class="text-xs text-gray-700 flex flex-wrap gap-1 mb-2">
+                                @foreach(array_slice(explode(',', $component->characteristics), 0, 3) as $char)
+                                    <span class="bg-gray-100 px-2 py-1 rounded">{{ trim($char) }}</span>
                                 @endforeach
+                                @if(count(explode(',', $component->characteristics)) > 3)
+                                    <span class="bg-gray-100 px-2 py-1 rounded">+{{ count(explode(',', $component->characteristics)) - 3 }}</span>
+                                @endif
                             </div>
-                            @if($component->shop_url)
-                            <a href="{{ $component->shop_url }}" target="_blank" class="text-blue-500 underline">
-                                Перейти в магазин
-                            </a>
-                            @endif
+                            
                             <!-- Кнопки действий -->
-                            <div class="flex justify-between items-center pt-3 border-t">
-                                <div class="flex space-x-4">
-                                    
-                                    @if (auth()->check() && auth()->user()->admin == 1)
-                                    <a href="{{ route('components.show', $component->id) }}" 
-                                       class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                                        Редактировать
+                            <div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center gap-2">
+                                @if($component->shop_url)
+                                    <a href="{{ $component->shop_url }}" target="_blank" 
+                                       class="text-xs text-blue-600 hover:text-blue-800 underline truncate max-w-[120px]">
+                                        Магазин
                                     </a>
+                                @else
+                                    <span class="flex-1"></span>
+                                @endif
+                                
+                                <div class="flex items-center gap-2">
+                                    @if(auth()->check() && auth()->user()->admin == 1)
+                                        <a href="{{ route('components.show', $component->id) }}" 
+                                           class="text-xs text-indigo-600 hover:text-indigo-800 whitespace-nowrap">
+                                            Ред.
+                                        </a>
+                                        <button type="button" 
+                                                onclick="deleteComponent(event, {{ $component->id }})"
+                                                class="text-xs text-red-600 hover:text-red-800 whitespace-nowrap">
+                                            Удалить
+                                        </button>
+                                    @endif
+                                    
+                                    @if(session('configurator_mode') == true)
+                                        <button type="button"
+                                                onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $component->image_url ? asset('storage/products/' . basename($component->image_url)) : asset('images/defaulte_image.jpg') }}', {{ $component->category_id }})"
+                                                class="ml-auto px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs whitespace-nowrap transition-colors">
+                                            В сборку
+                                        </button>
                                     @endif
                                 </div>
-                                
-                                @if (auth()->check() && auth()->user()->admin == 1)
-                                <button type="button" 
-                                onclick="deleteComponent(event, {{ $component->id }})" 
-                                class="text-red-600 hover:text-red-800 text-sm font-medium">
-                            Удалить
-                        </button>
-                                @endif
                             </div>
                         </div>
                     </div>
                 </form>
+                
                 
                 @empty
                 <div class="text-center py-10">
@@ -674,7 +675,7 @@
                         id="preview_image_{{ $category->id }}" 
                         src="{{ asset('images/defaulte_image.jpg') }}" 
                         alt="Предпросмотр"
-                        style="width: 175px; height: 150px; object-fit: contain;"
+                      
                         class="rounded shadow border border-gray-300 mb-2"
                     />
                     
