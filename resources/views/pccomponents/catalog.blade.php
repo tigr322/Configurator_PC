@@ -1124,22 +1124,33 @@
 </script>
 
 <script>
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
     document.getElementById('toggleConfiguratorMode')?.addEventListener('click', function () {
-        fetch("{{ route('toggleConfiguratorMode') }}", {
+        // Используем относительный путь или динамически определяем протокол
+        const url = "{{ route('toggleConfiguratorMode') }}".replace(/^http:/, window.location.protocol);
+        
+        fetch(url, {
             method: "POST",
             headers: {
-                'X-CSRF-TOKEN': token,
-                'Content-Type': 'application/json'
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify({})
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                location.reload(); // Перезагрузить страницу для применения режима
+                location.reload();
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при переключении режима');
         });
     });
 </script>
