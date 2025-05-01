@@ -566,7 +566,7 @@
                     @method('DELETE')
                     
                     <div class="p-3 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex  sm:flex-row gap-3">
-                        <!-- Изображение -->
+                        <!-- Изображение dsd-->
                         <div class="w-full sm:w-24 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
                             <img src="{{ $component->image_url ? asset('storage/products/' . basename($component->image_url)) : asset('images/defaulte_image.jpg') }}"
                                  alt="{{ $component->name }}"
