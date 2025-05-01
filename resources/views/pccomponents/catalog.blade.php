@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Каталог комплектующих</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
@@ -1123,11 +1124,13 @@
 </script>
 
 <script>
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
     document.getElementById('toggleConfiguratorMode')?.addEventListener('click', function () {
         fetch("{{ route('toggleConfiguratorMode') }}", {
             method: "POST",
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': token,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({})
