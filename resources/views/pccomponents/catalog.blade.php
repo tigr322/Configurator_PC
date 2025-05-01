@@ -667,7 +667,7 @@
                 @foreach($categories as $category)
                 <div class="flex flex-col items-center p-3 border border-gray-200 rounded-lg" id="category-block-{{ $category->id }}">
                     <div class="flex-1 min-w-0 text-center">
-                        <label class="block text-sm mb-2">{{ $category->name }}</label>
+                        <label class="block text-sm mb-2"> {{ Str::words($category->name, 4, '...') }}</label>
                     </div>
                     
                     <img 
