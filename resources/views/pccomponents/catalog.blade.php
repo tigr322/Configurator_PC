@@ -1054,9 +1054,12 @@ document.getElementById('reset-configurator').addEventListener('click', function
         function fetchComponents() {
             const formData = new FormData(form);
             const params = new URLSearchParams(formData);
-            const url = "{{ route('catalog') }}".replace(/^http:/, window.location.protocol);
-        
-            fetch(url + params.toString(), {
+            const baseUrl = pageUrl ?? "{{ route('catalog') }}";
+            const secureUrl = baseUrl.replace(/^http:/, 'https:'); // принудительно HTTPS
+
+            const finalUrl = secureUrl + (secureUrl.includes('?') ? '&' : '?') + params.toString();
+
+            fetch(finalUrl, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(res => res.text())
