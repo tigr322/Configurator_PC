@@ -68,8 +68,15 @@
     
                 <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="min_price" placeholder="Мин. цена" value="{{ request('min_price') }}" class="border p-2 rounded">
                 <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="max_price" placeholder="Макс. цена" value="{{ request('max_price') }}" class="border p-2 rounded">
-                <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
-                type="number" name="pagination" placeholder="Пагинация" value="{{ request('pagination') }}" class="border p-2 rounded">
+                <select name="pagination"
+                class="bg-gray-100 p-2 rounded text-sm text-black border"
+                onchange="document.getElementById('filter-form').dispatchEvent(new Event('submit'))">
+                <option value="8" {{ request('pagination') == 8 ? 'selected' : '' }}>8</option>
+                <option value="16" {{ request('pagination') == 16 ? 'selected' : '' }}>16</option>
+                <option value="24" {{ request('pagination') == 24 ? 'selected' : '' }}>24</option>
+                <option value="32" {{ request('pagination') == 32 ? 'selected' : '' }}>32</option>
+            </select>
+            
                 <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="sort" class="border p-2 rounded">
                     <option value="">Сортировка</option>
                     <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
@@ -1055,7 +1062,7 @@ document.getElementById('reset-configurator').addEventListener('click', function
     .then(html => {
         document.getElementById('catalog-wrapper').innerHTML = html;
         attachPaginationListeners();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        //window.scrollTo({ top: 0, behavior: 'smooth' });
     })
     .catch(err => {
         console.error("Ошибка при загрузке компонентов:", err);
