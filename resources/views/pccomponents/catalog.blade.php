@@ -815,45 +815,7 @@
         });
         </script>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const gridViewBtn = document.getElementById('grid-view');
-                const listViewBtn = document.getElementById('list-view');
-                const gridVersion = document.getElementById('grid-version');
-                const listVersion = document.getElementById('list-version');
-                
-                // Проверяем сохраненное значение в localStorage
-                const savedView = localStorage.getItem('preferredView') || 'grid';
-                
-                // Устанавливаем начальное состояние
-                if (savedView === 'grid') {
-                    gridVersion.classList.remove('hidden');
-                    listVersion.classList.add('hidden');
-                    gridViewBtn.classList.add('bg-blue-100', 'text-blue-600');
-                    listViewBtn.classList.remove('bg-blue-100', 'text-blue-600');
-                } else {
-                    gridVersion.classList.add('hidden');
-                    listVersion.classList.remove('hidden');
-                    gridViewBtn.classList.remove('bg-blue-100', 'text-blue-600');
-                    listViewBtn.classList.add('bg-blue-100', 'text-blue-600');
-                }
-                
-                // Обработчики кликовd
-                gridViewBtn.addEventListener('click', function() {
-                    gridVersion.classList.remove('hidden');
-                    listVersion.classList.add('hidden');
-                    gridViewBtn.classList.add('bg-blue-100', 'text-blue-600');
-                    listViewBtn.classList.remove('bg-blue-100', 'text-blue-600');
-                    localStorage.setItem('preferredView', 'grid');
-                });
-                
-                listViewBtn.addEventListener('click', function() {
-                    gridVersion.classList.add('hidden');
-                    listVersion.classList.remove('hidden');
-                    gridViewBtn.classList.remove('bg-blue-100', 'text-blue-600');
-                    listViewBtn.classList.add('bg-blue-100', 'text-blue-600');
-                    localStorage.setItem('preferredView', 'list');
-                });
-            });
+           
             </script>
             <script>
                 function deleteComponent(event, id) {
