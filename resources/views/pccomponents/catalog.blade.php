@@ -1051,22 +1051,34 @@ document.getElementById('reset-configurator').addEventListener('click', function
             listBtn.classList.toggle('text-blue-600', view === 'list');
         }
     
-        function fetchComponents() {
-            const formData = new FormData(form);
-            const params = new URLSearchParams(formData);
-            const baseUrl = pageUrl ?? "{{ route('catalog') }}";
-            const secureUrl = baseUrl.replace(/^http:/, 'https:'); // принудительно HTTPS
+        function fetchComponents(pageUrl = null) {
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
 
-            const finalUrl = secureUrl + (secureUrl.includes('?') ? '&' : '?') + params.toString();
+    const baseUrl = pageUrl ?? "{{ route('catalog') }}";
 
-            fetch(finalUrl, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('catalog-wrapper').innerHTML = html;
-            });
-        }
+    // Получаем текущий протокол (http: или https:) и домен
+    const currentOrigin = window.location.origin;
+
+    // Убираем домен с протоколом из baseUrl и подставляем свой
+    const relativePath = baseUrl.replace(/^https?:\/\/[^/]+/, '');
+    const finalUrl = currentOrigin + relativePath + (relativePath.includes('?') ? '&' : '?') + params.toString();
+
+    fetch(finalUrl, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById('catalog-wrapper').innerHTML = html;
+        attachPaginationListeners();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch(err => {
+        console.error("Ошибка при загрузке компонентов:", err);
+    });
+}
+
+
     
         const savedView = localStorage.getItem('catalogView');
     
