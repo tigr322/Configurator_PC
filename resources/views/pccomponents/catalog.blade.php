@@ -1038,29 +1038,13 @@ document.getElementById('reset-configurator').addEventListener('click', function
 });
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const gridBtn = document.getElementById('grid-view');
-        const listBtn = document.getElementById('list-view');
-        const viewInput = document.getElementById('view-mode');
-        const form = document.getElementById('filter-form');
-    
-        function toggleViewButtons(view) {
-            gridBtn.classList.toggle('bg-blue-100', view === 'grid');
-            gridBtn.classList.toggle('text-blue-600', view === 'grid');
-            listBtn.classList.toggle('bg-blue-100', view === 'list');
-            listBtn.classList.toggle('text-blue-600', view === 'list');
-        }
-    
-        function fetchComponents(pageUrl = null) {
+    function fetchComponents(pageUrl = null) {
+    const form = document.getElementById('filter-form');
     const formData = new FormData(form);
     const params = new URLSearchParams(formData);
 
     const baseUrl = pageUrl ?? "{{ route('catalog') }}";
-
-    // Получаем текущий протокол (http: или https:) и домен
     const currentOrigin = window.location.origin;
-
-    // Убираем домен с протоколом из baseUrl и подставляем свой
     const relativePath = baseUrl.replace(/^https?:\/\/[^/]+/, '');
     const finalUrl = currentOrigin + relativePath + (relativePath.includes('?') ? '&' : '?') + params.toString();
 
@@ -1078,35 +1062,55 @@ document.getElementById('reset-configurator').addEventListener('click', function
     });
 }
 
+function attachPaginationListeners() {
+    const links = document.querySelectorAll('#pagination-wrapper a');
 
-    
-        const savedView = localStorage.getItem('catalogView');
-    
-        if (savedView === 'grid' || savedView === 'list') {
-            viewInput.value = savedView;
-            toggleViewButtons(savedView);
-    
-            // ВАЖНО: Автоматическая загрузка товаров с сохранённым видом
-            fetchComponents();
-        } else {
-            // Если нет сохранённого значения, то загружаем с дефолтным видом из input (если он есть)
-            fetchComponents();
-        }
-    
-        gridBtn.addEventListener('click', function () {
-            viewInput.value = 'grid';
-            localStorage.setItem('catalogView', 'grid');
-            toggleViewButtons('grid');
-            fetchComponents();
-        });
-    
-        listBtn.addEventListener('click', function () {
-            viewInput.value = 'list';
-            localStorage.setItem('catalogView', 'list');
-            toggleViewButtons('list');
-            fetchComponents();
+    links.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const url = this.href;
+            fetchComponents(url);
         });
     });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const gridBtn = document.getElementById('grid-view');
+    const listBtn = document.getElementById('list-view');
+    const viewInput = document.getElementById('view-mode');
+
+    function toggleViewButtons(view) {
+        gridBtn.classList.toggle('bg-blue-100', view === 'grid');
+        gridBtn.classList.toggle('text-blue-600', view === 'grid');
+        listBtn.classList.toggle('bg-blue-100', view === 'list');
+        listBtn.classList.toggle('text-blue-600', view === 'list');
+    }
+
+    const savedView = localStorage.getItem('catalogView');
+
+    if (savedView === 'grid' || savedView === 'list') {
+        viewInput.value = savedView;
+        toggleViewButtons(savedView);
+        fetchComponents();
+    } else {
+        fetchComponents();
+    }
+
+    gridBtn.addEventListener('click', function () {
+        viewInput.value = 'grid';
+        localStorage.setItem('catalogView', 'grid');
+        toggleViewButtons('grid');
+        fetchComponents();
+    });
+
+    listBtn.addEventListener('click', function () {
+        viewInput.value = 'list';
+        localStorage.setItem('catalogView', 'list');
+        toggleViewButtons('list');
+        fetchComponents();
+    });
+});
+
     </script>
     
 
