@@ -97,7 +97,7 @@
 </form>
 
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+<div class="gap-4">
     @forelse ($builds as $build)
     <div class="accordion-item border rounded-lg p-3 sm:p-4 shadow mb-4 transition-all duration-200">
         <!-- Заголовок -->
