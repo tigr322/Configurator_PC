@@ -79,7 +79,9 @@
                 <input type="hidden" id="manufacturer-filter" name="manufacturer" value="{{ request('manufacturer') }}">
                 <input type="hidden" id="memory-type-filter" name="memory_type" value="{{ request('memory_type') }}">
                 <input type="hidden" id="market-filter" name="market" value="{{ request('market') }}">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button>
+                <input type="hidden" id="view-mode" name="view" value="{{ request('view', 'grid') }}">
+
+                <!--<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button> -->
             </form>
         
             <div class="mb-6 space-y-4">
@@ -164,14 +166,14 @@
                     </div>
                 </div>
                 <!-- Кнопка сброса (показывается только если есть активные фильтры) -->
-                @if(request('socket') || request('manufacturer') || request('memory_type'))
+              
                 <div class="pt-2">
                     <button type="button" onclick="clearAllFilters()" 
                             class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-200 text-blue-600">
                         Сбросить все фильтры
                     </button>
                 </div>
-                @endif
+              
             </div>
      
     @if (auth()->check() && auth()->user()->admin == 1)
@@ -492,159 +494,12 @@
             <h1 class="text-3xl font-bold">Каталог комплектующих</h1>
                 
             <!-- Версия плиткой (по умолчанию) -->
-            
-                <div class="mx-auto max-w-2xl lg:max-w-7xl lg:px-8">
-                
-                  <div id="grid-version" class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-5">
-                    @forelse ($components as $component)
-                    <form method="POST" action="{{ route('delete', $component->id) }}" class="group">
-                      @csrf
-                      @method('DELETE')
-                      <div class="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-                        <!-- Изображение -->
-                        <div class="aspect-square w-full rounded-lg bg-gray-100 flex items-center justify-center mb-4 overflow-hidden">
-                          @if($component->image_url)
-                            @php
-                              $imagePath = 'products/' . basename($component->image_url);
-                              $url = asset('storage/' . $imagePath);
-                            @endphp
-                            <img src="{{ $url }}" 
-                                 alt="{{ $component->name }}" 
-                                 class="w-full h-full object-contain group-hover:opacity-75"
-                                 onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}'">
-                          @else
-                            <img src="{{ asset('images/defaulte_image.jpg') }}" 
-                                 alt="Default product image" 
-                                 class="w-full h-full object-contain group-hover:opacity-75">
-                          @endif
-                        </div>
-                        
-                        <!-- Информация о товаре -->
-                        <div class="flex-grow">
-                          <h3 class="text-sm font-medium line-clamp-2 mb-1">{{ $component->name }}</h3>
-                          <p class="text-xs text-gray-500">{{ $component->brand }}</p>
-                        </div>
-                        
-                        <!-- Цена и кнопки -->
-                        <div class="mt-4">
-                         
-                            <p class="text-lg font-medium text-green-600">{{ number_format($component->price, 0, '', ' ') }} ₽</p>
-                            <a href="{{ route('components.show', $component->id) }}" 
-                               class="text-sm font-medium text-blue-600 hover:text-blue-500">
-                              Подробнее
-                            </a>
-                          
-                          
-                          @if (auth()->check() && auth()->user()->admin == 1)
-                          <button type="button" 
-                          onclick="deleteComponent(event, {{ $component->id }})" 
-                          class="text-red-600 hover:text-red-800 text-sm font-medium">
-                      Удалить
-                  </button>
-                          @endif
-                          @if (session('configurator_mode') == true)
-                          <button type="button" 
-                              onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $component->image_url ? asset('storage/products/' . basename($component->image_url)) : asset('images/defaulte_image.jpg') }}', {{ $component->category_id }})"
-                              class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
-                              Добавить в сборку
-                          </button>
-                      @endif
-                      
-                        </div>
-                      </div>
-                    </form>
-                    @empty
-                      <p class="col-span-full text-center py-10 text-gray-500">Комплектующие не найдены.</p>
-                    @endforelse
-                  </div>
-                </div>
-             
-              <div id="list-version" class="hidden space-y-4">
-                @forelse ($components as $component)
-                <form method="POST" action="{{ route('delete', $component->id) }}" class="group">
-                    @csrf
-                    @method('DELETE')
-                    
-                    <div class="p-3 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex  sm:flex-row gap-3">
-                        <!-- Изображение dsd-->
-                        <div class="w-full sm:w-24 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
-                            <img src="{{ $component->image_url ? asset('storage/products/' . basename($component->image_url)) : asset('images/defaulte_image.jpg') }}"
-                                 alt="{{ $component->name }}"
-                                 class="w-full h-full object-contain group-hover:opacity-75 transition-opacity"
-                                 onerror="this.onerror=null; this.src='{{ asset('images/defaulte_image.jpg') }}';">
-                        </div>
-                        
-                        <!-- Контент -->
-                        <div class="flex-1 min-w-0">
-                            <!-- Заголовок и цена -->
-                            <div class="flex justify-between items-start gap-2 mb-1">
-                                <h3 class="text-sm font-medium line-clamp-2 leading-tight">{{ $component->name }}</h3>
-                                <span class="text-green-600 font-semibold text-sm whitespace-nowrap pl-2">
-                                    {{ number_format($component->price, 0, '', ' ') }} ₽
-                                </span>
-                            </div>
-                            
-                            <!-- Бренд -->
-                            <p class="text-xs text-gray-500 mb-2 truncate">{{ $component->brand }}</p>
-                            
-                            <!-- Характеристики -->
-                            <div class="text-xs flex flex-wrap gap-1 mb-2">
-                                @foreach(array_slice(explode(',', $component->characteristics), 0, 3) as $char)
-                                    <span class=" px-2 py-1 rounded">{{ trim($char) }}</span>
-                                @endforeach
-                                @if(count(explode(',', $component->characteristics)) > 3)
-                                    <span class=" px-2 py-1 rounded">+{{ count(explode(',', $component->characteristics)) - 3 }}</span>
-                                @endif
-                            </div>
-                            
-                            <!-- Кнопки действий -->
-                            <div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center gap-2">
-                                @if($component->shop_url)
-                                    <a href="{{ $component->shop_url }}" target="_blank" 
-                                       class="text-xs text-blue-600 hover:text-blue-800 underline truncate max-w-[120px]">
-                                        Магазин
-                                    </a>
-                                @else
-                                    <span class="flex-1"></span>
-                                @endif
-                                
-                                <div class="flex items-center gap-2">
-                                    @if(auth()->check() && auth()->user()->admin == 1)
-                                        <a href="{{ route('components.show', $component->id) }}" 
-                                           class="text-xs text-indigo-600 hover:text-indigo-800 whitespace-nowrap">
-                                            Ред.
-                                        </a>
-                                        <button type="button" 
-                                                onclick="deleteComponent(event, {{ $component->id }})"
-                                                class="text-xs text-red-600 hover:text-red-800 whitespace-nowrap">
-                                            Удалить
-                                        </button>
-                                    @endif
-                                    
-                                    @if(session('configurator_mode') == true)
-                                        <button type="button"
-                                                onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $component->image_url ? asset('storage/products/' . basename($component->image_url)) : asset('images/defaulte_image.jpg') }}', {{ $component->category_id }})"
-                                                class="ml-auto px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs whitespace-nowrap transition-colors">
-                                            В сборку
-                                        </button>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                
-                
-                @empty
-                <div class="text-center py-10">
-                    <p class="text-gray-500">Комплектующие не найдены.</p>
-                </div>
-                @endforelse
+            <div id="catalog-wrapper">
+                @include('pccomponents.partial.components', ['components' => $components, 'view' => request('view', 'grid')])
             </div>
+               
        
-        <div class="mt-6">
-            {{ $components->withQueryString()->links() }}
-        </div>
+        
     </div>
     @if (session('configurator_mode') == true)
     <div class="lg:w-1/4">
@@ -1182,7 +1037,117 @@ document.getElementById('reset-configurator').addEventListener('click', function
     @endforeach
 });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const gridBtn = document.getElementById('grid-view');
+        const listBtn = document.getElementById('list-view');
+        const viewInput = document.getElementById('view-mode');
+        const form = document.getElementById('filter-form');
+    
+        function toggleViewButtons(view) {
+            gridBtn.classList.toggle('bg-blue-100', view === 'grid');
+            gridBtn.classList.toggle('text-blue-600', view === 'grid');
+            listBtn.classList.toggle('bg-blue-100', view === 'list');
+            listBtn.classList.toggle('text-blue-600', view === 'list');
+        }
+    
+        function fetchComponents() {
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+    
+            fetch("{{ route('catalog') }}?" + params.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('catalog-wrapper').innerHTML = html;
+            });
+        }
+    
+        const savedView = localStorage.getItem('catalogView');
+    
+        if (savedView === 'grid' || savedView === 'list') {
+            viewInput.value = savedView;
+            toggleViewButtons(savedView);
+    
+            // ВАЖНО: Автоматическая загрузка товаров с сохранённым видом
+            fetchComponents();
+        } else {
+            // Если нет сохранённого значения, то загружаем с дефолтным видом из input (если он есть)
+            fetchComponents();
+        }
+    
+        gridBtn.addEventListener('click', function () {
+            viewInput.value = 'grid';
+            localStorage.setItem('catalogView', 'grid');
+            toggleViewButtons('grid');
+            fetchComponents();
+        });
+    
+        listBtn.addEventListener('click', function () {
+            viewInput.value = 'list';
+            localStorage.setItem('catalogView', 'list');
+            toggleViewButtons('list');
+            fetchComponents();
+        });
+    });
+    </script>
+    
 
+    <script>
+        function submitFilters() {
+            const form = document.getElementById('filter-form');
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData).toString();
+    
+            fetch(form.action + '?' + params, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('component-container').innerHTML = html;
+                history.pushState(null, '', form.action + '?' + params); // обновляет URL без перезагрузки
+            })
+            .catch(error => console.error('Ошибка фильтрации:', error));
+        }
+    
+        // Отправка по изменению любого поля формы
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('filter-form').addEventListener('change', function () {
+                submitFilters();
+            });
+        });
+    
+        // Обработка кастомных кнопок фильтра (сокет, вендор и т.п.)
+        function filterBySocket(value) {
+            document.getElementById('socket-filter').value = value;
+            submitFilters();
+        }
+    
+        function filterByManufacturer(value) {
+            document.getElementById('manufacturer-filter').value = value;
+            submitFilters();
+        }
+    
+        function filterByMemoryType(value) {
+            document.getElementById('memory-type-filter').value = value;
+            submitFilters();
+        }
+    
+        function filterByMarket(value) {
+            document.getElementById('market-filter').value = value;
+            submitFilters();
+        }
+    
+        function clearAllFilters() {
+            document.getElementById('socket-filter').value = '';
+            document.getElementById('manufacturer-filter').value = '';
+            document.getElementById('memory-type-filter').value = '';
+            document.getElementById('market-filter').value = '';
+            submitFilters();
+        }
+    </script>
+    
 
 </body>
 </html>

@@ -85,12 +85,23 @@ class ComponentController extends Controller
         // Пагинация
         $perPage = $request->filled('pagination') ? (int)$request->pagination : 12;
         $components = $query->paginate($perPage);
-    
+        $view = $request->input('view', 'grid');
+
         $categories = Category::all();
         $rules = CompatibilityRule::all();
         $markets = Markets::all();
         $marketsUrls = MarketsUrls::all();
-        
+        if ($request->ajax()) {
+            return view('pccomponents.partial.components', [
+                'components' => $components,
+                'view' => $view,
+                'categories' => $categories,
+                'rules' => $rules,
+                'markets' => $markets,
+                'marketsUrls' => $marketsUrls,
+            ])->render();
+        }
+    
         return view('pccomponents.catalog', compact('components', 'categories', 'rules', 'markets', 'marketsUrls'));
     }
     public function getUrlsByMarket(Request $request)
