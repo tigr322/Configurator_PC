@@ -1054,8 +1054,9 @@ document.getElementById('reset-configurator').addEventListener('click', function
         function fetchComponents() {
             const formData = new FormData(form);
             const params = new URLSearchParams(formData);
-    
-            fetch("{{ route('catalog') }}?" + params.toString(), {
+            const url = "{{ route('catalog') }}".replace(/^http:/, window.location.protocol);
+        
+            fetch(url + params.toString(), {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(res => res.text())
