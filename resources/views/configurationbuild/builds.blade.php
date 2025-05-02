@@ -206,16 +206,7 @@
               
                 </div>
             @endforeach
-        </div>
-    </div>
-            <div class="mt-2 text-sm" id="vote-counts-{{ $build->id }}">
-                👍 Лайков: <span id="likes-{{ $build->id }}">{{ $build->likes()->count() }}</span> |
-                👎 Дизлайков: <span id="dislikes-{{ $build->id }}">{{ $build->dislikes()->count() }}</span> |
-                🏆 Голосов за лучшую сборку: <span id="best-{{ $build->id }}">{{ $build->bestBuildVotes()->count() }}</span>
-            </div>
             @if (auth()->check())
-              
-           
             <form method="POST" action="{{ route('comments.store') }}" class="max-w-xl mx-auto p-6 rounded-2xl shadow-md">
                 @csrf
                 <input type="hidden" name="configuration_id" value="{{ $build->id }}">
@@ -234,6 +225,18 @@
                     </button>
                 </div>
             </form>
+            @endif
+        </div>
+    </div>
+            <div class="mt-2 text-sm" id="vote-counts-{{ $build->id }}">
+                👍 Лайков: <span id="likes-{{ $build->id }}">{{ $build->likes()->count() }}</span> |
+                👎 Дизлайков: <span id="dislikes-{{ $build->id }}">{{ $build->dislikes()->count() }}</span> |
+                🏆 Голосов за лучшую сборку: <span id="best-{{ $build->id }}">{{ $build->bestBuildVotes()->count() }}</span>
+            </div>
+            @if (auth()->check())
+              
+           
+           
             <div class="flex gap-4 mt-4" id="votes-{{ $build->id }}">
                 <button 
                     class="vote-button px-3 py-1  text-green-700 rounded hover:bg-green-200" 
