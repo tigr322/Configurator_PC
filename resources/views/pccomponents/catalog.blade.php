@@ -588,12 +588,12 @@
                             <p class="text-xs text-gray-500 mb-2 truncate">{{ $component->brand }}</p>
                             
                             <!-- Характеристики -->
-                            <div class="text-xs text-gray-700 flex flex-wrap gap-1 mb-2">
+                            <div class="text-xs flex flex-wrap gap-1 mb-2">
                                 @foreach(array_slice(explode(',', $component->characteristics), 0, 3) as $char)
-                                    <span class="bg-gray-100 px-2 py-1 rounded">{{ trim($char) }}</span>
+                                    <span class=" px-2 py-1 rounded">{{ trim($char) }}</span>
                                 @endforeach
                                 @if(count(explode(',', $component->characteristics)) > 3)
-                                    <span class="bg-gray-100 px-2 py-1 rounded">+{{ count(explode(',', $component->characteristics)) - 3 }}</span>
+                                    <span class=" px-2 py-1 rounded">+{{ count(explode(',', $component->characteristics)) - 3 }}</span>
                                 @endif
                             </div>
                             
