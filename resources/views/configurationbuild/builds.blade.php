@@ -58,13 +58,15 @@
         class="w-full px-4 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none"
     >
 
-    <input 
-        type="number" 
-        name="pagination" 
-        placeholder="Количество на странице" 
-        value="{{ request('pagination') }}"
-        class="w-full px-4 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:outline-none"
-    >
+    <select name="pagination"
+    class="bg-gray-100 p-2 rounded text-sm text-black border"
+    onchange="document.getElementById('filter-form').dispatchEvent(new Event('submit'))">
+    <option value="">Выберите пагинацию</option>
+    <option value="8" {{ request('pagination') == 8 ? 'selected' : '' }}>8</option>
+    <option value="16" {{ request('pagination') == 16 ? 'selected' : '' }}>16</option>
+    <option value="24" {{ request('pagination') == 24 ? 'selected' : '' }}>24</option>
+    <option value="32" {{ request('pagination') == 32 ? 'selected' : '' }}>32</option>
+</select>
 
     <select 
         name="sort"
