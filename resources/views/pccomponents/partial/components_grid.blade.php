@@ -39,12 +39,16 @@
             @endif
 
             @if (session('configurator_mode') == true)
-                <button type="button" 
-                        onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $imageUrl }}', {{ $component->category_id }})"
-                        class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
-                    Добавить в сборку
-                </button>
-            @endif
+            <button type="button" 
+        onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $imageUrl }}', {{ $component->category_id }})"
+        class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
+    Добавить в сборку
+</button>
+    <p class="incompatible-text text-red-600 text-xs mt-1 hidden text-center">
+        Несовместим с текущей сборкой
+    </p>
+@endif
+
         </div>
     </div>
 </form>

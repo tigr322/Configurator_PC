@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -979,108 +980,82 @@
         });
     });
 </script>
+
 <script>
-
-function addToConfiguration(componentId, componentName, componentImageUrl, categoryId) {
-    // Найдем элементы по ID
-    const imageElement = document.getElementById('preview_image_' + categoryId);
-    const nameElement = document.getElementById('preview_name_' + categoryId);
-    const inputElement = document.getElementById('component_input_' + categoryId);
-
-    // Обновим содержимое
-    if (imageElement) {
-        imageElement.src = componentImageUrl;
-    }
-    if (nameElement) {
-        nameElement.textContent = componentName; 
-    }
-    if (inputElement) {
-        inputElement.value = componentId;
-    }
-}
-document.getElementById('reset-configurator').addEventListener('click', function() {
-    @foreach($categories as $category)
-        document.getElementById('preview_image_{{ $category->id }}').src = "{{ asset('images/defaulte_image.jpg') }}";
-        document.getElementById('preview_name_{{ $category->id }}').textContent = "Не выбрано";
-        document.getElementById('component_input_{{ $category->id }}').value = "";
-    @endforeach
-});
-</script>
-<script>
-    function fetchComponents(pageUrl = null) {
-    const form = document.getElementById('filter-form');
-    const formData = new FormData(form);
-    const params = new URLSearchParams(formData);
-
-    const baseUrl = pageUrl ?? "{{ route('catalog') }}";
-    const currentOrigin = window.location.origin;
-    const relativePath = baseUrl.replace(/^https?:\/\/[^/]+/, '');
-    const finalUrl = currentOrigin + relativePath + (relativePath.includes('?') ? '&' : '?') + params.toString();
-
-    fetch(finalUrl, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(res => res.text())
-    .then(html => {
-        document.getElementById('catalog-wrapper').innerHTML = html;
-        attachPaginationListeners();
-        //window.scrollTo({ top: 0, behavior: 'smooth' });
-    })
-    .catch(err => {
-        console.error("Ошибка при загрузке компонентов:", err);
-    });
-}
-
-function attachPaginationListeners() {
-    const links = document.querySelectorAll('#pagination-wrapper a');
-
-    links.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const url = this.href;
-            fetchComponents(url);
+    document.addEventListener('DOMContentLoaded', function () {
+        const gridBtn = document.getElementById('grid-view');
+        const listBtn = document.getElementById('list-view');
+        const viewInput = document.getElementById('view-mode');
+        const filterForm = document.getElementById('filter-form');
+    
+        function fetchComponents(pageUrl = null) {
+            const formData = new FormData(filterForm);
+            const params = new URLSearchParams(formData);
+    
+            const baseUrl = pageUrl ?? "{{ route('catalog') }}";
+            const currentOrigin = window.location.origin;
+            const relativePath = baseUrl.replace(/^https?:\/\/[^/]+/, '');
+            const finalUrl = currentOrigin + relativePath + (relativePath.includes('?') ? '&' : '?') + params.toString();
+    
+            fetch(finalUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('catalog-wrapper').innerHTML = html;
+            })
+            .catch(err => {
+                console.error("Ошибка при загрузке компонентов:", err);
+            });
+        }
+    
+        function toggleViewButtons(view) {
+            gridBtn.classList.toggle('bg-blue-100', view === 'grid');
+            gridBtn.classList.toggle('text-blue-600', view === 'grid');
+            listBtn.classList.toggle('bg-blue-100', view === 'list');
+            listBtn.classList.toggle('text-blue-600', view === 'list');
+        }
+    
+        const savedView = localStorage.getItem('catalogView');
+        if (savedView === 'grid' || savedView === 'list') {
+            viewInput.value = savedView;
+            toggleViewButtons(savedView);
+        }
+    
+        // Первая загрузка
+        fetchComponents();
+    
+        // Переключение вида
+        gridBtn.addEventListener('click', function () {
+            viewInput.value = 'grid';
+            localStorage.setItem('catalogView', 'grid');
+            toggleViewButtons('grid');
+            fetchComponents();
+        });
+    
+        listBtn.addEventListener('click', function () {
+            viewInput.value = 'list';
+            localStorage.setItem('catalogView', 'list');
+            toggleViewButtons('list');
+            fetchComponents();
+        });
+    
+        // Отправка формы по смене любого фильтра
+        filterForm.addEventListener('change', function () {
+            fetchComponents();
+        });
+    
+        // Делегирование кликов по пагинации
+        document.addEventListener('click', function (e) {
+            const link = e.target.closest('#pagination-wrapper a');
+            if (link) {
+                e.preventDefault();
+                fetchComponents(link.href);
+            }
         });
     });
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    const gridBtn = document.getElementById('grid-view');
-    const listBtn = document.getElementById('list-view');
-    const viewInput = document.getElementById('view-mode');
-
-    function toggleViewButtons(view) {
-        gridBtn.classList.toggle('bg-blue-100', view === 'grid');
-        gridBtn.classList.toggle('text-blue-600', view === 'grid');
-        listBtn.classList.toggle('bg-blue-100', view === 'list');
-        listBtn.classList.toggle('text-blue-600', view === 'list');
-    }
-
-    const savedView = localStorage.getItem('catalogView');
-
-    if (savedView === 'grid' || savedView === 'list') {
-        viewInput.value = savedView;
-        toggleViewButtons(savedView);
-        fetchComponents();
-    } else {
-        fetchComponents();
-    }
-
-    gridBtn.addEventListener('click', function () {
-        viewInput.value = 'grid';
-        localStorage.setItem('catalogView', 'grid');
-        toggleViewButtons('grid');
-        fetchComponents();
-    });
-
-    listBtn.addEventListener('click', function () {
-        viewInput.value = 'list';
-        localStorage.setItem('catalogView', 'list');
-        toggleViewButtons('list');
-        fetchComponents();
-    });
-});
-
     </script>
+    
     
 
     <script>
@@ -1136,6 +1111,69 @@ document.addEventListener('DOMContentLoaded', function () {
             submitFilters();
         }
     </script>
+    <script>
+        function addToConfiguration(componentId, componentName, componentImageUrl, categoryId) {
+            const imageElement = document.getElementById('preview_image_' + categoryId);
+            const nameElement = document.getElementById('preview_name_' + categoryId);
+            const inputElement = document.getElementById('component_input_' + categoryId);
+    
+            if (imageElement) imageElement.src = componentImageUrl;
+            if (nameElement) nameElement.textContent = componentName;
+            if (inputElement) inputElement.value = componentId;
+    
+            const selectedComponents = [];
+            @foreach($categories as $category)
+                const componentInput{{ $category->id }} = document.getElementById('component_input_{{ $category->id }}');
+                if (componentInput{{ $category->id }} && componentInput{{ $category->id }}.value) {
+                    selectedComponents.push(parseInt(componentInput{{ $category->id }}.value));
+                }
+            @endforeach
+    
+            checkCompatibilityMulti(selectedComponents);
+        }
+    
+        function checkCompatibilityMulti(selectedComponents) {
+            fetch('/configurator/check-compatibility-multi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    selected_components: selectedComponents
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Совместимость:', data);
+                handleCompatibilityResults(data);
+            })
+            .catch(error => {
+                console.error('Ошибка при проверке совместимости:', error);
+            });
+        }
+    
+        function handleCompatibilityResults(results) {
+            for (const categoryId in results) {
+                const incompatibleComponents = results[categoryId];
+                if (incompatibleComponents.length > 0) {
+                    alert('Несовместимые компоненты в категории ' + categoryId + ': ' + incompatibleComponents.join(', '));
+                }
+            }
+        }
+    
+        // Для кнопки сброса
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('reset-configurator').addEventListener('click', function() {
+                @foreach($categories as $category)
+                    document.getElementById('preview_image_{{ $category->id }}').src = "{{ asset('images/defaulte_image.jpg') }}";
+                    document.getElementById('preview_name_{{ $category->id }}').textContent = "Не выбрано";
+                    document.getElementById('component_input_{{ $category->id }}').value = "";
+                @endforeach
+            });
+        });
+    </script>
+    
     
 
 </body>

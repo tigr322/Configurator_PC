@@ -66,7 +66,7 @@
     <option value="16" {{ request('pagination') == 16 ? 'selected' : '' }}>16</option>
     <option value="24" {{ request('pagination') == 24 ? 'selected' : '' }}>24</option>
     <option value="32" {{ request('pagination') == 32 ? 'selected' : '' }}>32</option>
-</select>
+    </select>
 
     <select 
         name="sort"

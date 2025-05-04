@@ -28,14 +28,23 @@
             <p class="text-xs text-gray-500 mb-2 truncate">{{ $component->brand }}</p>
 
             <!-- Характеристики -->
+            @php
+                $allChars = explode(',', $component->characteristics);
+                $displayedChars = array_slice($allChars, 0, 10);
+            @endphp
+
             <div class="text-xs flex flex-wrap gap-1 mb-2">
-                @foreach(array_slice(explode(',', $component->characteristics), 0, 3) as $char)
-                    <span class="px-2 py-1 rounded">{{ trim($char) }}</span>
+                @foreach($displayedChars as $char)
+                    <span class="px-2 py-1 rounded ">{{ trim($char) }}</span>
                 @endforeach
-                @if(count(explode(',', $component->characteristics)) > 3)
-                    <span class="px-2 py-1 rounded">+{{ count(explode(',', $component->characteristics)) - 3 }}</span>
+
+                @if(count($allChars) > 10)
+                    <span class="px-2 py-1 rounded ">
+                        +{{ count($allChars) - 10 }}
+                    </span>
                 @endif
             </div>
+
 
             <!-- Кнопки -->
             <div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center gap-2">
