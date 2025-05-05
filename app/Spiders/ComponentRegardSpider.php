@@ -28,60 +28,73 @@ class ComponentRegardSpider extends BasicSpider{
 
  
     protected function parseCompatibilityData(string $text): array
-{
-    $data = [];
-    if (preg_match_all('/\b(ATX|Micro[-\s]?ATX|mATX|Mini[-\s]?ITX|E[-\s]?ATX)\b/i', $text, $formFactorMatches)) {
-        $formFactors = array_map(function ($f) {
-            $normalized = str_replace(['-', ' '], '', $f);
-            return $normalized === 'MICROATX' ? 'mATX' : ($normalized === 'MINIITX' ? 'Mini-ITX' : $normalized);
-        }, $formFactorMatches[1]);
+    {
+        $data = [];
     
-        $data['form_factor'] = array_values(array_unique($formFactors));
+        // Form factor
+        if (preg_match_all('/\b(ATX|Micro[-\s]?ATX|mATX|Mini[-\s]?ITX|E[-\s]?ATX)\b/i', $text, $formFactorMatches)) {
+            $formFactors = array_map(function ($f) {
+                $normalized = strtoupper(str_replace(['-', ' '], '', $f));
+                return match ($normalized) {
+                    'MICROATX', 'MATX' => 'mATX',
+                    'MINIITX' => 'Mini-ITX',
+                    default => $normalized,
+                };
+            }, $formFactorMatches[1]);
+            
+    
+            $data['form_factor'] = array_values(array_unique($formFactors));
+        }
+    
+        // Также обрабатываем ATX12V как form_factor = ATX
+        if (preg_match('/ATX12V/i', $text)) {
+            $data['form_factor'][] = 'ATX';
+            $data['form_factor'] = array_unique($data['form_factor']); // убираем дубли
+        }
+    
+        // Socket
+        if (preg_match('/LGA\s?(\d+)/i', $text, $lgaMatch)) {
+            $data['socket'] = 'LGA' . $lgaMatch[1];
+        } elseif (preg_match('/AM\s?(\d+)/i', $text, $amMatch)) {
+            $data['socket'] = 'AM' . $amMatch[1];
+        }
+    
+        // Speed (MHz)
+        if (preg_match('/(\d{3,5})\s?(МГц|MHz)/iu', $text, $matches)) {
+            $data['speed'] = $matches[1] . 'MHz';
+        }
+    
+        // Chipset
+        if (preg_match('/(Intel|AMD)\s+(Z\d{3}|B\d{3}|H\d{3}|X\d{3}|A\d{3})/i', $text, $chipsetMatch)) {
+            $data['chipset'] = $chipsetMatch[1] . ' ' . strtoupper($chipsetMatch[2]);
+        }
+    
+        // Memory type (DDR)
+        if (preg_match('/DDR(\d)/i', $text, $ddrMatch)) {
+            $data['memory_type'] = 'DDR' . $ddrMatch[1];
+        }
+    
+        // Интерфейсы (может быть несколько)
+        $interfaces = [];
+        if (preg_match_all('/M[\.\s-]?2/i', $text)) {
+            $interfaces[] = 'M.2';
+            $interfaces[] = 'SATA';
+        }
+        if (preg_match_all('/SATA\s*(II|III|3\.0)?/i', $text)) {
+            $interfaces[] = 'SATA';
+        }
+        if (!empty($interfaces)) {
+            $data['interface'] = array_unique($interfaces);
+        }
+    
+        // PCI-E версия
+        if (preg_match('/PCI[-\s]?E\s*(\d(?:\.\d)?)/i', $text, $pcieMatch)) {
+            $data['pcie_version'] = $pcieMatch[1];
+        }
+    
+        return $data;
     }
     
-    // Form factor
-    
-
-    // Socket
-    if (preg_match('/LGA\s?(\d+)/i', $text, $lgaMatch)) {
-        $data['socket'] = 'LGA' . $lgaMatch[1];
-    } elseif (preg_match('/AM\s?(\d+)/i', $text, $amMatch)) {
-        $data['socket'] = 'AM' . $amMatch[1];
-    }
-    if (preg_match('/(\d{3,5})\s?(МГц|MHz)/iu', $text, $matches)) {
-        $data['speed'] = $matches[1] . 'MHz';
-    }
-    // Chipset
-    if (preg_match('/(Intel|AMD)\s+(Z\d{3}|B\d{3}|H\d{3}|X\d{3}|A\d{3})/i', $text, $chipsetMatch)) {
-        $data['chipset'] = $chipsetMatch[1] . ' ' . strtoupper($chipsetMatch[2]);
-    }
-
-    // Memory type (DDR)
-    if (preg_match('/DDR(\d)/i', $text, $ddrMatch)) {
-        $data['memory_type'] = 'DDR' . $ddrMatch[1];
-    }
-
-    // Интерфейсы (может быть несколько)
-    $interfaces = [];
-    if (preg_match_all('/M[\.\s-]?2/i', $text, $m2Match)) {
-        $interfaces[] = 'M.2';
-        $interfaces[] ='SATA';
-    }
-    if (preg_match_all('/SATA\s*(II|III|3\.0)?/i', $text, $sataMatch)) {
-        $interfaces[] = 'SATA';
-    }
-    if (!empty($interfaces)) {
-        $data['interface'] = array_unique($interfaces);
-    }
-
-    // PCI-E версия
-    if (preg_match('/PCI[-\s]?E\s*(\d(?:\.\d)?)/i', $text, $pcieMatch)) {
-        $data['pcie_version'] = $pcieMatch[1];
-    }
-
-    return $data;
-}
-
     
     public function parse(Response $response): Generator
     {
