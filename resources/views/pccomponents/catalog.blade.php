@@ -16,12 +16,6 @@
     
     <div class="container mx-auto">
         
-        
-        {{-- Список компонентов --}}
-        <div class="flex flex-col lg:flex-row">
-           
-
-
         @if (session('success'))
             <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
                 {{ session('success') }}
@@ -37,6 +31,12 @@
                 </ul>
             </div>
         @endif
+        {{-- Список компонентов --}}
+        <div class="flex flex-col lg:flex-row">
+           
+
+
+        
             <div class="lg:w-1/4">
                 <div 
                 class=""
@@ -820,7 +820,7 @@
             </script>
             <script>
                 function deleteComponent(event, id) {
-                        event.preventDefault(); // Важно: предотвращаем действие по умолчанию
+                        event.preventDefault(); // Важно: предотвращаем действие по умолчаниюss
                         
                         if (!confirm('Вы уверены, что хотите удалить этот компонент?')) return;
 
@@ -892,6 +892,7 @@
     // Фильтрация по сокету
     function filterBySocket(socket) {
         document.getElementById('socket-filter').value = socket;
+        
         document.getElementById('filter-form').submit();
     }
     
@@ -981,80 +982,7 @@
     });
 </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const gridBtn = document.getElementById('grid-view');
-        const listBtn = document.getElementById('list-view');
-        const viewInput = document.getElementById('view-mode');
-        const filterForm = document.getElementById('filter-form');
-    
-        function fetchComponents(pageUrl = null) {
-            const formData = new FormData(filterForm);
-            const params = new URLSearchParams(formData);
-    
-            const baseUrl = pageUrl ?? "{{ route('catalog') }}";
-            const currentOrigin = window.location.origin;
-            const relativePath = baseUrl.replace(/^https?:\/\/[^/]+/, '');
-            const finalUrl = currentOrigin + relativePath + (relativePath.includes('?') ? '&' : '?') + params.toString();
-    
-            fetch(finalUrl, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('catalog-wrapper').innerHTML = html;
-            })
-            .catch(err => {
-                console.error("Ошибка при загрузке компонентов:", err);
-            });
-        }
-    
-        function toggleViewButtons(view) {
-            gridBtn.classList.toggle('bg-blue-100', view === 'grid');
-            gridBtn.classList.toggle('text-blue-600', view === 'grid');
-            listBtn.classList.toggle('bg-blue-100', view === 'list');
-            listBtn.classList.toggle('text-blue-600', view === 'list');
-        }
-    
-        const savedView = localStorage.getItem('catalogView');
-        if (savedView === 'grid' || savedView === 'list') {
-            viewInput.value = savedView;
-            toggleViewButtons(savedView);
-        }
-    
-        // Первая загрузка
-        fetchComponents();
-    
-        // Переключение вида
-        gridBtn.addEventListener('click', function () {
-            viewInput.value = 'grid';
-            localStorage.setItem('catalogView', 'grid');
-            toggleViewButtons('grid');
-            fetchComponents();
-        });
-    
-        listBtn.addEventListener('click', function () {
-            viewInput.value = 'list';
-            localStorage.setItem('catalogView', 'list');
-            toggleViewButtons('list');
-            fetchComponents();
-        });
-    
-        // Отправка формы по смене любого фильтра
-        filterForm.addEventListener('change', function () {
-            fetchComponents();
-        });
-    
-        // Делегирование кликов по пагинации
-        document.addEventListener('click', function (e) {
-            const link = e.target.closest('#pagination-wrapper a');
-            if (link) {
-                e.preventDefault();
-                fetchComponents(link.href);
-            }
-        });
-    });
-    </script>
+
     
     
 
@@ -1112,27 +1040,46 @@
         }
     </script>
     <script>
+       
+        </script>
+    <script>
+        
         function addToConfiguration(componentId, componentName, componentImageUrl, categoryId) {
-            const imageElement = document.getElementById('preview_image_' + categoryId);
-            const nameElement = document.getElementById('preview_name_' + categoryId);
-            const inputElement = document.getElementById('component_input_' + categoryId);
-    
-            if (imageElement) imageElement.src = componentImageUrl;
-            if (nameElement) nameElement.textContent = componentName;
-            if (inputElement) inputElement.value = componentId;
-    
-            const selectedComponents = [];
-            @foreach($categories as $category)
-                const componentInput{{ $category->id }} = document.getElementById('component_input_{{ $category->id }}');
-                if (componentInput{{ $category->id }} && componentInput{{ $category->id }}.value) {
-                    selectedComponents.push(parseInt(componentInput{{ $category->id }}.value));
-                }
-            @endforeach
-    
-            checkCompatibilityMulti(selectedComponents);
+    const imageElement = document.getElementById('preview_image_' + categoryId);
+    const nameElement = document.getElementById('preview_name_' + categoryId);
+    const inputElement = document.getElementById('component_input_' + categoryId);
+
+    // Обновляем изображение, имя и значение
+    if (imageElement) imageElement.src = componentImageUrl;
+    if (nameElement) nameElement.textContent = componentName;
+    if (inputElement) inputElement.value = componentId;
+
+    // Обновляем выбранные компоненты
+    updateSelectedComponents();
+}
+
+function updateSelectedComponents() {
+    const selectedComponents = {};
+
+    @foreach($categories as $category)
+        const componentInput{{ $category->id }} = document.getElementById('component_input_{{ $category->id }}');
+        if (componentInput{{ $category->id }} && componentInput{{ $category->id }}.value) {
+            selectedComponents[{{ $category->id }}] = parseInt(componentInput{{ $category->id }}.value);
         }
+    @endforeach
+
+    console.log('Выбранные компоненты:', selectedComponents);
+    checkCompatibilityMulti(selectedComponents);
+}
+
     
         function checkCompatibilityMulti(selectedComponents) {
+            // Сначала разблокируем все кнопки и прячем сообщения
+            document.querySelectorAll('.add-to-config-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.closest('.component-card')?.querySelector('.incompatible-text')?.classList.add('hidden');
+            });
+    
             fetch('/configurator/check-compatibility-multi', {
                 method: 'POST',
                 headers: {
@@ -1155,14 +1102,27 @@
     
         function handleCompatibilityResults(results) {
             for (const categoryId in results) {
-                const incompatibleComponents = results[categoryId];
-                if (incompatibleComponents.length > 0) {
-                    alert('Несовместимые компоненты в категории ' + categoryId + ': ' + incompatibleComponents.join(', '));
-                }
+                const incompatibleIds = results[categoryId];
+
+                incompatibleIds.forEach(componentId => {
+                    const btn = document.querySelector(`.add-to-config-btn[data-component-id="${componentId}"]`);
+                    if (btn) {
+                        btn.disabled = true;
+
+                        const card = btn.closest('.component-card');
+                        if (card) {
+                            const warning = card.querySelector('.incompatible-text');
+                            if (warning) {
+                                warning.classList.remove('hidden');
+                            }
+                        }
+                    }
+                });
             }
         }
+
     
-        // Для кнопки сброса
+        // Сброс конфигурации
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('reset-configurator').addEventListener('click', function() {
                 @foreach($categories as $category)
@@ -1170,9 +1130,89 @@
                     document.getElementById('preview_name_{{ $category->id }}').textContent = "Не выбрано";
                     document.getElementById('component_input_{{ $category->id }}').value = "";
                 @endforeach
+    
+                // Разблокируем все кнопки и прячем ошибки
+                document.querySelectorAll('.add-to-config-btn').forEach(btn => {
+                    btn.disabled = false;
+                    btn.closest('.component-card')?.querySelector('.incompatible-text')?.classList.add('hidden');
+                });
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const gridBtn = document.getElementById('grid-view');
+            const listBtn = document.getElementById('list-view');
+            const viewInput = document.getElementById('view-mode');
+            const filterForm = document.getElementById('filter-form');
+        
+            function fetchComponents(pageUrl = null) {
+                const formData = new FormData(filterForm);
+                const params = new URLSearchParams(formData);
+        
+                const baseUrl = pageUrl ?? "{{ route('catalog') }}";
+                const currentOrigin = window.location.origin;
+                const relativePath = baseUrl.replace(/^https?:\/\/[^/]+/, '');
+                const finalUrl = currentOrigin + relativePath + (relativePath.includes('?') ? '&' : '?') + params.toString();
+        
+                fetch(finalUrl, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('catalog-wrapper').innerHTML = html;
+                })
+                .catch(err => {
+                    console.error("Ошибка при загрузке компонентов:", err);
+                });
+                
+            }
+        
+            function toggleViewButtons(view) {
+                gridBtn.classList.toggle('bg-blue-100', view === 'grid');
+                gridBtn.classList.toggle('text-blue-600', view === 'grid');
+                listBtn.classList.toggle('bg-blue-100', view === 'list');
+                listBtn.classList.toggle('text-blue-600', view === 'list');
+            }
+        
+            const savedView = localStorage.getItem('catalogView');
+            if (savedView === 'grid' || savedView === 'list') {
+                viewInput.value = savedView;
+                toggleViewButtons(savedView);
+            }
+        
+            // Первая загрузка
+            fetchComponents();
+        
+            // Переключение вида
+            gridBtn.addEventListener('click', function () {
+                viewInput.value = 'grid';
+                localStorage.setItem('catalogView', 'grid');
+                toggleViewButtons('grid');
+                fetchComponents();
+            });
+        
+            listBtn.addEventListener('click', function () {
+                viewInput.value = 'list';
+                localStorage.setItem('catalogView', 'list');
+                toggleViewButtons('list');
+                fetchComponents();
+            });
+        
+            // Отправка формы по смене любого фильтра
+            filterForm.addEventListener('change', function () {
+                fetchComponents();
+            });
+        
+            // Делегирование кликов по пагинации
+            document.addEventListener('click', function (e) {
+                const link = e.target.closest('#pagination-wrapper a');
+                if (link) {
+                    e.preventDefault();
+                    fetchComponents(link.href);
+                }
             });
         });
     </script>
+
     
     
 
