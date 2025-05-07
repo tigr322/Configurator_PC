@@ -997,10 +997,10 @@
             })
             .then(response => response.text())
             .then(html => {
-    document.getElementById('component-container').innerHTML = html;
-    history.pushState(null, '', form.action + '?' + params);
-    updateSelectedComponents(); // <- добавил это
-})
+                document.getElementById('component-container').innerHTML = html;
+                history.pushState(null, '', form.action + '?' + params);
+                updateSelectedComponents(); 
+            })
 
             .catch(error => console.error('Ошибка фильтрации:', error));
         }
