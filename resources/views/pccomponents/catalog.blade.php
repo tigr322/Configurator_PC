@@ -997,9 +997,11 @@
             })
             .then(response => response.text())
             .then(html => {
-                document.getElementById('component-container').innerHTML = html;
-                history.pushState(null, '', form.action + '?' + params); // обновляет URL без перезагрузки
-            })
+    document.getElementById('component-container').innerHTML = html;
+    history.pushState(null, '', form.action + '?' + params);
+    updateSelectedComponents(); // <- добавил это
+})
+
             .catch(error => console.error('Ошибка фильтрации:', error));
         }
     
@@ -1145,26 +1147,27 @@ function updateSelectedComponents() {
             const filterForm = document.getElementById('filter-form');
         
             function fetchComponents(pageUrl = null) {
-                const formData = new FormData(filterForm);
-                const params = new URLSearchParams(formData);
-        
-                const baseUrl = pageUrl ?? "{{ route('catalog') }}";
-                const currentOrigin = window.location.origin;
-                const relativePath = baseUrl.replace(/^https?:\/\/[^/]+/, '');
-                const finalUrl = currentOrigin + relativePath + (relativePath.includes('?') ? '&' : '?') + params.toString();
-        
-                fetch(finalUrl, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('catalog-wrapper').innerHTML = html;
-                })
-                .catch(err => {
-                    console.error("Ошибка при загрузке компонентов:", err);
-                });
-                
-            }
+    const formData = new FormData(filterForm);
+    const params = new URLSearchParams(formData);
+
+    const baseUrl = pageUrl ?? "{{ route('catalog') }}";
+    const currentOrigin = window.location.origin;
+    const relativePath = baseUrl.replace(/^https?:\/\/[^/]+/, '');
+    const finalUrl = currentOrigin + relativePath + (relativePath.includes('?') ? '&' : '?') + params.toString();
+
+    fetch(finalUrl, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.text())
+    .then(html => {
+        document.getElementById('catalog-wrapper').innerHTML = html;
+        updateSelectedComponents(); // <- добавил это
+    })
+    .catch(err => {
+        console.error("Ошибка при загрузке компонентов:", err);
+    });
+}
+
         
             function toggleViewButtons(view) {
                 gridBtn.classList.toggle('bg-blue-100', view === 'grid');
