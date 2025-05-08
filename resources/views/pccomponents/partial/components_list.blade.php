@@ -70,13 +70,19 @@
                         </button>
                     @endif
 
-                    @if(session('configurator_mode') == true)
-                        <button type="button"
-                                onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $imageUrl }}', {{ $component->category_id }})"
-                                class="ml-auto px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs whitespace-nowrap transition-colors">
-                            В сборку
+                    @if (session('configurator_mode') == true)
+                    <div class="component-card">
+                        <button type="button" 
+                            onclick="addToConfiguration({{ $component->id }}, '{{ $component->name }}', '{{ $imageUrl }}', {{ $component->category_id }})"
+                            class="add-to-config-btn px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
+                            data-component-id="{{ $component->id }}">
+                            Добавить в сборку
                         </button>
-                    @endif
+                        <p class="incompatible-text text-red-600 text-xs mt-1 hidden text-center">
+                            Несовместим с текущей сборкой
+                        </p>
+                    </div>
+                @endif
                 </div>
             </div>
         </div>

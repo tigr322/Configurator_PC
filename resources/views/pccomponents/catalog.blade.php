@@ -516,9 +516,11 @@
 
             <div class="mb-4">
                 <label for="config-name" class="block mb-1 font-medium text-sm">Название конфигурации:</label>
-                <input type="text" name="name" id="config-name"   style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
-                       class="w-full border p-2 rounded text-sm focus:ring-blue-500 focus:border-blue-500" 
-                       placeholder="Моя игровая сборка" required>
+                <input type="text" name="name" id="config-name"
+       style="background-color: #f3f4f6; padding: 0.3rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
+       class="w-64 border p-2 rounded text-sm focus:ring-blue-500 focus:border-blue-500"
+       placeholder="Моя игровая сборка" required>
+
                 @error('name')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
