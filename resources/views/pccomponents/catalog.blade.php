@@ -250,6 +250,9 @@
                     <label for="category_id" class="block   mb-1">Категория</label>
                     <select id="category_id" name="category_id" required
                         class="w-full px-2 py-1 border rounded text-black   bg-white">
+                        <option value="">
+                            Выберите категорию
+                         </option>
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @endforeach
@@ -259,8 +262,13 @@
                     <label for="market_id" class="block   mb-1">Магазин</label>
                     <select id="market_id" name="market_id" required
                         class="w-full px-2 py-1 border rounded text-black   bg-white">
+                        <option value="">
+                            Выберите магазин
+                         </option>
                         @foreach ($markets as $market)
+                        
                             <option value="{{ $market->id }}">{{ $market->name }}</option>
+                            
                         @endforeach
                     </select>
                 </div>
@@ -276,7 +284,7 @@
                     <label for="component_brand" class="block   mb-1">Бренд</label>
                     <input type="text" name="component_brand" id="component_brand" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
                 </div>
-        
+               
                 <div class="mb-2">
                     <label for="component_market_url" class="block   mb-1">Ссылка на товар</label>
                     <input type="url" name="component_market_url" id="component_market_url" class="w-full px-2 py-1 border rounded text-black   bg-white" required>

@@ -22,14 +22,17 @@
                     @include('profile.partials.my-configurations')
                 </div>
             </div>
-            
+          
+                  
+               
+       
             <div class="p-4 sm:p-8 shadow sm:rounded-lg">
                 <div class="max-w-xl mx-auto">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
-
-            <!-- Вывод всех пользователей -->
+            @include('profile.partials.developer')
+           
           
         </div>
     </div>
