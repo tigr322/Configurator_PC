@@ -191,15 +191,7 @@ header nav a:hover {
     background-color: #e0b20e;
     transform: scale(1.05);
 }
-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: #e0b20e;
-    text-align: center;
-    padding: 10px 0;
-    font-weight: bold;
-}
+
 
 @media (max-width: 375px) {
     .navigation {
