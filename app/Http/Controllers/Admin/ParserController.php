@@ -29,7 +29,7 @@ class ParserController extends Controller
     ]);
     ParseMarketJob::dispatch($validated)
     ->onQueue('parsing');
-    // Get the URL from MarketsUrls
+   
     $marketUrl = MarketsUrls::where('category_id', $validated['category_id'])
         ->where('market_id', $validated['market_id'])
         ->first();

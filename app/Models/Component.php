@@ -21,9 +21,6 @@ class Component extends Model
         'compatibility_data',
         'characteristics',
     ];
-
-   
-
     // Связи
     public function category()
     {
@@ -39,7 +36,4 @@ class Component extends Model
     {
         return $this->hasMany(ParsedData::class);
     }
-
-    // 🛠 Методы для работы с compatibility_data
-   
 }

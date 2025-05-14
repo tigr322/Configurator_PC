@@ -101,7 +101,7 @@
         @else
         {{-- Если не админ --}}
         <div class="p-8  rounded-2xl shadow-2xl max-w-4xl mx-auto mt-10">
-            <h1 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">{{ $component->name }}</h1>
+            <h1 class="text-3xl font-extrabold mb-8 text-center">{{ $component->name }}</h1>
         
             @if($component->image_url)
                 <div class="flex justify-center mb-8">

@@ -15,9 +15,7 @@ class ConfigurationController extends Controller
 {
     public function configurations(Request $request)
 {
-    // Начинаем запрос с моделей Configurations и их компонентов
-    //$query = Configurations::query()->with(['components', 'comments.user']);
-
+   
     $query = Configurations::query()
         ->withCount([
             'votes as likes_count' => function ($query) {
@@ -27,7 +25,6 @@ class ConfigurationController extends Controller
                 $query->where('is_like', false);
             }
         ]);
-
     if ($request->filled('like')) {
         if ($request->like === 'like') {
             $query->orderByDesc('likes_count');
@@ -55,7 +52,6 @@ class ConfigurationController extends Controller
     } else {
         $col = $query->paginate(5); // или любое значение по умолчанию
     }
-    
     // Сортировка по цене pagination
     if ($request->filled('sort')) {
         switch ($request->sort) {
@@ -86,13 +82,12 @@ public function toggleMode(Request $request)
             return response()->json(['success' => false, 'message' => 'Необходима авторизация']);
         }
 
-        // Получаем текущее состояние режима из сессии
+       
         $currentMode = session('configurator_mode', false);
         
-        // Переключаем режим
         session(['configurator_mode' => !$currentMode]);
         
-        // Если нужно сохранять настройку для пользователя в БД
+       
         // Auth::user()->update(['configurator_mode' => !$currentMode]);
         
         return response()->json([
@@ -101,7 +96,7 @@ public function toggleMode(Request $request)
             'message' => 'Режим конфигуратора ' . ($currentMode ? 'выключен' : 'включен')
         ]);
     }
-public function comments(Request $request)
+    public function comments(Request $request)
     {
         $request->validate([
             'configuration_id' => 'required|exists:configurations,id',
@@ -147,31 +142,30 @@ public function update(Request $request, $id)
     return redirect()->route('builds.index')->with('success', 'Конфигурация обновлена');
 }
 */
-public function destroy($id)
-{
-    $build = Configurations::findOrFail($id);
-    $build->delete();
-    return redirect()->back()->with('success', 'Конфигурация удалена');
-}
+    public function destroy($id)
+    {
+        $build = Configurations::findOrFail($id);
+        $build->delete();
+        return redirect()->back()->with('success', 'Конфигурация удалена');
+    }
 
     public function show($id)
     {
         $configuration = Configurations::with('components.category')->findOrFail($id);
     
-        return view('configurationbuild.showconf', compact('configuration')); // Убедитесь, что переменная правильно названа
-    }
-    
-    public function create()
-    {
-        // Загружаем все категории и их компоненты pc-configurator/resources/views/configurationbuild/configurator.blade.php
-        $categories = Category::with('components')->get();
-        //return view('configurationbuild.configurator', compact('categories'));
-        return view('configurationbuild.configurator', compact('categories'));
+        return view('configurationbuild.showconf', compact('configuration')); 
     }
     public function publicShow($id){
         $build = Configurations::with('components.category')->findOrFail($id);
         return view('configurationbuild.publicBuild', compact('build'));
     }
+    public function create()
+    {
+        $categories = Category::with('components')->get();
+        //return view('configurationbuild.configurator', compact('categories'));
+        return view('configurationbuild.configurator', compact('categories'));
+    }
+   
     //голосование
     public function like(Configurations $configuration)
     {
