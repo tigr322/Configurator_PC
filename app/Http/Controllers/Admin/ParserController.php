@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RoachPHP\Downloader\Middleware\RequestDeduplicationMiddleware;
 use RoachPHP\Downloader\Middleware\DelayRequestsMiddleware;
+use App\Spiders\ComponentDnsSpider;
+use App\Spiders\ComponentKnsSpider;
 class ParserController extends Controller
 {
     public function parse(Request $request)
@@ -55,6 +57,38 @@ class ParserController extends Controller
     } elseif ($validated['market_id'] == 2) {
         Roach::startSpider(
             ComponentRegardSpider::class,
+            new Overrides(
+                startUrls: [$marketUrl->url],
+                downloaderMiddleware: [
+                   
+                    RequestDeduplicationMiddleware::class,
+                ], // Access the url property from the model
+            ),
+
+            context: [
+                'category_id' => $validated['category_id'],
+                'market_id' => $validated['market_id'],
+            ]
+        );
+    }elseif ($validated['market_id'] == 3) {
+        Roach::startSpider(
+            ComponentDnsSpider::class,
+            new Overrides(
+                startUrls: [$marketUrl->url],
+                downloaderMiddleware: [
+                   
+                    RequestDeduplicationMiddleware::class,
+                ], // Access the url property from the model
+            ),
+
+            context: [
+                'category_id' => $validated['category_id'],
+                'market_id' => $validated['market_id'],
+            ]
+        );
+    }elseif ($validated['market_id'] == 4) {
+        Roach::startSpider(
+            ComponentKnsSpider::class,
             new Overrides(
                 startUrls: [$marketUrl->url],
                 downloaderMiddleware: [
