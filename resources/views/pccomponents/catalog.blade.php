@@ -171,6 +171,11 @@
                                        {{ request('market') == 2 ? 'bg-blue-100 border-blue-300' : '' }}">
                                        Regard
                         </button>
+                        <button type="button" onclick="filterByMarket(2)" 
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                                       {{ request('market') == 4 ? 'bg-blue-100 border-blue-300' : '' }}">
+                                       KNS
+                        </button>
                     </div>
                 </div>
                 <!-- Кнопка сброса (показывается только если есть активные фильтры) -->
