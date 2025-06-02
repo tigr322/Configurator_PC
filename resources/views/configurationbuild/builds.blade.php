@@ -145,6 +145,19 @@
                 <div id="accordion-content-{{ $build->id }}" class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
                     <ul class="space-y-2 w-full mx-auto">
                         @foreach($build->components as $component)
+                            @php
+                                
+                                $similarComponents = \App\Models\Component::where('category_id', $component->category_id)
+                                    ->where('id', '!=', $component->id)
+                                    ->get()
+                                    ->filter(function ($c) use ($component) {
+                                        similar_text(Str::lower($component->name), Str::lower($c->name), $percent);
+                                        return $percent > 70;
+                                    });
+                    
+                                $bestOffer = $similarComponents->sortBy('price')->first();
+                            @endphp
+                    
                             <li class="py-2 border-b border-gray-200 last:border-0">
                                 <div class="flex justify-between items-baseline">
                                     <div class="truncate pr-2">
@@ -153,11 +166,19 @@
                                             <span class="text-xs">{{ $component->category->name }}:</span>
                                             <span class="ml-1 font-medium">{{ $component->name }}</span>
                                         </a>
+                                       
                                     </div>
+                                   
                                     <span class="text-xs font-medium text-green-600 whitespace-nowrap">
                                         {{ number_format($component->price, 0, '', ' ') }}₽
                                     </span>
                                 </div>
+                                @if ($bestOffer && $bestOffer->price < $component->price)
+                                <p class="text-xs text-blue-600 mt-1">
+                                    Рекомендация по цене: {{ number_format($bestOffer->price, 0, '', ' ') }}₽ 
+                                    <a href="{{ $bestOffer->shop_url }}" target="_blank" class="underline">Перейти</a>
+                                </p>
+                            @endif
                             </li>
                         @endforeach
                     </ul>
