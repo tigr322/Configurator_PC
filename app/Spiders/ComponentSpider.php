@@ -17,7 +17,8 @@ use RoachPHP\ItemPipeline\Item;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 class ComponentSpider extends BasicSpider
-{ public array $startUrls = [];
+{ 
+    public array $startUrls = [];
 
   
 
@@ -186,6 +187,7 @@ public function parse(Response $response): Generator
             'image_url' =>$foto,
             'characteristics' => $characteristics,
         ];
+        
     });
    
     // Ищем все товары
