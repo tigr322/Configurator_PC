@@ -31,6 +31,10 @@ class PriceUpdateSpider extends BasicSpider
             return;
         }
         $priceNode = $response->filter('[data-meta-price]')->first();
+
+        if ($priceNode->count() === 0 || !$priceNode->attr('data-meta-price')) {
+            $priceNode = $response->filter('[data-meta-name="PriceBlock__additional-price"] span')->first();
+        }
         if ($priceNode->count() === 0 || !$priceNode->attr('data-meta-price')) {
           
             
