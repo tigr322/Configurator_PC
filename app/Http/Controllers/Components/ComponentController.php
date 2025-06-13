@@ -14,21 +14,19 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 class ComponentController extends Controller
 {
- /*
-      Показать список всех комплектующих с фильтрацией и сортировкой
-     */
+
     public function index(Request $request)
     {   
         $validated = $request->validate([
             'socket' => 'nullable|string',
             'memory_type' => 'nullable|string',
-            'manufacturer' => 'nullable|string', // ← ДОБАВЬ ЭТО!
+            'manufacturer' => 'nullable|string', 
         ]);
         
         
         $query = Component::query()->with('category')->with('markets');
     
-        // Базовая фильтрация
+       
         if ($request->filled('category')) {
             $query->whereHas('category', function($q) use ($request) {
                 $q->where('name', $request->category);
@@ -66,7 +64,7 @@ class ComponentController extends Controller
         if ($request->market) {
             $query->where('market_id', $request->market);
         }
-        // Сортировка
+        
         if ($request->filled('sort')) {
             switch ($request->sort) {
                 case 'price_asc':
@@ -82,7 +80,7 @@ class ComponentController extends Controller
             $query->latest();
         }
     
-        // Пагинация
+       
         $perPage = $request->filled('pagination') ? (int)$request->pagination : 12;
         $components = $query->paginate($perPage);
         $view = $request->input('view', 'grid');
@@ -111,9 +109,7 @@ class ComponentController extends Controller
         
         return response()->json($urls);
     }
-    /**
-     * Показать один компонент
-     */
+    
     public function checkCompatibilityMulti(Request $request)
     {
         // Фильтруем выбранные компоненты: убираем пустые, нечисловые значения
@@ -122,16 +118,16 @@ class ComponentController extends Controller
             ->map(fn($value) => (int)$value)
             ->toArray();
     
-        // Берем только ID для валидации
+       
         $componentIds = array_values($selectedComponents);
     
-        // Валидация
+       
         $validator = Validator::make($request->all(), [
-            'selected_components' => 'required|array|min:1',  // Это поле должно быть массивом и содержать хотя бы 1 элемент
-            'selected_components.*' => 'integer|exists:components,id',  // Каждое значение должно быть числом и существовать в базе
+            'selected_components' => 'required|array|min:1',  
+            'selected_components.*' => 'integer|exists:components,id',  
         ]);
     
-        // Если валидация не пройдена — вернём ошибку
+       
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
@@ -139,7 +135,6 @@ class ComponentController extends Controller
             ], 422);
         }
     
-        // Загружаем компоненты по ID
         $components = Component::whereIn('id', $componentIds)
             ->get()
             ->keyBy('id');
@@ -225,7 +220,7 @@ protected function normalizeToArray($value): array
          try {
              $component = Component::findOrFail($id);
      
-             // Удаление изображения из хранилища
+            
              if ($component->image_url) {
                  $imageName = basename($component->image_url);
                  $storagePath = 'public/products/' . $imageName;
@@ -233,7 +228,7 @@ protected function normalizeToArray($value): array
                  if (Storage::exists($storagePath)) {
                      Storage::delete($storagePath);
                  } else {
-                     // Логирование для отладки
+                   
                      Log::warning("Файл изображения не найден: " . $storagePath);
                  }
              }
@@ -259,19 +254,18 @@ public function saveRules(Request $request)
     $rules = $request->input('rules', []);
     $deletedRules = $request->input('deleted_rules') ? json_decode($request->input('deleted_rules')) : [];
 
-    // Удаление правил
+    
     if (!empty($deletedRules)) {
         CompatibilityRule::whereIn('id', $deletedRules)->delete();
     }
 
-    // Сохранение/обновление
     foreach ($rules as $rule) {
         if (!isset($rule['category1_id'], $rule['category2_id'], $rule['condition'])) {
-            continue; // Пропускаем если данных не хватает
+            continue; 
         }
 
         CompatibilityRule::updateOrCreate(
-            ['id' => $rule['id'] ?? null], // может быть null
+            ['id' => $rule['id'] ?? null], 
             [
                 'category1_id' => $rule['category1_id'],
                 'category2_id' => $rule['category2_id'],
@@ -348,7 +342,7 @@ public function getUrls($marketId)
         $categories = Category::all(); 
 
         $markets = Markets::all();
-        //dd( $component);
+       
         return view('pccomponents.show', compact('component','categories','markets'));
     }
 }

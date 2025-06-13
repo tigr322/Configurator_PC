@@ -24,51 +24,45 @@ class PriceUpdateSpider extends BasicSpider
     public function parse(Response $response): \Generator
     {
         $component = Component::find($this->context['component_id']);
-
+    
         if (!isset($this->context['component_id']) || !$component) {
-            
             yield ParseResult::item([]);
             return;
         }
+    
+        // Попробуем сначала data-meta-price
         $priceNode = $response->filter('[data-meta-price]')->first();
-
-        if ($priceNode->count() === 0 || !$priceNode->attr('data-meta-price')) {
-            $priceNode = $response->filter('[data-meta-name="PriceBlock__additional-price"] span')->first();
-        }
-        if ($priceNode->count() === 0 || !$priceNode->attr('data-meta-price')) {
-          
-            
+    
+        // Если нет, пробуем другой способ (как на новых страницах)
+       
+        // Если всё ещё нет — считаем цену не найденной
+        if ($priceNode->count() === 0) {
+            logger()->warning("⛔ Не найдена цена у компонента {$component->name} [ID {$component->id}]");
+    
             ParsedData::create([
                 'component_id' => $component->id,
                 'source' => 'citilink',
                 'availability' => 0,
             ]);
-        
+    
             yield ParseResult::item([]);
             return;
         }
-       
-
-        $priceText = $priceNode->attr('data-meta-price');
+    
+        // Парсим текст цены
+        $priceText = $priceNode->attr('data-meta-price') ?? $priceNode->text();
         $price = (int) preg_replace('/\D+/', '', $priceText);
-        
-      
-            ParsedData::create([
-                'component_id' => $component->id,
-                'source' => 'citilink',
-                'price' => $price,
-                'availability' => 1,
-            ]);
-            $component->update(['price' => $price]);
-
-            
-        
-       
-
-      
-
-       
-
+    
+        ParsedData::create([
+            'component_id' => $component->id,
+            'source' => 'citilink',
+            'price' => $price,
+            'availability' => 1,
+        ]);
+        $component->update(['price' => $price]);
+    
+        logger()->info("✅ Обновлена цена: {$component->name} — {$price} ₽");
+    
         yield ParseResult::item([]);
     }
 }
