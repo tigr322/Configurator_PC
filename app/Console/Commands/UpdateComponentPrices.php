@@ -16,7 +16,7 @@ class UpdateComponentPrices extends Command
     {
         logger()->info("Команда запущена");
 
-        $components = Component::where('market_id', 4)->whereNotNull('shop_url')->get();
+        $components = Component::whereNotNull('shop_url')->get();
 
         foreach ($components as $component) {
             logger()->info("Старт парсинга для компонента {$component->id}");
@@ -27,9 +27,11 @@ class UpdateComponentPrices extends Command
                     startUrls: [$component->shop_url]
                 ),
                 context: [
-                    'component_id' => $component->id
+                    'component_id' => $component->id,
+                    'market_id' => $component->market_id
                 ]
             );
+           
         }
 
         $this->info("Все цены обновлены.");
