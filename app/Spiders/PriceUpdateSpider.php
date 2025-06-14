@@ -12,7 +12,7 @@ use App\Models\ParsedData;
 
 class PriceUpdateSpider extends BasicSpider
 {
-    public array $startUrls = []; // получаем из Overrides
+    public array $startUrls = [];
 
     public array $downloaderMiddleware = [
         RequestDeduplicationMiddleware::class,
@@ -24,44 +24,46 @@ class PriceUpdateSpider extends BasicSpider
     public function parse(Response $response): \Generator
     {
         $component = Component::find($this->context['component_id']);
-    
+
         if (!isset($this->context['component_id']) || !$component) {
             yield ParseResult::item([]);
             return;
         }
-    
-        // Попробуем сначала data-meta-price
-        $priceNode = $response->filter('[data-meta-price]')->first();
-    
-        // Если нет, пробуем другой способ (как на новых страницах)
-        file_put_contents(storage_path("logs/html_{$component->id}.html"), $response->getBody());        // Если всё ещё нет — считаем цену не найденной
+
+        // Сохраняем HTML для отладки
+        file_put_contents(storage_path("logs/html_kns_{$component->id}.html"), $response->getBody());
+
+        // Ищем цену
+        $priceNode = $response->filter('.price-info .price-val')->first();
+
         if ($priceNode->count() === 0) {
-            logger()->warning("⛔ Не найдена цена у компонента {$component->name} [ID {$component->id}]");
-    
+            logger()->warning("⛔ KNS: Не найдена цена у компонента {$component->name} [ID {$component->id}]");
+
             ParsedData::create([
                 'component_id' => $component->id,
-                'source' => 'citilink',
+                'source' => 'kns',
                 'availability' => 0,
             ]);
-    
+
             yield ParseResult::item([]);
             return;
         }
-    
-        // Парсим текст цены
-        $priceText = $priceNode->attr('data-meta-price') ?? $priceNode->text();
+
+        // Получаем текст цены и чистим
+        $priceText = $priceNode->text();
         $price = (int) preg_replace('/\D+/', '', $priceText);
-    
+
         ParsedData::create([
             'component_id' => $component->id,
-            'source' => 'citilink',
+            'source' => 'kns',
             'price' => $price,
             'availability' => 1,
         ]);
+
         $component->update(['price' => $price]);
-    
-        logger()->info("✅ Обновлена цена: {$component->name} — {$price} ₽");
-    
+
+        logger()->info("✅ KNS: Обновлена цена — {$component->name} — {$price} ₽");
+
         yield ParseResult::item([]);
     }
 }
