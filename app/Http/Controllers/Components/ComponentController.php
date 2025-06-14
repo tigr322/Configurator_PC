@@ -345,4 +345,19 @@ public function getUrls($marketId)
        
         return view('pccomponents.show', compact('component','categories','markets'));
     }
+    public function chart(Component $component)
+    {
+        $parsedPrices = $component->parsedData()
+            ->orderBy('created_at')
+            ->get(['price', 'created_at']);
+    
+        $labels = $parsedPrices->pluck('created_at')->map(fn($dt) => $dt->format('d.m H:i'));
+        $prices = $parsedPrices->pluck('price');
+    
+        return view('pccomponents.chart', [
+            'component' => $component,
+            'labels' => $labels,
+            'prices' => $prices,
+        ]);
+    }
 }

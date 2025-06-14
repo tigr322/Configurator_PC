@@ -90,7 +90,7 @@
                     <p class="text-xs text-gray-500 mt-1">Например: {"socket": "AM4", "form_factor": "ATX"}</p>
                 </div>
             </div>
-
+           
             <div class="flex justify-center">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow">
                     Сохранить изменения
@@ -102,7 +102,14 @@
         {{-- Если не админ --}}
         <div class="p-8  rounded-2xl shadow-2xl max-w-4xl mx-auto mt-10">
             <h1 class="text-3xl font-extrabold mb-8 text-center">{{ $component->name }}</h1>
-        
+            @if($component->parsedData->count())
+                <div class="mt-6 text-center">
+                    <a href="{{ route('components.chart', $component->id) }}"
+                    class="inline-block bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition">
+                        Посмотреть график цены
+                    </a>
+                </div>
+            @endif
             @if($component->image_url)
                 <div class="flex justify-center mb-8">
                     @php
@@ -146,7 +153,7 @@
 
         {{-- Источники цен --}}
         @if($component->parsedData->count())
-            <div class="mt-10 bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+            <div class="mt-10 p-6 rounded-lg shadow-md max-w-4xl mx-auto">
                 <h2 class="text-lg font-semibold mb-4">Цены в магазинах</h2>
                 <ul class="list-disc space-y-2 ml-5">
                     @foreach($component->parsedData as $parsed)
