@@ -14,5 +14,5 @@ Artisan::command('inspire', function () {
 app()->booted(function () {
     app(\Illuminate\Console\Scheduling\Schedule::class)
         ->command('prices:update')
-        ->everyMinute();
+        ->dailyAt('04:00');
 });
