@@ -2,8 +2,7 @@
     @csrf
     @method('DELETE')
 
-    <div class="p-3 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex sm:flex-row gap-3">
-      
+    <div class="p-3 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow sm:flex sm:flex-row gap-3">      
         <div class="w-full sm:w-24 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
             @php
                 $imageUrl = $component->image_url 
@@ -74,6 +73,14 @@
                     </div>
                 @endif
                 </div>
+                @if($component->parsedData->count())
+                <div class="mt-6 text-center">
+                    <a href="{{ route('components.chart', $component->id) }}"
+                        class="text-xs text-blue-600 hover:text-blue-800 underline truncate max-w-[120px]">
+                        Посмотреть график цены
+                    </a>
+                </div>
+            @endif
             </div>
         </div>
     </div>
