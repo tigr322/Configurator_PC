@@ -31,7 +31,7 @@ class UpdateComponentPrices extends Command
                     'market_id' => $component->market_id
                 ]
             );
-           
+            sleep(10);
         }
 
         $this->info("Все цены обновлены.");
