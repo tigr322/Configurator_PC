@@ -34,7 +34,7 @@ class PriceUpdateSpider extends BasicSpider
         $priceNode = $response->filter('[data-meta-price]')->first();
     
         // Если нет, пробуем другой способ (как на новых страницах)
-       
+        file_put_contents(storage_path("logs/html_{$component->id}.html"), $response->body());
         // Если всё ещё нет — считаем цену не найденной
         if ($priceNode->count() === 0) {
             logger()->warning("⛔ Не найдена цена у компонента {$component->name} [ID {$component->id}]");
