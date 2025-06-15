@@ -152,24 +152,26 @@
         @endif
 
         {{-- Источники цен --}}
-        @if($component->parsedData->count())
-    <div class="mt-10 p-6 rounded-lg shadow-md max-w-4xl mx-auto">
-        <h2 class="text-lg font-semibold mb-4">Цены в магазинах</h2>
-        <ul class="list-disc space-y-2 ml-5">
-            @foreach($component->parsedData as $parsed)
+        @php
+        $lastParsed = $component->parsedData->sortByDesc('updated_at')->first();
+    @endphp
+    
+    @if($lastParsed)
+        <div class="mt-10 p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+            <h2 class="text-lg font-semibold mb-4">Последняя цена</h2>
+            <ul class="list-disc space-y-2 ml-5">
                 <li>
-                    <strong>{{ ucfirst($parsed->source) }}:</strong>
-                    {{ number_format($parsed->price, 2, ',', ' ') }} ₽
-                    {{ $parsed->availability ? '(В наличии)' : '(Нет в наличии)' }}
+                    <strong>{{ ucfirst($lastParsed->source) }}:</strong>
+                    {{ number_format($lastParsed->price, 2, ',', ' ') }} ₽
+                    {{ $lastParsed->availability ? '(В наличии)' : '(Нет в наличии)' }}
                     <br>
                     <span class="text-sm text-gray-500">
-                        Обновлено: {{ $parsed->updated_at->format('d.m.Y H:i') }}
+                        Обновлено: {{ $lastParsed->updated_at->format('d.m.Y H:i') }}
                     </span>
                 </li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+            </ul>
+        </div>
+    @endif
     </div>
 </body>
 </html>
