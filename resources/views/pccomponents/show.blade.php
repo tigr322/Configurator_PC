@@ -109,7 +109,7 @@
                     <div>
                         <label class="font-semibold block mb-1">Ссылка на магазин</label>
                         <input type="url" name="shop_url" value="{{ $component->shop_url }}"
-                               class="w-full p-2 border rounded bg-gray-50">
+                               class="w-full p-2 border rounded bg-white text-black">
                     </div>
 
                     <div>
