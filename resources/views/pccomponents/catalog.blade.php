@@ -487,7 +487,7 @@
             <div class="flex justify-between items-center">
               
                 @auth
-                    <div class="flex items-center justify-between mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg">
                         <span class="text-blue-800 font-semibold">Режим Конфигуратора</span>
                         <button id="toggleConfiguratorMode" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
                             {{ session('configurator_mode') ? 'Выключить' : 'Включить' }}
@@ -1175,9 +1175,11 @@ function updateSelectedComponents() {
     })
     .then(res => res.text())
     .then(html => {
-        document.getElementById('catalog-wrapper').innerHTML = html;
-        updateSelectedComponents(); // <- добавил это
-    })
+    const wrapper = document.getElementById('catalog-wrapper');
+    wrapper.innerHTML = ''; 
+    wrapper.innerHTML = html;
+    updateSelectedComponents();
+})
     .catch(err => {
         console.error("Ошибка при загрузке компонентов:", err);
     });
