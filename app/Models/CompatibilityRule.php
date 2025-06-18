@@ -17,7 +17,7 @@ class CompatibilityRule extends Model
     ];
 
     protected $casts = [
-        'condition' => 'array', // автоматически преобразует JSON в массив и обратно
+        'condition' => 'array', 
     ];
 
     public function category1()

@@ -26,10 +26,9 @@ class ProfileController extends Controller
     {   
         $authUser = $request->user();
         
-        // Начинаем запрос для пользователей
+       
         $usersQuery = User::query();
         
-        // Применяем фильтры только если они указаны
         if ($request->filled('name')) {
             $usersQuery->where('name', 'like', '%' . $request->name . '%');
         }
@@ -37,12 +36,10 @@ class ProfileController extends Controller
             $usersQuery->where('email', 'like', '%' . $request->email . '%');
         }
         
-        // Получаем конфигурации текущего пользователя
         $builds = Configurations::where('user_id', $authUser->id)
                               ->with('components')
                               ->get();
         
-        // Подготавливаем данные для представления
         $data = [
             'user' => $authUser,
             'builds' => $builds,
@@ -55,14 +52,11 @@ class ProfileController extends Controller
     {   
         $authUser = $request->user();
         
-        // Начинаем запрос для пользователей
        
-        // Получаем конфигурации текущего пользователя
         $builds = Configurations::where('user_id', $authUser->id)
                               ->with('components')
                               ->get();
         
-        // Подготавливаем данные для представления
         $data = [
             'user' => $authUser,
             'builds' => $builds,
@@ -83,12 +77,12 @@ class ProfileController extends Controller
         'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
         'password' => [
         'nullable',
-        'confirmed', // Добавляем проверку совпадения с password_confirmation
-        Password::min(8) // Минимальная длина 8 символов
-            ->mixedCase() // Требуются заглавные и строчные буквы
-            ->numbers() // Требуются цифры
-            ->symbols() // Требуются специальные символы
-            ->uncompromised() // Проверка на утечку данных
+        'confirmed',
+        Password::min(8) 
+            ->mixedCase() 
+            ->numbers() 
+            ->symbols() 
+            ->uncompromised() 
     ],
           
             'admin' => ['nullable', 'integer', 'max:1'],
@@ -151,7 +145,6 @@ class ProfileController extends Controller
     $urls = $request->input('urls');
 
     foreach ($urls as $data) {
-        // Пропускаем, если URL пустой
         if (empty($data['url'])) {
             continue;
         }

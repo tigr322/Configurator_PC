@@ -62,7 +62,7 @@ class ParserController extends Controller
                 downloaderMiddleware: [
                    
                     RequestDeduplicationMiddleware::class,
-                ], // Access the url property from the model
+                ], 
             ),
 
             context: [
@@ -78,7 +78,7 @@ class ParserController extends Controller
                 downloaderMiddleware: [
                    
                     RequestDeduplicationMiddleware::class,
-                ], // Access the url property from the model
+                ], 
             ),
 
             context: [
@@ -94,7 +94,7 @@ class ParserController extends Controller
                 downloaderMiddleware: [
                    
                     RequestDeduplicationMiddleware::class,
-                ], // Access the url property from the model
+                ], 
             ),
 
             context: [
@@ -141,10 +141,8 @@ class ParserController extends Controller
             $foto = Str::uuid() . '.' . $image->getClientOriginalExtension();
             $filename = 'products/' . $foto;
     
-            // Сохраняем файл в disk('public') => storage/app/public/products/
             Storage::disk('public')->putFileAs('products', $image, $foto);
     
-            // Сохраняем путь для доступа
             $imagePath = $filename;
         }else{
             $foto = 'images/defaulte_image.jpg';    

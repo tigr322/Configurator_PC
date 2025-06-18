@@ -35,12 +35,12 @@ class ConfigurationController extends Controller
             $query->orderByDesc('likes_count');
         }
     }
-    // Фильтрация по имени конфигурации
+   
     if ($request->filled('search')) {
         $query->where('name', 'like', '%' . $request->search . '%');
     }
     
-    // Фильтрация по компонентам
+   
     if ($request->filled('component')) {
         $query->whereHas('components', function($query) use ($request) {
             $query->where('name', 'like', '%' . $request->component . '%');
@@ -50,9 +50,8 @@ class ConfigurationController extends Controller
         $perPage = (int) $request->input('pagination');
         $col = $query->paginate($perPage);
     } else {
-        $col = $query->paginate(5); // или любое значение по умолчанию
+        $col = $query->paginate(5);
     }
-    // Сортировка по цене pagination
     if ($request->filled('sort')) {
         switch ($request->sort) {
             case 'price_asc':
@@ -69,10 +68,9 @@ class ConfigurationController extends Controller
     }
     
     
-    // Получаем все конфигурации после применения фильтров и сортировок
-    $builds = $query->get();  // Используем get() вместо all(), чтобы получить только отфильтрованные данные
     
-    // Передаем конфигурации в представление
+    $builds = $query->get();  
+    
     return view('configurationbuild.builds', compact('builds', 'col'));
 }
 

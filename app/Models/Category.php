@@ -11,7 +11,7 @@ class Category extends Model
     use HasFactory;
     protected $fillable = ['name'];
 
-    // Категория имеет много компонентов
+    
     public function components()
     {
         return $this->hasMany(Component::class);

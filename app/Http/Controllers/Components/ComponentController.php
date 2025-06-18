@@ -49,7 +49,7 @@ class ComponentController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
         
-        // Фильтрация по JSON-полю compatibility_data
+       
         if ($request->socket) {
             $query->whereJsonContains('compatibility_data->socket', $request->socket);
         }
@@ -112,7 +112,6 @@ class ComponentController extends Controller
     
     public function checkCompatibilityMulti(Request $request)
     {
-        // Фильтруем выбранные компоненты: убираем пустые, нечисловые значения
         $selectedComponents = collect($request->input('selected_components', []))
             ->filter(fn($value) => is_numeric($value) && $value > 0)
             ->map(fn($value) => (int)$value)
@@ -181,7 +180,6 @@ class ComponentController extends Controller
                         continue;
                     }
     
-                    // Обычное сравнение
                     switch ($operator) {
                         case '==': $isCompatible = $sourceValue == $targetValue; break;
                         case '>=': $isCompatible = $sourceValue >= $targetValue; break;
