@@ -8,8 +8,10 @@
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon.png') }}">
+   <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('css/light-dark.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
    
