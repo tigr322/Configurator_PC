@@ -84,7 +84,17 @@ class ComponentController extends Controller
         $perPage = $request->filled('pagination') ? (int)$request->pagination : 12;
         $components = $query->paginate($perPage);
         $view = $request->input('view', 'grid');
+        
+$components = Component::where('market_id', 4)->get();
 
+foreach ($components as $component) {
+    $words = explode(' ', $component->name);
+
+    if (isset($words[1])) {
+        $component->brand = $words[1];
+        $component->save();
+    }
+}
         $categories = Category::all();
         $rules = CompatibilityRule::all();
         $markets = Markets::all();
