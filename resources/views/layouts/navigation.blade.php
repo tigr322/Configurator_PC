@@ -67,6 +67,18 @@
                     @endif
                 </nav>
             @endif
+            <!--<div class="max-w-xl mx-auto mt-6">
+                <h2 class="text-lg font-semibold mb-2">🤖 Задать вопрос</h2>
+                <textarea id="userMessage" rows="2"
+                    class="w-full p-2 text-sm border border-gray-300 rounded mb-2 resize-none"
+                    placeholder="Например: сборка до 80 000₽"></textarea>
+                <button onclick="sendMessage()"
+                    class="bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700 transition">
+                    Отправить
+                </button>
+            
+                <div id="chatReply" class="mt-3 p-3 bg-gray-50 rounded text-sm text-gray-800 border border-gray-200"></div>
+            </div>-->
         </header>
 
         <main class="main-content">
@@ -130,6 +142,28 @@
         localStorage.setItem('theme', newTheme);
     });
 </script>
+<script>
+    function sendMessage() {
+    const message = document.getElementById('userMessage').value;
+    const replyBox = document.getElementById('chatReply');
+    replyBox.innerHTML = "⏳ Ответ генерируется...";
 
+    fetch("{{ route('ai.chat') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        replyBox.innerHTML = data.reply;
+    })
+    .catch(() => {
+        replyBox.innerHTML = "⚠️ Ошибка при получении ответа.";
+    });
+}
+</script>
 </body>
 </html>

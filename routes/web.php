@@ -5,7 +5,7 @@ use App\Http\Controllers\Components\ComponentController;
 use App\Http\Controllers\Configuration\ConfigurationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AiChatController;
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
@@ -36,6 +36,9 @@ Route::middleware('auth')->group(function () {
    
 });
 
+// дипсик помощник
+
+Route::post('/ai-chat', action: [AiChatController::class, 'chat'])->name('ai.chat');
 
 Route::get('/catalog', [ComponentController::class, 'index'])->name('catalog');
 Route::get('/component/{id}', [ComponentController::class, 'show'])->name('components.show');

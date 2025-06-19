@@ -117,11 +117,12 @@ class ComponentKnsSpider extends BasicSpider
                 $filename = 'products/' . $foto;
                 Storage::disk('public')->put($filename, $imageContents);
             }
+            $name = preg_replace('/^[\p{Z}\s\x{00A0}\x{FEFF}]*(Материнская плата|Процессор|Видеокарта|Оперативная память|Жесткий диск|SSD накопитель|Накопитель|Кулер|Корпус|Блок питания)[\p{Z}\s\x{00A0}\x{FEFF}]*/ui', '', $name);
 
             $brand = 'Unknown';
-            if (preg_match('/^([\w\-]+)/u', $name, $matches)) {
-                $brand = $matches[1];
-            }
+            if (preg_match('/^([^\s]+)\s/', $name, $matches)) {
+                $brand = $matches[1]; // первый кусок — бренд
+                }
 
             $compatibilityData = array_merge(
                 $this->parseCompatibilityData($description),
