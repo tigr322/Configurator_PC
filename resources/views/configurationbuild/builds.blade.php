@@ -7,6 +7,9 @@
 
     <title>Каталог конфигурации</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon.png') }}">
     <style>
         .accordion-content {
     overflow: hidden;
