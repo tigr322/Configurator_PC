@@ -36,11 +36,11 @@
                 </div>
     
                 @foreach($categories as $category)
-                    <div class="min-w-[120px] flex-shrink-0 text-center border rounded-lg p-2 bg-white shadow-sm" id="category-block-{{ $category->id }}">
-                        <label class="block text-sm mb-2">{{ $category->name }}</label>
+                    <div class="min-w-[120px] flex-shrink-0 text-center border rounded-lg p-2  shadow-sm" id="category-block-{{ $category->id }}">
+                        <label style="">{{ $category->name }}</label>
                         <img id="preview_image_{{ $category->id }}"
                              src="{{ asset('images/defaulte_image.jpg') }}"
-                             class="w-20 h-20 mx-auto object-contain rounded border mb-2"
+                             class="object-contain rounded border" style = "width: 150px; height: 150px;"
                              alt="Превью">
                         <div id="preview_name_{{ $category->id }}" class="text-xs truncate"></div>
                         <input type="hidden" name="components[{{ $category->id }}]" id="component_input_{{ $category->id }}" value="">
