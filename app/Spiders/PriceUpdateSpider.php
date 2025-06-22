@@ -17,7 +17,6 @@ class PriceUpdateSpider extends BasicSpider
    
 
     public array $downloaderMiddleware = [
-        RequestDeduplicationMiddleware::class,
         [UserAgentMiddleware::class, [
             "userAgent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
         ]],
@@ -37,10 +36,7 @@ class PriceUpdateSpider extends BasicSpider
         $marketId = $this->context['market_id'] ?? null;
         $priceNode = null;
 
-        // Сохраняем HTML для отладки
-        //file_put_contents(storage_path("logs/html_market_{$component->id}.html"), $response->getBody());
-
-        // === MARKETS ===
+        
         switch ($marketId) {
             case 4: // KNS
                 $priceNode = $response->filter('.price-info .price-val')->first();
@@ -55,13 +51,13 @@ class PriceUpdateSpider extends BasicSpider
                 break;
 
             default:
-                logger()->warning("⛔ Неизвестный market_id: {$marketId} для компонента {$component->id}");
+                logger()->warning("Неизвестный market_id: {$marketId} для компонента {$component->id}");
                 yield ParseResult::item([]);
                 return;
         }
 
         if (!$priceNode || $priceNode->count() === 0) {
-            logger()->warning("⛔ [market_id: $marketId] Не найдена цена у компонента {$component->name} [ID {$component->id}]");
+            logger()->warning("[market_id: $marketId] Не найдена цена у компонента {$component->name} [ID {$component->id}]");
 
             ParsedData::create([
                 'component_id' => $component->id,
@@ -71,21 +67,23 @@ class PriceUpdateSpider extends BasicSpider
 
             yield ParseResult::item([]);
             return;
+        }else{
+            $priceText = $priceNode->attr('data-meta-price') ?? $priceNode->text();
+            $price = (int) preg_replace('/\D+/', '', $priceText);
+    
+            ParsedData::create([
+                'component_id' => $component->id,
+                'source' => $this->getSourceName($marketId),
+                'price' => $price,
+                'availability' => 1,
+            ]);
+    
+            $component->update(['price' => $price]);
+    
+            logger()->info("Цена обновлена: {$component->name} — {$price} ₽ [market_id {$marketId}]");
         }
 
-        $priceText = $priceNode->attr('data-meta-price') ?? $priceNode->text();
-        $price = (int) preg_replace('/\D+/', '', $priceText);
-
-        ParsedData::create([
-            'component_id' => $component->id,
-            'source' => $this->getSourceName($marketId),
-            'price' => $price,
-            'availability' => 1,
-        ]);
-
-        $component->update(['price' => $price]);
-
-        logger()->info("✅ Цена обновлена: {$component->name} — {$price} ₽ [market_id {$marketId}]");
+       
 
         yield ParseResult::item([]);
     }

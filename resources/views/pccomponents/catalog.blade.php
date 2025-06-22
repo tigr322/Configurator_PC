@@ -16,8 +16,46 @@
     @include('layouts.navigation')
    
     
+    
     <div class="container mx-auto">
-        
+        @if (session('configurator_mode') == true)
+        <div class="w-full overflow-x-auto py-4">
+            <form action="{{ route('configurations.store') }}" method="POST"
+                  class="flex flex-row gap-4 items-start min-w-[600px] sm:min-w-full px-4" id="configurator-form">
+                @csrf
+    
+                <div class="min-w-[200px]">
+                    <label for="config-name" class="block mb-1 font-medium text-sm">Название конфигурации:</label>
+                    <input type="text" name="name" id="config-name"
+                           class="w-full border p-2 rounded text-sm bg-gray-100"
+                           placeholder="Моя игровая сборка" required>
+    
+                    @error('name')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+    
+                @foreach($categories as $category)
+                    <div class="min-w-[120px] flex-shrink-0 text-center border rounded-lg p-2 bg-white shadow-sm" id="category-block-{{ $category->id }}">
+                        <label class="block text-sm mb-2">{{ $category->name }}</label>
+                        <img id="preview_image_{{ $category->id }}"
+                             src="{{ asset('images/defaulte_image.jpg') }}"
+                             class="w-20 h-20 mx-auto object-contain rounded border mb-2"
+                             alt="Превью">
+                        <div id="preview_name_{{ $category->id }}" class="text-xs truncate"></div>
+                        <input type="hidden" name="components[{{ $category->id }}]" id="component_input_{{ $category->id }}" value="">
+                    </div>
+                @endforeach
+    
+                <div class="flex flex-col justify-end gap-2">
+                    <button type="submit"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded">Создать</button>
+                    <button type="button" id="reset-configurator"
+                            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-sm text-gray-800 rounded">Сбросить</button>
+                </div>
+            </form>
+        </div>
+    @endif
         @if (session('success'))
             <div style="color: green; font-weight: bold; text-align: center; margin-top: 1rem;">
                 {{ session('success') }}
@@ -524,72 +562,7 @@
        
         
     </div>
-    @if (session('configurator_mode') == true)
-    <div class="lg:w-1/4">
-        <form action="{{ route('configurations.store') }}" method="POST" class="space-y-4" id="configurator-form">
-            @csrf
-
-            <div class="mb-4">
-                <label for="config-name" class="block mb-1 font-medium text-sm">Название конфигурации:</label>
-                <input type="text" name="name" id="config-name"
-       style="background-color: #f3f4f6; padding: 0.3rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"
-       class="w-64 border p-2 rounded text-sm focus:ring-blue-500 focus:border-blue-500"
-       placeholder="Моя игровая сборка" required>
-
-                @error('name')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <h2 class="text-lg font-medium mb-3 text-sm">Ваша сборка:</h2>
-            
-            <!-- Контейнер для выбранных компонентов -->
-            <div id="selected-components" class="space-y-3">
-                @foreach($categories as $category)
-                <div class="flex flex-col items-center p-3 border border-gray-200 rounded-lg" id="category-block-{{ $category->id }}">
-                    <div class="flex-1 min-w-0 text-center">
-                        <label class="block text-sm mb-2">{{ $category->name }}</label>
-                    </div>
-                    
-                    <img 
-                        id="preview_image_{{ $category->id }}" 
-                        src="{{ asset('images/defaulte_image.jpg') }}" 
-                        alt="Предпросмотр"
-                      
-                        class="rounded shadow border border-gray-300 mb-2"
-                    />
-                    
-                    <div id="preview_name_{{ $category->id }}" class="line-clamp-2"></div>
-                    
-                    <!-- Скрытый инпут для отправки выбранного компонента -->
-                    <input type="hidden" name="components[{{ $category->id }}]" id="component_input_{{ $category->id }}" value="">
-                </div>
-                
-                @endforeach
-            </div>
-
-            <div class="mt-4 flex items-center space-x-2">
-                <button type="submit" 
-                        class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
-                    Создать сборку
-                </button>
-                
-                <button type="button" 
-                        id="reset-configurator" 
-                        class="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded text-sm transition-colors">
-                    Сбросить всё
-                </button>
-            </div>
-            
-            <!-- Скрытые поля для хранения выбранных компонентов -->
-            <div id="hidden-fields-container"></div>
-        </form>
-    </div>
-
-    
    
-  
-@endif
 </div>
 </div>
     <script>
@@ -652,7 +625,7 @@
                 rowIndex++;
             });
     
-            // удаление строки
+            
             tableBody.addEventListener("click", (e) => {
                 if (e.target.classList.contains("remove-row")) {
                     e.target.closest("tr").remove();
@@ -662,13 +635,13 @@
     </script>  
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Обработчик для удаления строки
+            
             const tableBody = document.getElementById("compatibility-rows");
             const deletedRulesInput = document.getElementById("deleted-rules");
     
             tableBody.addEventListener("click", (e) => {
                 if (e.target.classList.contains("remove-row")) {
-                    const row = e.target.closest("tr");  // Находим строку, которая была нажата
+                    const row = e.target.closest("tr");  
                     const ruleId = e.target.getAttribute("data-id");
 
                     if (ruleId) {
@@ -678,7 +651,7 @@
                     }
                    
     
-                    row.remove();  // Удаляем строку из таблицы
+                    row.remove(); 
                 }
             });
         });
@@ -689,7 +662,7 @@
     const tableWrapper = document.getElementById('categories-url-table-wrapper');
     const tableBody = document.getElementById('categories-url-body');
     const addRowButton = document.getElementById('add-row');
-    let categories = @json($categories); // заранее передаём категории
+    let categories = @json($categories); 
     let rowIndex = {{ count($marketsUrls) }};
 
     marketSelect.addEventListener('change', function () {
@@ -722,7 +695,7 @@
         rowIndex++;
     });
 
-    // Функция генерации строки
+    
     function createRow(index, selectedCategoryId = '', url = '', id = null) {
         const row = document.createElement('tr');
 
@@ -749,7 +722,6 @@
         return row;
     }
 
-    // Слушатель для удаления строки
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-row')) {
             e.target.closest('tr').remove();
@@ -799,7 +771,6 @@
                 return;
             }
         
-            // AJAX-запрос для получения URL
             fetch(`/admin/get-urls?market_id=${marketId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -837,11 +808,11 @@
             </script>
             <script>
                 function deleteComponent(event, id) {
-                        event.preventDefault(); // Важно: предотвращаем действие по умолчаниюss
+                        event.preventDefault(); 
                         
                         if (!confirm('Вы уверены, что хотите удалить этот компонент?')) return;
 
-                        const componentElement = event.target.closest('form'); // Находим родительскую форму
+                        const componentElement = event.target.closest('form'); 
 
                         fetch(`/delete/${id}`, {
                             method: 'DELETE',
@@ -857,20 +828,17 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                // Плавное исчезновение элемента
                                 componentElement.style.transition = 'opacity 0.3s, transform 0.3s';
                                 componentElement.style.opacity = '0';
                                 componentElement.style.transform = 'scale(0.9)';
                                 
-                                // Удаление после анимации
                                 setTimeout(() => {
                                     componentElement.remove();
                                     
-                                    // Обновляем счетчик или другие элементы при необходимости
+                                    
                                     updateComponentsCounter();
                                 }, 300);
                                 
-                                // Показываем уведомление
                                 showFlashMessage(data.message, 'success');
                             }
                         })
@@ -880,7 +848,6 @@
                         });
                     }
 
-                    // Функция для показа уведомлений
                     function showFlashMessage(message, type) {
                         const flash = document.createElement('div');
                         flash.className = `fixed top-4 right-4 px-4 py-2 rounded-md text-white ${
@@ -896,7 +863,6 @@
                         }, 3000);
                     }
 
-                    // Если нужно обновить счетчик компонентов
                     function updateComponentsCounter() {
                         const counter = document.getElementById('components-counter');
                         if (counter) {
@@ -906,20 +872,17 @@
                 </script>
 
 <script>
-    // Фильтрация по сокету
     function filterBySocket(socket) {
         document.getElementById('socket-filter').value = socket;
         
         document.getElementById('filter-form').submit();
     }
     
-    // Фильтрация по производителю
     function filterByManufacturer(brand) {
         document.getElementById('manufacturer-filter').value = brand;
         document.getElementById('filter-form').submit();
     }
     
-    // Фильтрация по типу памяти
     function filterByMemoryType(memoryType) {
         document.getElementById('memory-type-filter').value = memoryType;
         document.getElementById('filter-form').submit();
@@ -928,7 +891,6 @@
         document.getElementById('market-filter').value = MarketId;
         document.getElementById('filter-form').submit();
     }
-    // Сброс всех фильтров
     function clearAllFilters() {
         document.getElementById('socket-filter').value = '';
         document.getElementById('manufacturer-filter').value = '';
@@ -938,8 +900,7 @@
     </script>
 
 
-<!-- JS для открытия/закрытия модального окна -->
-<!-- JS для открытия/закрытия модального окна -->
+
 <script>
     const openModal = document.getElementById('open-modal');
     const closeModal = document.getElementById('close-modal');
@@ -953,7 +914,6 @@
         modal.classList.add('hidden');
     });
 
-    // Закрытие по клику на затемнение
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.add('hidden');
@@ -969,7 +929,6 @@
 
 <script>
     document.getElementById('toggleConfiguratorMode')?.addEventListener('click', function () {
-        // Используем относительный путь или динамически определяем протокол
         const url = "{{ route('toggleConfiguratorMode') }}".replace(/^http:/, window.location.protocol);
         
         fetch(url, {
@@ -1022,14 +981,12 @@
             .catch(error => console.error('Ошибка фильтрации:', error));
         }
     
-        // Отправка по изменению любого поля формы
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('filter-form').addEventListener('change', function () {
                 submitFilters();
             });
         });
     
-        // Обработка кастомных кнопок фильтра (сокет, вендор и т.п.)
         function filterBySocket(value) {
             document.getElementById('socket-filter').value = value;
             submitFilters();
@@ -1068,12 +1025,10 @@
     const nameElement = document.getElementById('preview_name_' + categoryId);
     const inputElement = document.getElementById('component_input_' + categoryId);
 
-    // Обновляем изображение, имя и значение
     if (imageElement) imageElement.src = componentImageUrl;
     if (nameElement) nameElement.textContent = componentName;
     if (inputElement) inputElement.value = componentId;
 
-    // Обновляем выбранные компоненты
     updateSelectedComponents();
 }
 
@@ -1093,7 +1048,6 @@ function updateSelectedComponents() {
 
     
         function checkCompatibilityMulti(selectedComponents) {
-            // Сначала разблокируем все кнопки и прячем сообщения
             document.querySelectorAll('.add-to-config-btn').forEach(btn => {
                 btn.disabled = false;
                 btn.closest('.component-card')?.querySelector('.incompatible-text')?.classList.add('hidden');
@@ -1141,7 +1095,6 @@ function updateSelectedComponents() {
         }
 
     
-        // Сброс конфигурации
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('reset-configurator').addEventListener('click', function() {
                 @foreach($categories as $category)
@@ -1150,7 +1103,6 @@ function updateSelectedComponents() {
                     document.getElementById('component_input_{{ $category->id }}').value = "";
                 @endforeach
     
-                // Разблокируем все кнопки и прячем ошибки
                 document.querySelectorAll('.add-to-config-btn').forEach(btn => {
                     btn.disabled = false;
                     btn.closest('.component-card')?.querySelector('.incompatible-text')?.classList.add('hidden');
@@ -1201,10 +1153,8 @@ function updateSelectedComponents() {
                 toggleViewButtons(savedView);
             }
         
-            // Первая загрузка
             fetchComponents();
         
-            // Переключение вида
             gridBtn.addEventListener('click', function () {
                 viewInput.value = 'grid';
                 localStorage.setItem('catalogView', 'grid');
@@ -1219,12 +1169,10 @@ function updateSelectedComponents() {
                 fetchComponents();
             });
         
-            // Отправка формы по смене любого фильтра
             filterForm.addEventListener('change', function () {
                 fetchComponents();
             });
         
-            // Делегирование кликов по пагинации
             document.addEventListener('click', function (e) {
                 const link = e.target.closest('#pagination-wrapper a');
                 if (link) {

@@ -70,39 +70,34 @@ class ProfileController extends Controller
     $user->delete();
     return back()->with('status', 'user-deleted');
 }
-    public function updateUsers(Request $request, User $user)
-    {
-        $validated = $request->validate([
+public function updateUsers(Request $request, User $user)
+{
+    $rules = [
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-        'password' => [
-        'nullable',
-        'confirmed',
-        Password::min(8) 
-            ->mixedCase() 
-            ->numbers() 
-            ->symbols() 
-            ->uncompromised() 
-    ],
-          
-            'admin' => ['nullable', 'integer', 'max:1'],
-        ]);
-        
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-        $user->admin = $validated['admin'] ?? $user->admin;
-    
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
-        if($validated){
-            return back()->with('error', 'user-updated-' . $user->id);
-        }
-        $user->save();
-    
-        return back()->with('status', 'user-updated-' . $user->id);
+        'admin' => ['nullable', 'integer', 'max:1'],
+    ];
+
+    if ($request->filled('password')) {
+        $rules['password'] = [
+            'confirmed',
+            Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()
+        ];
     }
-    
+    $validated = $request->validate($rules);
+
+    $user->name = $validated['name'];
+    $user->email = $validated['email'];
+    $user->admin = $validated['admin'] ?? $user->admin;
+
+    if (!empty($validated['password'])) {
+        $user->password = Hash::make($validated['password']);
+    }
+
+    $user->save();
+
+    return back()->with('status', 'user-updated-' . $user->id);
+}
     /**
      * Update the user's profile information.
      */

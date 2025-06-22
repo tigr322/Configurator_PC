@@ -39,50 +39,44 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @foreach($users as $user)
-                    <tr class="block sm:table-row mb-4 sm:mb-0 border-b sm:border-b-0">
-                        <!-- Для мобильных - заголовок перед значением -->
-                        <td class="px-2 sm:px-4 py-2 block sm:table-cell">
-                            <span class="sm:hidden font-medium">ID: </span>
-                            {{ $user->id }}
-                        </td>
-                        
-                        <td class="px-2 sm:px-4 py-2 block sm:table-cell">
-                            <span class="sm:hidden font-medium">Имя: </span>
-                            <input name="name" value="{{ $user->name }}" 
-                                         class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" required />
-                        </td>
-                        
-                        <td class="px-2 sm:px-4 py-2 block sm:table-cell">
-                            <span class="sm:hidden font-medium">Email: </span>
-                            <input name="email" value="{{ $user->email }}" type="email"
-                                         class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" required />
-                        </td>
-                        
-                        <td class="px-2 sm:px-4 py-2 block sm:table-cell">
-                            <span class="sm:hidden font-medium">Пароль: </span>
-                            <input name="password" type="password" placeholder="••••••••"
-                                         class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
-                        </td>
-                        
-                        <td class="px-2 sm:px-4 py-2 block sm:table-cell">
-                            <span class="sm:hidden font-medium">Подтверждение: </span>
-                            <input name="password_confirmation" type="password" placeholder="••••••••"
-                                         class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
-                        </td>
-                        
-                        <td class="px-2 sm:px-4 py-2 block sm:table-cell">
-                            <span class="sm:hidden font-medium">Админ: </span>
-                            <input name="admin" type="number" value="{{ $user->admin ?? '' }}"
-                                         class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
-                        </td>
-                        
-                        <td class="px-2 sm:px-4 py-2 block sm:table-cell space-y-2 sm:space-y-0 sm:space-x-2">
-                            <form method="post" action="{{ route('user.update', $user->id) }}" class="inline-block">
-                                @csrf
-                                @method('put')
-                                <x-primary-button class="text-xs sm:text-sm w-full sm:w-auto">{{ __('Сохранить') }}</x-primary-button>
-                                
-                                @if (session('success') === 'user-updated-'.$user->id)
+                    <form method="POST" action="{{ route('user.update', $user->id) }}">
+                        @csrf
+                        @method('PUT')
+            
+                        <tr class="block sm:table-row mb-4 sm:mb-0 border-b sm:border-b-0">
+                            <td class="px-2 sm:px-4 py-2 block sm:table-cell">
+                                {{ $user->id }}
+                            </td>
+            
+                            <td class="px-2 sm:px-4 py-2 block sm:table-cell">
+                                <input name="name" value="{{ $user->name }}"
+                                       class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" required />
+                            </td>
+            
+                            <td class="px-2 sm:px-4 py-2 block sm:table-cell">
+                                <input name="email" value="{{ $user->email }}" type="email"
+                                       class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" required />
+                            </td>
+            
+                            <td class="px-2 sm:px-4 py-2 block sm:table-cell">
+                                <input name="password" type="password" placeholder="••••••••"
+                                       class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
+                            </td>
+            
+                            <td class="px-2 sm:px-4 py-2 block sm:table-cell">
+                                <input name="password_confirmation" type="password" placeholder="••••••••"
+                                       class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
+                            </td>
+            
+                            <td class="px-2 sm:px-4 py-2 block sm:table-cell">
+                                <input name="admin" type="number" value="{{ $user->admin }}"
+                                       class="w-full sm:w-40 bg-gray-50 p-2 rounded text-sm text-black" />
+                            </td>
+            
+                            <td class="px-2 sm:px-4 py-2 block sm:table-cell">
+                                <x-primary-button class="text-xs sm:text-sm w-full sm:w-auto">Сохранить</x-primary-button>
+            
+                                @if (session('status') === 'user-updated-'.$user->id)
                                     <div x-data="{ show: true }" x-show="show" x-transition
                                          x-init="setTimeout(() => show = false, 2000)"
                                          class="text-xs text-green-600 mt-1 flex items-center">
@@ -91,27 +85,21 @@
                                         </svg>
                                         {{ __('Сохранено!') }}
                                     </div>
-                                @elseif (session('error')=== 'user-updated-'.$user->id)
-                                    <div x-data="{ show: true }" x-show="show" x-transition
-                                         x-init="setTimeout(() => show = false, 2000)"
-                                         class="text-xs text-red-600 mt-1 flex items-center">
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                        {{ __('Ошибка!') }}
-                                    </div>
                                 @endif
-                            </form>
-                            
-                            <form method="POST" action="{{ route('user.destroy', $user->id) }}" class="inline-block">
+                            </td>
+                        </tr>
+                    </form>
+            
+                    
+                  
+                        <td colspan="7" class="">
+                            <form method="POST" action="{{ route('user.destroy', $user->id) }}">
                                 @csrf
                                 @method('DELETE')
-                                <x-danger-button type="submit" class="text-xs sm:text-sm w-full sm:w-auto mt-2 sm:mt-0">
-                                    {{ __('Удалить') }}
-                                </x-danger-button>
+                                <x-danger-button type="submit" class="text-xs sm:text-sm">Удалить</x-danger-button>
                             </form>
                         </td>
-                    </tr>
+                    
                 @endforeach
             </tbody>
         </table>
