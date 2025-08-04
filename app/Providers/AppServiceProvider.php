@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Spiders\ComponentSpider;
+use Illuminate\Console\Scheduling\Schedule;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -31,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        app()->booted(function () {
+            app(Schedule::class)
+                ->command('prices:update')
+                ->everyMinute();
+        });
     }
 }

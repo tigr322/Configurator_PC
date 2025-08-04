@@ -125,9 +125,16 @@ header nav a:hover {
 
 /* Главный контейнер */
 .main-container {
-    text-align: center;
-    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  /* Вертикальное центрирование */
+    align-items: center;      /* Горизонтальное центрирование */
+    margin: 0 auto;          /* Автоматические отступы по бокам */
     max-width: 600px;
+    height: 80vh;           /* Занимает всю высоту viewport */
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 .Filters h2 {
     font-size: 0.75rem;
@@ -184,15 +191,7 @@ header nav a:hover {
     background-color: #e0b20e;
     transform: scale(1.05);
 }
-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: #e0b20e;
-    text-align: center;
-    padding: 10px 0;
-    font-weight: bold;
-}
+
 
 @media (max-width: 375px) {
     .navigation {
@@ -264,39 +263,7 @@ footer {
         
     }
     
-     .Filters {
-        width: 100%; /* Фильтры будут занимать всю ширину */
-        right: 0;
-        top: 80px; /* Можно подправить, если нужно отступить от верхней части */
-       
-       
-      
-    }
-
-    .Filters input,
-    .Filters select {
-        font-size: 0.3rem; /* Уменьшаем шрифт */
-        padding: 0; /* Меньше отступов внутри */
-    }
-
-    .Filters button {
-        font-size: 1rem; /* Уменьшаем размер шрифта в кнопке */
-        padding: 0.175rem 0.3rem; /* Уменьшаем отступы */
-    }
-
-    .Filters input,
-    .Filters select {
-        width: 100%; /* Сделаем поля ввода во всю ширину */
-    }
-
-    /* Пример уменьшения шрифта заголовка */
-    .Filters h2 {
-        font-size: 1rem; /* Уменьшаем размер заголовка */
-    }
-
-    .Filters form {
-        grid-template-columns: 1fr; /* Все элементы формы будут в одну колонку */
-    }
+   
     .button-theme {
      
         top: 10px;
@@ -310,6 +277,7 @@ footer {
         max-width: 30px !important;
         max-height: 30px !important;
     }
+    
     .navigation nav {
         display: flex;
         flex-wrap: wrap;

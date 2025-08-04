@@ -17,7 +17,8 @@ use RoachPHP\ItemPipeline\Item;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 class ComponentSpider extends BasicSpider
-{ public array $startUrls = [];
+{ 
+    public array $startUrls = [];
 
   
 
@@ -32,8 +33,13 @@ class ComponentSpider extends BasicSpider
 {
     $data = [];
     Log::info('Parsing with category ID: ' . ($this->categoryId ?? 'null'));
-    if (preg_match('/Форм-фактор\s+([A-Z]+)\b/u', $title, $matches)) {
-        $data['form_factor'] = $matches[1];
+    if (preg_match_all('/\b(ATX|Micro[-\s]?ATX|mATX|Mini[-\s]?ITX|E[-\s]?ATX)\b/i', $title, $formFactorMatches)) {
+        $formFactors = array_map(function ($f) {
+            $normalized = str_replace(['-', ' '], '', $f);
+            return $normalized === 'MICROATX' ? 'mATX' : ($normalized === 'MINIITX' ? 'Mini-ITX' : $normalized);
+        }, $formFactorMatches[1]);
+    
+        $data['form_factor'] = array_values(array_unique($formFactors));
     }
     if($this->context['category_id'] == 3){
         if (preg_match('/(DDR[0-9])/i', $title, $matches)) {
@@ -176,14 +182,16 @@ public function parse(Response $response): Generator
             'brand' => $brand,
             'compatibility_data' => json_encode($compatibilityData, JSON_UNESCAPED_UNICODE),
             'price' => $price,
+            'market_id' =>$this->context['market_id'],
             'shop_url'=> $shop_url,
             'image_url' =>$foto,
             'characteristics' => $characteristics,
         ];
+        
     });
    
     // Ищем все товары
-   
+  
     // Сохраняем в JSON
     $jsonPath = storage_path('app/parsed_data.json');
     file_put_contents($jsonPath, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));

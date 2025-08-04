@@ -7,40 +7,108 @@ use Illuminate\Http\Request;
 use RoachPHP\Spider\Configuration\Overrides;
 use Illuminate\Support\Facades\Artisan;
 use App\Spiders\ComponentSpider;
+use App\Spiders\ComponentRegardSpider;
 use RoachPHP\Roach;
+use App\Jobs\ParseMarketJob;
 use App\Models\Category;
 use App\Models\Component;
+use App\Models\Markets;
+use App\Models\MarketsUrls;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RoachPHP\Downloader\Middleware\RequestDeduplicationMiddleware;
+use RoachPHP\Downloader\Middleware\DelayRequestsMiddleware;
+use App\Spiders\ComponentDnsSpider;
+use App\Spiders\ComponentKnsSpider;
 class ParserController extends Controller
 {
     public function parse(Request $request)
-    {
-        $validated = $request->validate([
-            'category_id' => 'required|integer|exists:categories,id',
-            'source_url' => 'required|url',
-        ]);
+{
+    $validated = $request->validate([
+        'category_id' => 'required|integer|exists:categories,id',
+        'market_id' => 'required|integer|exists:markets,id',
+    ]);
+    ParseMarketJob::dispatch($validated)
+    ->onQueue('parsing');
+   
+    $marketUrl = MarketsUrls::where('category_id', $validated['category_id'])
+        ->where('market_id', $validated['market_id'])
+        ->first();
 
-        Log::info('Starting spider with params:', $validated);
+    if (!$marketUrl) {
+        return redirect()->back()
+            ->with('error', 'URL для выбранной категории и магазина не найден');
+    }
 
-        // Правильный способ запуска через Roach
-        Log::info('Before startSpider');
+    Log::info('Starting spider with params:', $validated);
+
+    if ($validated['market_id'] == 1) { 
         Roach::startSpider(
             ComponentSpider::class,
             new Overrides(
-                startUrls: [$validated['source_url']],
+                startUrls: [$marketUrl->url], 
             ),
             context: [
                 'category_id' => $validated['category_id'],
+                'market_id' => $validated['market_id'],
             ]
         );
-        
-        Log::info('After startSpider');
+    } elseif ($validated['market_id'] == 2) {
+        Roach::startSpider(
+            ComponentRegardSpider::class,
+            new Overrides(
+                startUrls: [$marketUrl->url],
+                downloaderMiddleware: [
+                   
+                    RequestDeduplicationMiddleware::class,
+                ], 
+            ),
 
-        return redirect()->back()
-            ->with('success', 'Парсинг успешно запущен!');
+            context: [
+                'category_id' => $validated['category_id'],
+                'market_id' => $validated['market_id'],
+            ]
+        );
+    }elseif ($validated['market_id'] == 3) {
+        Roach::startSpider(
+            ComponentDnsSpider::class,
+            new Overrides(
+                startUrls: [$marketUrl->url],
+                downloaderMiddleware: [
+                   
+                    RequestDeduplicationMiddleware::class,
+                ], 
+            ),
+
+            context: [
+                'category_id' => $validated['category_id'],
+                'market_id' => $validated['market_id'],
+            ]
+        );
+    }elseif ($validated['market_id'] == 4) {
+        Roach::startSpider(
+            ComponentKnsSpider::class,
+            new Overrides(
+                startUrls: [$marketUrl->url],
+                downloaderMiddleware: [
+                   
+                    RequestDeduplicationMiddleware::class,
+                ], 
+            ),
+
+            context: [
+                'category_id' => $validated['category_id'],
+                'market_id' => $validated['market_id'],
+            ]
+        );
     }
+
+    Log::info('After startSpider');
+
+    return redirect()->back()
+        ->with('success', 'Парсинг успешно запущен!');
+}
     public function addCategory(Request $request){
         $validated = $request->validate([
             'category_name' => 'required|string|max:32',
@@ -56,6 +124,7 @@ class ParserController extends Controller
     {
         $validated = $request->validate([
             'category_id' => 'required|integer',
+            'market_id' => 'required',
             'component_name' => 'required|string|max:128',
             'component_price'=>  'required|numeric',
             'component_brand' => 'required|string|max:32',
@@ -72,16 +141,17 @@ class ParserController extends Controller
             $foto = Str::uuid() . '.' . $image->getClientOriginalExtension();
             $filename = 'products/' . $foto;
     
-            // Сохраняем файл в disk('public') => storage/app/public/products/
             Storage::disk('public')->putFileAs('products', $image, $foto);
     
-            // Сохраняем путь для доступа
             $imagePath = $filename;
+        }else{
+            $foto = 'images/defaulte_image.jpg';    
         }
     
         Component::create([
             'category_id' => $validated['category_id'],
             'name' => $validated['component_name'],
+            'market_id' =>$validated['market_id'],
             'brand' => $validated['component_brand'],
             'price'=>  $validated['component_price'],
             'shop_url' => $validated['component_market_url'],
@@ -91,6 +161,15 @@ class ParserController extends Controller
         ]);
     
         return redirect()->back()->with('success', 'Компонент успешно добавлен!');
+    }
+    public function addMarket(Request $request){
+        $validated = $request->validate([
+            'market_name' => 'required|string|max:32',
+        ]);
+        Markets::create(['name' => $validated['market_name']]);
+
+        return redirect()->back()
+        ->with('success', 'Успешно добавлен новый магазин!');
     }
     
 }

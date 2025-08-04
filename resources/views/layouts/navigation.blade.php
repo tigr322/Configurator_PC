@@ -8,8 +8,10 @@
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
- 
-    <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon.png') }}">
+   <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('css/light-dark.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
    
@@ -48,7 +50,7 @@
                     
                     
                         <a href="{{ url('/configurator') }}">Конфигуратор</a>
-                        <a href="{{ url('/profile') }}">Профиль</a>
+                        <a href="{{ route('profile.editProfile') }}">Профиль</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit">Выход</button>
@@ -61,8 +63,24 @@
                     @endauth
                     <a href="{{ route('catalog') }}">Каталог комплектующих</a>
                     <a href="{{ route('builds') }}">Популярные конфигурации</a>
+                    @if (auth()->check() && auth()->user()->admin == 1)
+                        <a href="{{ route('profile.edit'    ) }}">Администрирование пользователей</a>
+                    
+                    @endif
                 </nav>
             @endif
+            <!--<div class="max-w-xl mx-auto mt-6">
+                <h2 class="text-lg font-semibold mb-2">🤖 Задать вопрос</h2>
+                <textarea id="userMessage" rows="2"
+                    class="w-full p-2 text-sm border border-gray-300 rounded mb-2 resize-none"
+                    placeholder="Например: сборка до 80 000₽"></textarea>
+                <button onclick="sendMessage()"
+                    class="bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700 transition">
+                    Отправить
+                </button>
+            
+                <div id="chatReply" class="mt-3 p-3 bg-gray-50 rounded text-sm text-gray-800 border border-gray-200"></div>
+            </div>-->
         </header>
 
         <main class="main-content">
@@ -126,6 +144,28 @@
         localStorage.setItem('theme', newTheme);
     });
 </script>
+<script>
+    function sendMessage() {
+    const message = document.getElementById('userMessage').value;
+    const replyBox = document.getElementById('chatReply');
+    replyBox.innerHTML = "⏳ Ответ генерируется...";
 
+    fetch("{{ route('ai.chat') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        replyBox.innerHTML = data.reply;
+    })
+    .catch(() => {
+        replyBox.innerHTML = "⚠️ Ошибка при получении ответа.";
+    });
+}
+</script>
 </body>
 </html>

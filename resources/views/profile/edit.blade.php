@@ -17,6 +17,7 @@
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
+
             @if (auth()->check() && auth()->user()->admin == 1)
             <div class="container mx-auto px-4">
                 <div class="text-center">
@@ -25,6 +26,16 @@
                 </div>
             </div>
             @endif
+
+            <div class="ontainer mx-auto px-4">
+                <div class="text-center">
+                    @include('profile.partials.my-configurations')
+                </div>
+            </div>
+          
+                  
+               
+       
             <div class="p-4 sm:p-8 shadow sm:rounded-lg">
                 <div class="max-w-xl mx-auto">
                     @include('profile.partials.delete-user-form')
@@ -32,6 +43,8 @@
             </div>
 
             <!-- Вывод всех пользователей -->
+            @include('profile.partials.developer')
+           
           
         </div>
     </div>

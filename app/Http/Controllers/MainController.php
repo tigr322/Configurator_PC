@@ -7,6 +7,5 @@ use Illuminate\Http\Request;
 use App\Models\Configurations;
 class MainController extends Controller
 {
-    // получение конфигурации пользовталей с бд
    
 }

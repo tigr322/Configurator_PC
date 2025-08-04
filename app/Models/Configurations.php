@@ -12,7 +12,30 @@ class Configurations extends Model
 
     public function components()
     {
-        return $this->belongsToMany(Component::class, 'configuration_components', 'configuration_id', 'component_id')->with('category');
+        return $this->belongsToMany(Component::class, 'configuration_components', 
+        'configuration_id', 'component_id')->with('category');
     }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'configuration_id');
+    }
+    public function votes()
+{
+    return $this->hasMany(ConfigurationVote::class, 'configuration_id');
+}
 
+public function likes()
+{
+    return $this->votes()->where('is_like', true);
+}
+
+public function dislikes()
+{
+    return $this->votes()->where('is_like', false);
+}
+
+public function bestBuildVotes()
+{
+    return $this->votes()->where('is_best_build_vote', true);
+}
 }   

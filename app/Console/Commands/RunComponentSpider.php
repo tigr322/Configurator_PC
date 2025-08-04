@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use RoachPHP\Roach;
-use App\Spiders\ComponentSpider;
-
+use App\Spiders\ComponentRegardSpider;
+use App\Spiders\ComponentKnsSpider;
 class RunComponentSpider extends Command
 {
     protected $signature = 'spider:components';
@@ -13,7 +13,7 @@ class RunComponentSpider extends Command
 
     public function handle()
     {
-        Roach::startSpider(ComponentSpider::class);
+        Roach::startSpider(ComponentKnsSpider::class);
         $this->info('Парсинг завершён!');
     }
 }

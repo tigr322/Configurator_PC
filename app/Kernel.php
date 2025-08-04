@@ -3,9 +3,14 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends HttpKernel
 {
+    protected function schedule(Schedule $schedule): void
+    {
+        $schedule->command('prices:update')->everyFiveMinutes();
+    }
     protected $middleware = [
        
         \Illuminate\Http\Middleware\HandleCors::class,

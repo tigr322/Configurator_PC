@@ -26,3 +26,5 @@ yarn-error.log
 /docker/nginx/default.conf
 /docker/php/Dockerfile
 docker-compose.yml
+backup.sql
+/public/css/app
