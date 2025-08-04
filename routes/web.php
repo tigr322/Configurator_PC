@@ -20,6 +20,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Админска удаление и изменения статуса пользователя
+   // Route::group(['middleware' => 'admin'], function () {
+    //if (auth()->check() && auth()->user()->admin == 1){
+        Route::put('/user/{user}', [ProfileController::class, 'updateUsers'])->name('user.update');
+    
+        Route::delete('/users/{user}', [ProfileController::class, 'destroyUser'])->name('user.destroy');
+   // }
+   
+//});
 });
 Route::get('/catalog', [ComponentController::class, 'index'])->name('catalog');
 Route::get('/component/{id}', [ComponentController::class, 'show'])->name('components.show');
