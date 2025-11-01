@@ -374,7 +374,7 @@
 
                 <!-- Форма -->
                 <form id="compatibility-form" action="{{ route('save.compatibility.rules') }}" method="POST">
-
+                    @csrf
                     <table class="w-full border mt-2 text-sm" id="compatibility-table">
                         <thead>
                             <tr>
