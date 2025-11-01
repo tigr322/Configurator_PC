@@ -1,20 +1,13 @@
 <section>
+    @php($users = isset($users) ? $users : collect())
+
     <header>
-        <h2 class="text-lg font-medium">
-            {{ __('Администрирование пользователей') }}
-        </h2>
-        <p class="mt-1 text-sm">
-            {{ __('Редактируйте имя, email, пароль и права доступа пользователей.') }}
-        </p>
+        <h2 class="text-lg font-medium">Панель администрирования пользователей</h2>
+        <p class="mt-1 text-sm">Редактируйте имя, email, права администратора и пароль пользователей.</p>
     </header>
 
-    <div class="mt-6 overflow-x-auto text-center">
-        <table class="border rounded-lg shadow-sm  text-center">
-            <thead class="bg-gray-50  text-center">
-                <tr>
-
     <div class="mt-6 overflow-x-auto">
-        <table class="border rounded-lg shadow-sm">
+        <table class="min-w-full border rounded-lg shadow-sm">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-2 text-left text-sm font-medium">ID</th>
@@ -23,93 +16,54 @@
                     <th class="px-4 py-2 text-left text-sm font-medium">Пароль</th>
                     <th class="px-4 py-2 text-left text-sm font-medium">Подтверждение</th>
                     <th class="px-4 py-2 text-left text-sm font-medium">Админ</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium">Действие</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium">Действия</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100  text-center">
-                @foreach($users as $user)
-                    <tr class="">
-                        <form method="post" action="{{ route('user.update', $user->id) }}" class="divide-y divide-gray-100  text-center">
-                            @csrf
-                            @method('put')
-                            <td class="px-4 py-2">
-                                <x-text-input  style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="name" value="{{ $user->name }}" class="w-full" required />
-                            </td>
-                            <td class="px-4 py-2">
-                                <x-text-input name="email"  style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" value="{{ $user->email }}" type="email" class="w-full" required />
-                            </td>
-                            <td class="px-4 py-2">
-                                <x-text-input name="password"  style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="password" placeholder="••••••••" class="w-full" />
-                            </td>
-                            <td class="px-4 py-2">
-                                <x-text-input name="password_confirmation" style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="password" placeholder="••••••••" class="w-full" />
-                            </td>
-                            <td class="px-4 py-2">
-                                <x-text-input name="admin" type="number"  style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" value="{{ $user->admin ?? '' }}" class="w-full" />
-                            </td>
-                            <td class="px-4 py-2">
-                                <x-primary-button class="text-sm">{{ __('Сохранить') }}</x-primary-button>
-                                
-                                @if (session('status') === 'user-updated-'.$user->id)
-                                    <p
-                                        x-data="{ show: true }"
-                                        x-show="show"
-                                        x-transition
-                                        x-init="setTimeout(() => show = false, 2000)"
-                                        class="text-xs text-green-600 mt-1"
-                                    >
-                                        {{ __('Сохранено.') }}
-                                    </p>
-                                @endif
-                           
-                        </form>
-                        <form method="POST" action="{{ route('user.destroy', $user->id) }}" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <x-danger-button type="submit" class="text-sm">
-                                        {{ __('Удалить') }}
-                                    </x-danger-button>
-                        </form>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($users as $user)
+                    <tr>
+                        <td class="px-4 py-2 align-top">{{ $user->id }}</td>
+                        <td class="px-4 py-2 align-top">
+                            <x-text-input form="update-user-{{ $user->id }}" name="name" value="{{ $user->name }}" class="w-full" required />
+                        </td>
+                        <td class="px-4 py-2 align-top">
+                            <x-text-input form="update-user-{{ $user->id }}" name="email" value="{{ $user->email }}" type="email" class="w-full" required />
+                        </td>
+                        <td class="px-4 py-2 align-top">
+                            <x-text-input form="update-user-{{ $user->id }}" name="password" type="password" placeholder="Новый пароль" class="w-full" />
+                        </td>
+                        <td class="px-4 py-2 align-top">
+                            <x-text-input form="update-user-{{ $user->id }}" name="password_confirmation" type="password" placeholder="Повторите пароль" class="w-full" />
+                        </td>
+                        <td class="px-4 py-2 align-top">
+                            <x-text-input form="update-user-{{ $user->id }}" name="admin" type="number" value="{{ $user->admin ?? 0 }}" class="w-full" />
+                        </td>
+                        <td class="px-4 py-2 align-top">
+                            <button type="submit" form="update-user-{{ $user->id }}" class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700">Сохранить</button>
+                            <button type="submit" form="delete-user-{{ $user->id }}" class="ml-2 px-3 py-1 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700" onclick="return confirm('Удалить пользователя?')">Удалить</button>
+
+                            @if (session('status') === 'user-updated-'.$user->id)
+                                <p class="text-xs text-green-600 mt-2">Сохранено.</p>
+                            @endif
                         </td>
                     </tr>
 
-            <tbody class="divide-y divide-gray-100">
-                @foreach($users as $user)
-                <form method="POST" action="{{ route('user.update', $user->id) }}">
-                    @csrf
-                    @method('PUT')
-            
+                    <form id="update-user-{{ $user->id }}" method="POST" action="{{ route('user.update', $user->id) }}" class="hidden">
+                        @csrf
+                        @method('PUT')
+                    </form>
+
+                    <form id="delete-user-{{ $user->id }}" method="POST" action="{{ route('user.destroy', $user->id) }}" class="hidden">
+                        @csrf
+                        @method('DELETE')
+                    </form>
+                @empty
                     <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>
-                            <input type="text" name="name" value="{{ $user->name }}" class="w-full" />
-                        </td>
-                        <td>
-                            <input type="email" name="email" value="{{ $user->email }}" class="w-full" />
-                        </td>
-                        <td>
-                            <input type="password" name="password" class="w-full" />
-                        </td>
-                        <td>
-                            <input type="password" name="password_confirmation" class="w-full" />
-                        </td>
-                        <td>
-                            <input type="number" name="admin" value="{{ $user->admin }}" class="w-full" />
-                        </td>
-                        <td>
-                            <button type="submit">Сохранить1</button>
-                        </td>
+                        <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">Пользователи не найдены.</td>
                     </tr>
-                </form>
-                                <form method="POST" action="{{ route('user.destroy', $user->id) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <x-danger-button type="submit" class="text-sm">Удалить</x-danger-button>
-                                </form>
-                            </td>
-                        </tr>
-                @endforeach
+                @endforelse
             </tbody>
         </table>
     </div>
 </section>
+

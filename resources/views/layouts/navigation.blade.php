@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Конфигуратор ПК</title>
 
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -14,9 +14,9 @@
    <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('css/light-dark.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-   
+
 </head>
-<body>
+<body
     <div class="page-wrapper">
         <header class="navigation">
             @if (Route::has('login'))
@@ -47,8 +47,8 @@
                             </svg>
                         </span>
                     </button>
-                    
-                    
+
+
                         <a href="{{ url('/configurator') }}">Конфигуратор</a>
                         <a href="{{ route('profile.editProfile') }}">Профиль</a>
                         <form method="POST" action="{{ route('logout') }}">
@@ -65,8 +65,11 @@
                     <a href="{{ route('builds') }}">Популярные конфигурации</a>
                     @if (auth()->check() && auth()->user()->admin == 1)
                         <a href="{{ route('profile.edit'    ) }}">Администрирование пользователей</a>
-                    
+
                     @endif
+                    @auth
+                       <!-- <a href="{{ route('ai.index') }}" class="px-3 py-1.5 rounded-md text-sm border border-gray-200 dark:border-gray-700 hover:border-amber-500 hover:text-amber-500 transition">ИИ помощник</a>-->
+                    @endauth
                 </nav>
             @endif
             <!--<div class="max-w-xl mx-auto mt-6">
@@ -78,7 +81,7 @@
                     class="bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700 transition">
                     Отправить
                 </button>
-            
+
                 <div id="chatReply" class="mt-3 p-3 bg-gray-50 rounded text-sm text-gray-800 border border-gray-200"></div>
             </div>-->
         </header>
@@ -92,10 +95,10 @@
         document.addEventListener("DOMContentLoaded", function () {
             const nav = document.querySelector('.navigation');
             let lastScrollY = window.scrollY;
-    
+
             // Оптимизация: используем requestAnimationFrame для плавности
             let ticking = false;
-    
+
             window.addEventListener('scroll', function () {
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
@@ -110,22 +113,22 @@
                     ticking = true;
                 }
             });
-    
+
             // Темная/светлая тема
             const toggleButton = document.getElementById("themeToggle");
             const savedTheme = localStorage.getItem("theme");
-    
+
             if (savedTheme === "light") {
                 document.body.classList.add("light");
             }
-    
+
             toggleButton?.addEventListener("click", function () {
                 document.body.classList.toggle("light");
                 localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
             });
         });
     </script>
-    
+
   <script>
     const themeToggleButton = document.getElementById('themeToggle');
     const bodyElement = document.body;
