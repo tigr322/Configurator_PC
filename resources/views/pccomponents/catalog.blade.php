@@ -14,27 +14,27 @@
 <body>
 
     @include('layouts.navigation')
-   
-    
-    
+
+
+
     <div class="container mx-auto">
         @if (session('configurator_mode') == true)
         <div class="w-full overflow-x-auto py-4">
             <form action="{{ route('configurations.store') }}" method="POST"
                   class="flex flex-row gap-4 items-start min-w-[600px] sm:min-w-full px-4" id="configurator-form">
                 @csrf
-    
+
                 <div class="min-w-[200px]">
                     <label for="config-name" class="block mb-1 font-medium text-sm">Название конфигурации:</label>
                     <input type="text" name="name" id="config-name"
                            class="w-full border p-2 rounded text-sm bg-gray-100"
                            placeholder="Моя игровая сборка" required>
-    
+
                     @error('name')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-    
+
                 @foreach($categories as $category)
                     <div class="min-w-[120px] flex-shrink-0 text-center border rounded-lg p-2  shadow-sm" id="category-block-{{ $category->id }}">
                         <label style="">{{ $category->name }}</label>
@@ -46,7 +46,7 @@
                         <input type="hidden" name="components[{{ $category->id }}]" id="component_input_{{ $category->id }}" value="">
                     </div>
                 @endforeach
-    
+
                 <div class="flex flex-col justify-end gap-2">
                     <button type="submit"
                             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded">Создать</button>
@@ -61,7 +61,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        
+
         @if ($errors->any())
             <div style="color: red; font-weight: bold; text-align: center; margin-top: 1rem;">
                 <ul style="list-style-type: none; padding: 0;">
@@ -73,12 +73,12 @@
         @endif
         {{-- Список компонентов --}}
         <div class="flex flex-col lg:flex-row">
-           
 
 
-        
+
+
             <div class="lg:w-1/4">
-                <div 
+                <div
                 class=""
                 style="padding-top:60px;
                 "
@@ -102,11 +102,11 @@
                         </option>
                     @endforeach
                 </select>
-    
+
                 <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"  type="text" name="name" placeholder="Название" value="{{ request('name') }}" class="border p-2 rounded">
-    
+
                 <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;"  type="text" name="brand" placeholder="Бренд" value="{{ request('brand') }}" class="border p-2 rounded">
-    
+
                 <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="min_price" placeholder="Мин. цена" value="{{ request('min_price') }}" class="border p-2 rounded">
                 <input style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" type="number" name="max_price" placeholder="Макс. цена" value="{{ request('max_price') }}" class="border p-2 rounded">
                 <select name="pagination"
@@ -117,7 +117,7 @@
                 <option value="24" {{ request('pagination') == 24 ? 'selected' : '' }}>24</option>
                 <option value="32" {{ request('pagination') == 32 ? 'selected' : '' }}>32</option>
             </select>
-            
+
                 <select style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; overflow-x: auto; color: black;" name="sort" class="border p-2 rounded">
                     <option value="">Сортировка</option>
                     <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Цена ↑</option>
@@ -131,68 +131,68 @@
 
                 <!--<button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded col-span-1 md:col-span-2">Применить</button> -->
             </form>
-        
+
             <div class="mb-6 space-y-4">
                 <!-- Группа фильтров по сокетам процессоров -->
                 <div>
                     <h3 class="text-sm font-semibold text-gray-500 mb-2">Сокеты</h3>
                     <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="filterBySocket('AM4')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterBySocket('AM4')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('socket') == 'AM4' ? 'bg-blue-100 border-blue-300' : '' }}">
                             AM4
                         </button>
-                        <button type="button" onclick="filterBySocket('AM5')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterBySocket('AM5')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('socket') == 'AM5' ? 'bg-blue-100 border-blue-300' : '' }}">
                             AM5
                         </button>
-                        <button type="button" onclick="filterBySocket('LGA1700')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterBySocket('LGA1700')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('socket') == 'LGA1700' ? 'bg-blue-100 border-blue-300' : '' }}">
                             LGA1700
                         </button>
-                        <button type="button" onclick="filterBySocket('LGA1200')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterBySocket('LGA1200')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('socket') == 'LGA1200' ? 'bg-blue-100 border-blue-300' : '' }}">
                             LGA1200
                         </button>
                     </div>
                 </div>
-            
+
                 <!-- Группа фильтров по производителям видеокарт -->
                 <div>
                     <h3 class="text-sm font-semibold text-gray-500 mb-2">Вендоры</h3>
                     <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="filterByManufacturer('Gigabyte')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterByManufacturer('Gigabyte')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('manufacturer') == 'Gigabyte' ? 'bg-blue-100 border-blue-300' : '' }}">
                                        Gigabyte
                         </button>
-                        <button type="button" onclick="filterByManufacturer('ASUS')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterByManufacturer('ASUS')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('manufacturer') == 'ASUS' ? 'bg-blue-100 border-blue-300' : '' }}">
                                        ASUS
                         </button>
-                        <button type="button" onclick="filterByManufacturer('Palit')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterByManufacturer('Palit')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('manufacturer') == 'Palit' ? 'bg-blue-100 border-blue-300' : '' }}">
                             Palit
                         </button>
                     </div>
                 </div>
-            
+
                 <!-- Группа фильтров по типу памяти -->
                 <div>
                     <h3 class="text-sm font-semibold text-gray-500 mb-2">Тип памяти</h3>
                     <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="filterByMemoryType('DDR4')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterByMemoryType('DDR4')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('memory_type') == 'DDR4' ? 'bg-blue-100 border-blue-300' : '' }}">
                             DDR4
                         </button>
-                        <button type="button" onclick="filterByMemoryType('DDR5')" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterByMemoryType('DDR5')"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('memory_type') == 'DDR5' ? 'bg-blue-100 border-blue-300' : '' }}">
                             DDR5
                         </button>
@@ -201,39 +201,39 @@
                 <div>
                     <h3 class="text-sm font-semibold text-gray-500 mb-2">Магазин</h3>
                     <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="filterByMarket(1)" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterByMarket(1)"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('market') == 1 ? 'bg-blue-100 border-blue-300' : '' }}">
                                        Citilink
                         </button>
-                        <button type="button" onclick="filterByMarket(2)" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterByMarket(2)"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('market') == 2 ? 'bg-blue-100 border-blue-300' : '' }}">
                                        Regard
                         </button>
-                        <button type="button" onclick="filterByMarket(4)" 
-                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100 
+                        <button type="button" onclick="filterByMarket(4)"
+                                class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-100
                                        {{ request('market') == 4 ? 'bg-blue-100 border-blue-300' : '' }}">
                                        KNS
                         </button>
                     </div>
                 </div>
                 <!-- Кнопка сброса (показывается только если есть активные фильтры) -->
-              
+
                 <div class="pt-2">
-                    <button type="button" onclick="clearAllFilters()" 
+                    <button type="button" onclick="clearAllFilters()"
                             class="px-3 py-1 hover:bg-blue-100 rounded-full text-sm transition border border-blue-200 text-blue-600">
                         Сбросить все фильтры
                     </button>
                 </div>
-              
+
             </div>
-     
+
     @if (auth()->check() && auth()->user()->admin == 1)
-        
+
     <div style="">
         <h2 class=" font-bold mb-6">🔧 Админ-панель</h2>
-    
+
         <!-- Добавление категории -->
         <button class="accordion w-full bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
             ➕ Категория
@@ -252,7 +252,7 @@
                 </button>
             </form>
         </div>
-    
+
         <!-- Парсинг -->
         <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
             🔍 Парсинг
@@ -262,7 +262,7 @@
                 @csrf
                 <div class="mb-3">
                     <label for="markets-select" class="block mb-1 text-sm">Выберите магазин:</label>
-                    <select id="markets-select" name="market_id" required 
+                    <select id="markets-select" name="market_id" required
                             class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
                         <option value="">— Выберите —</option>
                         @foreach($markets as $market)
@@ -270,7 +270,7 @@
                         @endforeach
                     </select>
                 </div>
-            
+
                 <div id="urls-container" class="mb-3 hidden">
                     <label for="category_id" class="block mb-1">Доступные категории:</label>
                     <select id="categories_id" name="category_id" required
@@ -278,7 +278,7 @@
                         <!-- Опции будут загружены через AJAX -->
                     </select>
                 </div>
-            
+
                 <button type="submit" id="submit-btn" disabled
                         class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition opacity-50">
                     Начать парсинг
@@ -286,7 +286,7 @@
             </form>
         </div>
         <button class="accordion w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
-            ✏ Добавить комплектующие в ручную 
+            ✏ Добавить комплектующие в ручную
         </button>
         <div class="panel hidden mt-2">
             <form method="POST" action="{{ route('admin.addComponent') }}" enctype="multipart/form-data">
@@ -311,9 +311,9 @@
                             Выберите магазин
                          </option>
                         @foreach ($markets as $market)
-                        
+
                             <option value="{{ $market->id }}">{{ $market->name }}</option>
-                            
+
                         @endforeach
                     </select>
                 </div>
@@ -329,7 +329,7 @@
                     <label for="component_brand" class="block   mb-1">Бренд</label>
                     <input type="text" name="component_brand" id="component_brand" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
                 </div>
-               
+
                 <div class="mb-2">
                     <label for="component_market_url" class="block   mb-1">Ссылка на товар</label>
                     <input type="url" name="component_market_url" id="component_market_url" class="w-full px-2 py-1 border rounded text-black   bg-white" required>
@@ -346,35 +346,35 @@
                               class="w-full border p-2 rounded h-28   bg-gray-100 text-black resize-none"
                               placeholder='{"socket": "AM4", "form_factor": "ATX"}'></textarea>
                 </div>
-        
+
                 <div class="mb-3">
                     <label for="component_image" class="block   mb-1">Изображение</label>
                     <input type="file" name="component_image" id="component_image"
                            class="w-full border rounded   px-2 py-1 bg-white text-black file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:  file:bg-green-600 file:text-white hover:file:bg-green-700">
                 </div>
-        
+
                 <button type="submit"
                     class="w-full bg-green-600 text-white py-1 rounded   hover:bg-green-700 transition">
                     Добавить
                 </button>
             </form>
         </div>
-        
+
         <button id="open-modal" class="w-full mt-4 bg-green-600 text-white py-1.5 text-sm rounded hover:bg-green-700 transition">
             ✏ Правила совместимости комплектующих
         </button>
-        
+
         <!-- Затемнение фона + Модальное окно -->
         <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
             <div style="background-color: black;" class="text-white p-6 rounded-lg shadow-lg w-full max-w-6xl overflow-auto max-h-[90vh] relative">
 
-        
+
                 <!-- Кнопка закрытия -->
                 <button id="close-modal" class="absolute top-3 right-4 text-gray-600 hover:text-black text-2xl">&times;</button>
-        
+
                 <!-- Форма -->
                 <form id="compatibility-form" action="{{ route('save.compatibility.rules') }}" method="POST">
-                    @csrf
+
                     <table class="w-full border mt-2 text-sm" id="compatibility-table">
                         <thead>
                             <tr>
@@ -411,8 +411,8 @@
                                     </select>
                                 </td>
                                 <td class="border px-2 py-1">
-                                    <textarea name="rules[{{ $index }}][condition]" 
-                                              class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded" 
+                                    <textarea name="rules[{{ $index }}][condition]"
+                                              class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded"
                                               style="min-height: 40px;">
                                         {{ json_encode($rule->condition) }}
                                     </textarea>
@@ -424,13 +424,13 @@
                             @endforeach
                         </tbody>
                     </table>
-        
+
                     <button type="button" id="add-rule" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
                         ➕ Добавить правило
                     </button>
-        
+
                     <input type="hidden" id="deleted-rules" name="deleted_rules" value="[]">
-        
+
                     <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-2">
                         💾 Сохранить изменения
                     </button>
@@ -443,7 +443,7 @@
         <div class="panel hidden mt-2">
             <form id="markets-urls-form" action="{{ route('markets_urls.save') }}" method="POST">
                 @csrf
-        
+
                 <div class="mb-3">
                     <label for="market-select" class="block mb-1 text-sm">Выберите магазин:</label>
                     <select id="market-select" name="market_id" class="w-full border px-1 py-2 bg-gray-100 text-sm text-black rounded">
@@ -453,7 +453,7 @@
                         @endforeach
                     </select>
                 </div>
-        
+
                 <div id="categories-url-table-wrapper" class="hidden">
                     <table id="categories-url-table" class="table-auto w-full">
                         <thead>
@@ -481,19 +481,19 @@
                                     </td>
                                     <td class="border px-2 py-1 text-center">
                                         <button type="button" class="remove-row text-red-600" data-id="{{ $marketUrl->id }}">✖</button>
-    
+
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    
-        
+
+
                     <button type="button" id="add-row" class="bg-blue-600 text-white px-3 py-1 mt-2 rounded hover:bg-blue-700 transition">
                         ➕ Добавить строку
                     </button>
                 </div>
-        
+
                 <button type="submit" class="w-full bg-green-600 text-white py-1 rounded hover:bg-green-700 transition mt-3">
                     💾 Сохранить
                 </button>
@@ -522,10 +522,10 @@
             @endif
         </div>
     </div>
-    </div>      
+    </div>
             <div class="lg:w-3/4">
             <div class="flex justify-between items-center">
-              
+
                 @auth
                     <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg">
                         <span class="text-blue-800 font-semibold">Режим Конфигуратора</span>
@@ -535,8 +535,8 @@
                     </div>
                 @endauth
 
-               
-                
+
+
                 <!-- Переключатель вида -->
                 <div class="flex items-center space-x-2">
                     <span class="text-sm text-gray-500">Вид:</span>
@@ -553,28 +553,28 @@
                 </div>
             </div>
             <h1 class="text-3xl font-bold">Каталог комплектующих</h1>
-                
+
             <!-- Версия плиткой (по умолчанию) -->
             <div id="catalog-wrapper">
                 @include('pccomponents.partial.components', ['components' => $components, 'view' => request('view', 'grid')])
             </div>
-               
-       
-        
+
+
+
     </div>
-   
+
 </div>
 </div>
     <script>
-       
+
     var acc = document.getElementsByClassName("accordion");
-    
+
     // Для каждого аккордеона добавляем обработчик событий
     for (var i = 0; i < acc.length; i++) {
         acc[i].addEventListener("click", function() {
             // Переключаем видимость панели
             this.classList.toggle("active");
-            
+
             var panel = this.nextElementSibling;
             if (panel.style.display === "block") {
                 panel.style.display = "none";
@@ -584,12 +584,12 @@
         });
     }
         </script>
-       
+
        <script>
         document.addEventListener("DOMContentLoaded", () => {
             let rowIndex = {{ count($rules) }};
             const tableBody = document.getElementById("compatibility-rows");
-    
+
             document.getElementById("add-rule").addEventListener("click", () => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
@@ -624,24 +624,24 @@
                 tableBody.appendChild(row);
                 rowIndex++;
             });
-    
-            
+
+
             tableBody.addEventListener("click", (e) => {
                 if (e.target.classList.contains("remove-row")) {
                     e.target.closest("tr").remove();
                 }
             });
         });
-    </script>  
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            
+
             const tableBody = document.getElementById("compatibility-rows");
             const deletedRulesInput = document.getElementById("deleted-rules");
-    
+
             tableBody.addEventListener("click", (e) => {
                 if (e.target.classList.contains("remove-row")) {
-                    const row = e.target.closest("tr");  
+                    const row = e.target.closest("tr");
                     const ruleId = e.target.getAttribute("data-id");
 
                     if (ruleId) {
@@ -649,9 +649,9 @@
                         deletedRules.push(ruleId);
                         deletedRulesInput.value = JSON.stringify(deletedRules);
                     }
-                   
-    
-                    row.remove(); 
+
+
+                    row.remove();
                 }
             });
         });
@@ -662,7 +662,7 @@
     const tableWrapper = document.getElementById('categories-url-table-wrapper');
     const tableBody = document.getElementById('categories-url-body');
     const addRowButton = document.getElementById('add-row');
-    let categories = @json($categories); 
+    let categories = @json($categories);
     let rowIndex = {{ count($marketsUrls) }};
 
     marketSelect.addEventListener('change', function () {
@@ -695,7 +695,7 @@
         rowIndex++;
     });
 
-    
+
     function createRow(index, selectedCategoryId = '', url = '', id = null) {
         const row = document.createElement('tr');
 
@@ -731,7 +731,7 @@
             if (e.target.classList.contains('remove-row')) {
                 const row = e.target.closest('tr');
                 const id = e.target.getAttribute('data-id');
-    
+
                 if (id) {
                     if (confirm('Вы уверены, что хотите удалить эту ссылку?')) {
                         fetch(`/markets-urls/delete/${id}`, {
@@ -757,26 +757,26 @@
         });
     });
     </script>
-    
+
     <script>
         document.getElementById('markets-select').addEventListener('change', function() {
             const marketId = this.value;
             const urlsContainer = document.getElementById('urls-container');
             const submitBtn = document.getElementById('submit-btn');
-            
+
             if (!marketId) {
                 urlsContainer.classList.add('hidden');
                 submitBtn.disabled = true;
                 submitBtn.classList.add('opacity-50');
                 return;
             }
-        
+
             fetch(`/admin/get-urls?market_id=${marketId}`)
                 .then(response => response.json())
                 .then(data => {
                     const select = document.getElementById('categories_id');
                     select.innerHTML = '';
-                    
+
                     if (Object.keys(data).length === 0) {
                         const option = document.createElement('option');
                         option.value = '';
@@ -798,21 +798,21 @@
                         submitBtn.disabled = false;
                         submitBtn.classList.remove('opacity-50');
                     }
-                    
+
                     urlsContainer.classList.remove('hidden');
                 });
         });
         </script>
         <script>
-           
+
             </script>
             <script>
                 function deleteComponent(event, id) {
-                        event.preventDefault(); 
-                        
+                        event.preventDefault();
+
                         if (!confirm('Вы уверены, что хотите удалить этот компонент?')) return;
 
-                        const componentElement = event.target.closest('form'); 
+                        const componentElement = event.target.closest('form');
 
                         fetch(`/delete/${id}`, {
                             method: 'DELETE',
@@ -831,14 +831,14 @@
                                 componentElement.style.transition = 'opacity 0.3s, transform 0.3s';
                                 componentElement.style.opacity = '0';
                                 componentElement.style.transform = 'scale(0.9)';
-                                
+
                                 setTimeout(() => {
                                     componentElement.remove();
-                                    
-                                    
+
+
                                     updateComponentsCounter();
                                 }, 300);
-                                
+
                                 showFlashMessage(data.message, 'success');
                             }
                         })
@@ -855,7 +855,7 @@
                         } z-50`;
                         flash.textContent = message;
                         document.body.appendChild(flash);
-                        
+
                         setTimeout(() => {
                             flash.style.transition = 'opacity 0.5s';
                             flash.style.opacity = '0';
@@ -874,15 +874,15 @@
 <script>
     function filterBySocket(socket) {
         document.getElementById('socket-filter').value = socket;
-        
+
         document.getElementById('filter-form').submit();
     }
-    
+
     function filterByManufacturer(brand) {
         document.getElementById('manufacturer-filter').value = brand;
         document.getElementById('filter-form').submit();
     }
-    
+
     function filterByMemoryType(memoryType) {
         document.getElementById('memory-type-filter').value = memoryType;
         document.getElementById('filter-form').submit();
@@ -930,7 +930,7 @@
 <script>
     document.getElementById('toggleConfiguratorMode')?.addEventListener('click', function () {
         const url = "{{ route('toggleConfiguratorMode') }}".replace(/^http:/, window.location.protocol);
-        
+
         fetch(url, {
             method: "POST",
             headers: {
@@ -959,15 +959,15 @@
 </script>
 
 
-    
-    
+
+
 
     <script>
         function submitFilters() {
             const form = document.getElementById('filter-form');
             const formData = new FormData(form);
             const params = new URLSearchParams(formData).toString();
-    
+
             fetch(form.action + '?' + params, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
@@ -975,38 +975,38 @@
             .then(html => {
                 document.getElementById('component-container').innerHTML = html;
                 history.pushState(null, '', form.action + '?' + params);
-                updateSelectedComponents(); 
+                updateSelectedComponents();
             })
 
             .catch(error => console.error('Ошибка фильтрации:', error));
         }
-    
+
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('filter-form').addEventListener('change', function () {
                 submitFilters();
             });
         });
-    
+
         function filterBySocket(value) {
             document.getElementById('socket-filter').value = value;
             submitFilters();
         }
-    
+
         function filterByManufacturer(value) {
             document.getElementById('manufacturer-filter').value = value;
             submitFilters();
         }
-    
+
         function filterByMemoryType(value) {
             document.getElementById('memory-type-filter').value = value;
             submitFilters();
         }
-    
+
         function filterByMarket(value) {
             document.getElementById('market-filter').value = value;
             submitFilters();
         }
-    
+
         function clearAllFilters() {
             document.getElementById('socket-filter').value = '';
             document.getElementById('manufacturer-filter').value = '';
@@ -1016,10 +1016,10 @@
         }
     </script>
     <script>
-       
+
         </script>
     <script>
-        
+
         function addToConfiguration(componentId, componentName, componentImageUrl, categoryId) {
     const imageElement = document.getElementById('preview_image_' + categoryId);
     const nameElement = document.getElementById('preview_name_' + categoryId);
@@ -1046,13 +1046,13 @@ function updateSelectedComponents() {
     checkCompatibilityMulti(selectedComponents);
 }
 
-    
+
         function checkCompatibilityMulti(selectedComponents) {
             document.querySelectorAll('.add-to-config-btn').forEach(btn => {
                 btn.disabled = false;
                 btn.closest('.component-card')?.querySelector('.incompatible-text')?.classList.add('hidden');
             });
-    
+
             fetch('/configurator/check-compatibility-multi', {
                 method: 'POST',
                 headers: {
@@ -1072,7 +1072,7 @@ function updateSelectedComponents() {
                 console.error('Ошибка при проверке совместимости:', error);
             });
         }
-    
+
         function handleCompatibilityResults(results) {
             for (const categoryId in results) {
                 const incompatibleIds = results[categoryId];
@@ -1094,7 +1094,7 @@ function updateSelectedComponents() {
             }
         }
 
-    
+
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('reset-configurator').addEventListener('click', function() {
                 @foreach($categories as $category)
@@ -1102,7 +1102,7 @@ function updateSelectedComponents() {
                     document.getElementById('preview_name_{{ $category->id }}').textContent = "Не выбрано";
                     document.getElementById('component_input_{{ $category->id }}').value = "";
                 @endforeach
-    
+
                 document.querySelectorAll('.add-to-config-btn').forEach(btn => {
                     btn.disabled = false;
                     btn.closest('.component-card')?.querySelector('.incompatible-text')?.classList.add('hidden');
@@ -1114,7 +1114,7 @@ function updateSelectedComponents() {
             const listBtn = document.getElementById('list-view');
             const viewInput = document.getElementById('view-mode');
             const filterForm = document.getElementById('filter-form');
-        
+
             function fetchComponents(pageUrl = null) {
     const formData = new FormData(filterForm);
     const params = new URLSearchParams(formData);
@@ -1130,7 +1130,7 @@ function updateSelectedComponents() {
     .then(res => res.text())
     .then(html => {
     const wrapper = document.getElementById('catalog-wrapper');
-    wrapper.innerHTML = ''; 
+    wrapper.innerHTML = '';
     wrapper.innerHTML = html;
     updateSelectedComponents();
 })
@@ -1139,40 +1139,40 @@ function updateSelectedComponents() {
     });
 }
 
-        
+
             function toggleViewButtons(view) {
                 gridBtn.classList.toggle('bg-blue-100', view === 'grid');
                 gridBtn.classList.toggle('text-blue-600', view === 'grid');
                 listBtn.classList.toggle('bg-blue-100', view === 'list');
                 listBtn.classList.toggle('text-blue-600', view === 'list');
             }
-        
+
             const savedView = localStorage.getItem('catalogView');
             if (savedView === 'grid' || savedView === 'list') {
                 viewInput.value = savedView;
                 toggleViewButtons(savedView);
             }
-        
+
             fetchComponents();
-        
+
             gridBtn.addEventListener('click', function () {
                 viewInput.value = 'grid';
                 localStorage.setItem('catalogView', 'grid');
                 toggleViewButtons('grid');
                 fetchComponents();
             });
-        
+
             listBtn.addEventListener('click', function () {
                 viewInput.value = 'list';
                 localStorage.setItem('catalogView', 'list');
                 toggleViewButtons('list');
                 fetchComponents();
             });
-        
+
             filterForm.addEventListener('change', function () {
                 fetchComponents();
             });
-        
+
             document.addEventListener('click', function (e) {
                 const link = e.target.closest('#pagination-wrapper a');
                 if (link) {
@@ -1183,8 +1183,8 @@ function updateSelectedComponents() {
         });
     </script>
 
-    
-    
+
+
 
 </body>
 </html>
