@@ -13,7 +13,15 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
-   
+
+       'yandex' => [
+           'gateway_url'  => env('YANDEX_GATEWAY_URL'),
+           'api_key'      => env('YANDEX_API_KEY_SECRET'),
+           'use_x_header' => (bool) env('YANDEX_USE_X_HEADER', false),
+           'folder_id'    => env('YANDEX_FOLDER_ID'),
+       ],
+
+
 
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),

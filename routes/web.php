@@ -27,22 +27,22 @@ Route::middleware('auth')->group(function () {
    // Route::group(['middleware' => 'admin'], function () {
     //if (auth()->check() && auth()->user()->admin == 1){
         Route::put('/user/{user}', [ProfileController::class, 'updateUsers'])->name('user.update');
-    
+
         Route::delete('/users/{user}', [ProfileController::class, 'destroyUser'])->name('user.destroy');
    // }
-   
+
 //});
 
-   
+
     Route::put('/user/{user}', [ProfileController::class, 'updateUsers'])->name('user.update');
-    
+
     Route::delete('/users/{user}', [ProfileController::class, 'destroyUser'])->name('user.destroy');
 
     Route::delete('/markets-urls/delete/{id}', [ProfileController::class, 'destroyMarketUrl'])->name('markets_urls.destroy');
 
     Route::post('/markets-urls/save/', [ProfileController::class, 'saveMarketUrl'])->name('markets_urls.save');
 
-   
+
 });
 
 // дипсик помощник
@@ -68,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.addMarket');
         Route::post('/admin/addComponent', [\App\Http\Controllers\Admin\ParserController::class, 'addComponent'])
         ->name('admin.addComponent');
-}); 
+});
 Route::delete('/delete/{id}', [ComponentController::class, 'delete'])->name('delete');
 Route::put('/components/{id}', [ComponentController::class, 'update'])->name('components.update');
 
@@ -92,12 +92,19 @@ Route::post('/toggle-configurator-mode', [ConfigurationController::class, 'toggl
     ->middleware('auth');
 //Route::post('/compatibility/check', [ConfigurationController::class, 'checkCompatibility']);
 //Конфигуратор
-/* 
+/*
 Route::middleware(['auth'])->group(function () {
    Route::get('/configurations/create', [ConfigurationController::class, 'create'])->name('configurations.create');
-   
+
     //Route::get('/configurations', [ConfigurationController::class, 'index'])->name('configurations.index');
     //Route::get('/configurations/{id}', [ConfigurationController::class, 'show'])->name('configurations.show');
 });
 */
 require __DIR__.'/auth.php';
+
+// AI Assistant (Yandex Gateway) — auth only
+Route::middleware('auth')->group(function () {
+    Route::get('/ai', [AiChatController::class, 'index'])->name('ai.index');
+    Route::post('/ai/generate', [AiChatController::class, 'generate'])
+        ->name('ai.generate');
+});
